@@ -14,6 +14,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-size-adjust: 100%;
+  scroll-padding-top: max(80px, env(safe-area-inset-top, 0px) + 60px);
 }
 
 body {
@@ -64,6 +65,12 @@ body {
   padding-bottom: 16px;
   margin-bottom: 20px;
   border-bottom: 1px solid #27272a;
+  /* Stick to top at all breakpoints */
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #09090b;
+  padding-top: max(12px, env(safe-area-inset-top, 0px));
 }
 
 @media (min-width: 640px) {
@@ -74,6 +81,7 @@ body {
     gap: 24px;
     padding-bottom: 20px;
     margin-bottom: 28px;
+    padding-top: max(24px, env(safe-area-inset-top, 0px));
   }
 }
 
@@ -81,11 +89,6 @@ body {
   .topbar {
     padding-bottom: 24px;
     margin-bottom: 32px;
-    /* Desktop: stick to top */
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: #09090b;
     margin-left: -32px;
     margin-right: -32px;
     padding-left: 32px;
@@ -155,89 +158,8 @@ body {
   .topbar-controls { gap: 10px; }
 }
 
-/* Status badge */
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #18181b;
-  border: 1px solid #27272a;
-  border-radius: 999px;
-  padding: 4px 12px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  user-select: none;
-}
-
-@media (min-width: 640px) {
-  .status-badge {
-    padding: 5px 14px;
-    font-size: 0.8125rem;
-  }
-}
-
-/* Status dot */
-.status-dot-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 8px;
-  height: 8px;
-}
-
-@media (min-width: 640px) {
-  .status-dot-wrapper { width: 10px; height: 10px; }
-}
-
-.status-dot-wrapper::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-  z-index: 0;
-}
-
-.status-dot {
-  position: relative;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  z-index: 1;
-}
-
-@media (min-width: 640px) {
-  .status-dot { width: 10px; height: 10px; }
-}
-
-/* OK state */
-.status-ok { background: #22c55e; }
-.status-dot.status-ok { background: #22c55e; }
-.status-dot-wrapper.status-ok::before { background: #22c55e; }
-
-/* Loading state */
-.status-loading { background: #22c55e80; }
-.status-dot.status-loading { background: #4ade80; }
-.status-dot-wrapper.status-loading::before { background: #22c55e; }
-
-/* Error state — no pulse */
-.status-error { background: #ef4444; }
-.status-dot.status-error { background: #ef4444; }
-.status-dot-wrapper.status-error::before { animation: none; }
-
-.status-text { font-weight: 500; }
-.status-text-ok { color: #4ade80; }
-.status-text-loading { color: #d4d4d8; }
-.status-text-error { color: #f87171; }
-
-@keyframes pulse-ring {
-  0%   { transform: scale(0.8); opacity: 0.5; }
-  100% { transform: scale(2.4); opacity: 0; }
-}
-
-/* Timer badge */
-.timer-badge {
+/* Last Updated badge */
+.last-updated-badge {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -251,22 +173,22 @@ body {
 }
 
 @media (min-width: 640px) {
-  .timer-badge {
+  .last-updated-badge {
     padding: 5px 14px;
     font-size: 0.8125rem;
   }
 }
 
-.timer-badge svg {
+.last-updated-badge svg {
   width: 12px;
   height: 12px;
 }
 
 @media (min-width: 640px) {
-  .timer-badge svg { width: 14px; height: 14px; }
+  .last-updated-badge svg { width: 14px; height: 14px; }
 }
 
-.timer-badge .countdown {
+.last-updated-time {
   color: #e4e4e7;
   font-weight: 600;
 }
@@ -600,6 +522,128 @@ body {
 
 @media (min-width: 480px) {
   .kpi-grid-4 { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COLLAPSE TOGGLE
+   ═══════════════════════════════════════════════════════════════ */
+.collapse-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: rgba(9, 9, 11, 0.4);
+  border: 1px solid rgba(39, 39, 42, 0.4);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #a1a1aa;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, margin-bottom 0.3s;
+  touch-action: manipulation;
+  user-select: none;
+  line-height: 1.4;
+}
+
+@media (min-width: 640px) {
+  .collapse-toggle {
+    font-size: 0.8125rem;
+    padding: 12px 18px;
+    border-radius: 12px;
+  }
+}
+
+.collapse-toggle:hover {
+  background: rgba(9, 9, 11, 0.7);
+  border-color: rgba(63, 63, 70, 0.6);
+  color: #d4d4d8;
+}
+
+.collapse-toggle:active {
+  transform: scale(0.99);
+}
+
+.collapse-toggle[aria-expanded="true"] {
+  color: #e4e4e7;
+  border-color: rgba(63, 63, 70, 0.6);
+  margin-bottom: 20px;
+}
+
+@media (min-width: 640px) {
+  .collapse-toggle[aria-expanded="true"] { margin-bottom: 24px; }
+}
+
+@media (min-width: 1024px) {
+  .collapse-toggle[aria-expanded="true"] { margin-bottom: 28px; }
+}
+
+.collapse-toggle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+  color: #71717a;
+}
+
+.collapse-toggle[aria-expanded="true"] .collapse-toggle-icon {
+  transform: rotate(90deg);
+  color: #a1a1aa;
+}
+
+.collapse-toggle-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.collapse-body {
+  overflow: hidden;
+  transition: opacity 0.35s ease, margin-bottom 0.35s ease;
+}
+
+.collapse-body.collapsed {
+  display: none;
+}
+
+/* Chart-specific collapse wrapper */
+.chart-collapse {
+  margin-bottom: 0;
+}
+
+.chart-collapse:not(.collapsed) {
+  margin-bottom: 24px;
+}
+
+@media (min-width: 640px) {
+  .chart-collapse:not(.collapsed) { margin-bottom: 28px; }
+}
+
+@media (min-width: 1024px) {
+  .chart-collapse:not(.collapsed) { margin-bottom: 32px; }
+}
+
+/* Charts section card (at the bottom) */
+.section-charts {
+  border-color: rgba(63, 63, 70, 0.6);
+  background: rgba(24, 24, 27, 0.7);
+}
+
+/* Grid for charts inside the collapse */
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 1024px) {
+  .chart-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════

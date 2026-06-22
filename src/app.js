@@ -35,7 +35,6 @@
 
   // ── State ────────────────────────────────────────────────────────
   const charts = {};
-  let countdown = REFRESH_INTERVAL;
   let lastSuccess = null;
   let timerId = null;
 
@@ -122,7 +121,6 @@
             autoSkip: true,
           },
           border: { display: false },
-          // Prevent x-axis from expanding beyond container
           suggestedMax: undefined,
         },
         y: {
@@ -130,9 +128,7 @@
           ticks: {
             color: theme.textPrimary,
             font: { weight: 500, size: small ? 10 : 12 },
-            // Truncate long labels on mobile
             maxTicksLimit: small ? 8 : 20,
-            // Truncate label text to prevent overflow on small screens
             callback: small
               ? function (value, index, ticks) {
                   const label = this.getLabelForValue(value);
@@ -151,9 +147,6 @@
     return Array.from({ length }, (_, i) => palette[i % palette.length]);
   }
 
-  /**
-   * Build a horizontal bar dataset.
-   */
   function barDataset(data, palette, showSingleColor) {
     const count = data.length;
     const small = isSmallScreen();
@@ -166,9 +159,16 @@
       barThickness: small ? (count > 4 ? 10 : 14) : (count > 5 ? 14 : 18),
       categoryPercentage: small ? 0.7 : 0.8,
       barPercentage: small ? 0.55 : 0.6,
-      // Avoid bars escaping the container
       maxBarThickness: small ? 16 : 28,
     };
+  }
+
+  // ── Update "Last updated" display ────────────────────────────────
+  function updateLastUpdated() {
+    const el = $('lastUpdated');
+    if (lastSuccess) {
+      el.textContent = lastSuccess.toLocaleTimeString();
+    }
   }
 
   // ── Main render ──────────────────────────────────────────────────
@@ -301,36 +301,8 @@
     });
   }
 
-  // ── Status indicator ─────────────────────────────────────────────
-  function setStatus(state) {
-    const dotWrapper = $('statusDot');
-    const dot = dotWrapper.querySelector('.status-dot');
-    const txt = $('statusText');
-
-    dotWrapper.className = 'status-dot-wrapper';
-    dot.className = 'status-dot';
-
-    if (state === 'error') {
-      dotWrapper.classList.add('status-error');
-      dot.classList.add('status-error');
-      txt.textContent = 'Disconnected';
-      txt.className = 'status-text status-text-error';
-    } else if (state === 'loading') {
-      dotWrapper.classList.add('status-loading');
-      dot.classList.add('status-loading');
-      txt.textContent = 'Updating\u2026';
-      txt.className = 'status-text status-text-loading';
-    } else {
-      dotWrapper.classList.add('status-ok');
-      dot.classList.add('status-ok');
-      txt.textContent = 'Live';
-      txt.className = 'status-text status-text-ok';
-    }
-  }
-
   // ── Fetch loop ───────────────────────────────────────────────────
   async function fetchStats() {
-    setStatus('loading');
     try {
       const res = await fetch(API_URL, { cache: 'no-store' });
       if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -338,34 +310,17 @@
       render(data);
 
       lastSuccess = new Date();
+      updateLastUpdated();
       $('errLast').textContent = lastSuccess.toLocaleTimeString();
       $('errorPanel').classList.add('hidden');
-      setStatus('ok');
     } catch (err) {
       console.error('[telemetry] fetch failed', err);
       $('errorPanel').classList.remove('hidden');
       $('errLast').textContent = lastSuccess
         ? lastSuccess.toLocaleTimeString()
         : 'never';
-      setStatus('error');
       renderMockData();
     }
-  }
-
-  function tick() {
-    countdown -= 1;
-    if (countdown <= 0) {
-      countdown = REFRESH_INTERVAL;
-      fetchStats();
-    }
-    $('countdown').textContent = countdown + 's';
-  }
-
-  function startLoop() {
-    if (timerId) clearInterval(timerId);
-    countdown = REFRESH_INTERVAL;
-    $('countdown').textContent = countdown + 's';
-    timerId = setInterval(tick, 1000);
   }
 
   function manualRefresh() {
@@ -375,14 +330,38 @@
       if (btnIcon) btnIcon.classList.remove('btn-spin');
     }, 1000);
 
-    countdown = REFRESH_INTERVAL;
-    $('countdown').textContent = countdown + 's';
     fetchStats();
   }
 
-  // ── Touch / mobile helpers ───────────────────────────────────────
-  function isTouchDevice() {
-    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  // ── Collapse toggle ──────────────────────────────────────────────
+  function initCollapseToggles() {
+    document.querySelectorAll('.collapse-toggle').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const targetId = this.getAttribute('data-target');
+        const body = document.getElementById(targetId);
+        if (!body) return;
+
+        const isOpen = this.getAttribute('aria-expanded') === 'true';
+
+        if (isOpen) {
+          body.classList.add('collapsed');
+          this.setAttribute('aria-expanded', 'false');
+          this.querySelector('.collapse-toggle-text').textContent = 'Show charts';
+        } else {
+          body.classList.remove('collapsed');
+          this.setAttribute('aria-expanded', 'true');
+          this.querySelector('.collapse-toggle-text').textContent = 'Hide charts';
+
+          const canvases = body.querySelectorAll('canvas');
+          canvases.forEach(canvas => {
+            const chartId = canvas.id;
+            if (charts[chartId]) {
+              setTimeout(() => charts[chartId].resize(), 50);
+            }
+          });
+        }
+      });
+    });
   }
 
   // ── Resize handler ───────────────────────────────────────────────
@@ -390,11 +369,16 @@
   function handleResize() {
     if (resizeTimer) clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      // On resize, just resize all existing charts (no API refetch needed)
       Object.values(charts).forEach(chart => {
         if (chart) chart.resize();
       });
     }, 200);
+  }
+
+  // ── Auto-refresh loop ──────────────────────────────────────
+  function startAutoRefresh() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(fetchStats, REFRESH_INTERVAL * 1000);
   }
 
   // ── Boot ─────────────────────────────────────────────────────────
@@ -402,9 +386,8 @@
     $('refreshBtn').addEventListener('click', manualRefresh);
     $('retryBtn').addEventListener('click', manualRefresh);
     fetchStats();
-    startLoop();
-
-    // Re-render on resize (e.g. rotate phone)
+    startAutoRefresh();
+    initCollapseToggles();
     window.addEventListener('resize', handleResize);
   });
 })();
