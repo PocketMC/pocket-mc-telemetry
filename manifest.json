@@ -1,0 +1,20 @@
+{
+  "name": "Pocket MC Telemetry",
+  "short_name": "PMC Stats",
+  "description": "Live anonymous telemetry for Pocket MC: installs, active clients, and server analytics.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#22c55e",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/PocketMC/pocket-mc-website/refs/heads/master/public/logo.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["utilities", "productivity"],
+  "lang": "en"
+}

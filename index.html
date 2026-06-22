@@ -1,628 +1,320 @@
 <!DOCTYPE html>
-<html lang="en" class="antialiased">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pocket MC — Telemetry Dashboard</title>
   <meta name="description" content="Live anonymous telemetry for Pocket MC: installs, active clients, and server analytics." />
   
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#22c55e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/PocketMC/pocket-mc-website/refs/heads/master/public/logo.webp" />
+  <link rel="stylesheet" href="src/style.css" />
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="src/app.js" defer></script>
   <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          },
-          colors: {
-            zinc: {
-              850: '#202024',
-              900: '#18181b',
-              950: '#09090b',
-            },
-            brand: {
-              400: '#4ade80',
-              500: '#22c55e',
-              600: '#16a34a',
-            }
-          }
-        }
-      }
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
     }
   </script>
-  <style>
-    body {
-      background-color: #09090b; /* zinc-950 */
-      color: #e4e4e7; /* zinc-200 */
-    }
-    
-    /* Elegant scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    
-    /* Animation for the live status dot */
-    @keyframes pulse-ring {
-      0% { transform: scale(0.8); opacity: 0.5; }
-      100% { transform: scale(2.4); opacity: 0; }
-    }
-    .status-dot-wrapper { position: relative; display: flex; align-items: center; justify-content: center; }
-    .status-dot-wrapper::before {
-      content: ''; position: absolute; width: 100%; height: 100%;
-      background-color: inherit; border-radius: 50%; z-index: 0;
-      animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-    }
-    .status-dot { position: relative; z-index: 1; }
-    
-    /* Ensure tabular numbers for all dynamic data */
-    .num-data { font-variant-numeric: tabular-nums; }
-  </style>
 </head>
-<body class="min-h-screen p-4 md:p-8">
-  <div class="max-w-7xl mx-auto">
+<body>
+  <div class="app-wrapper">
 
-    <!-- Topbar -->
-    <header class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 mb-8 border-b border-zinc-800">
-      <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-zinc-950 shadow-[0_0_20px_rgba(34,197,94,0.2)]">
-          <i data-lucide="box" class="w-7 h-7"></i>
-        </div>
+    <!-- ═══ Topbar ═══════════════════════════════════════════ -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <img class="logo-mark" src="https://raw.githubusercontent.com/PocketMC/pocket-mc-website/refs/heads/master/public/logo.webp" alt="Pocket MC logo" width="44" height="44" />
         <div>
-          <h1 class="text-lg font-semibold tracking-tight text-white m-0">Pocket MC Telemetry</h1>
-          <p class="text-sm text-zinc-400 m-0 mt-0.5">Live anonymous usage analytics</p>
+          <h1 class="header-title">Pocket MC Telemetry</h1>
+          <p class="header-sub">Live anonymous usage analytics</p>
         </div>
       </div>
-      
-      <div class="flex items-center gap-3 flex-wrap text-sm">
-        <div class="flex items-center gap-2.5 bg-zinc-900 border border-zinc-800 rounded-full px-3.5 py-1.5 text-zinc-300">
-          <div class="status-dot-wrapper w-2 h-2 rounded-full bg-brand-500" id="statusDot">
-            <div class="status-dot w-2 h-2 rounded-full bg-brand-500"></div>
-          </div>
-          <span id="statusText" class="font-medium">Connecting…</span>
-        </div>
-        
-        <div class="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full px-3.5 py-1.5 text-zinc-400">
-          <i data-lucide="clock" class="w-4 h-4"></i>
-          <span>Refresh in <span id="countdown" class="text-zinc-200 num-data font-medium ml-1">30s</span></span>
-        </div>
-        
-        <button id="refreshBtn" class="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-full px-4 py-1.5 transition-colors font-medium">
-          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+
+      <div class="topbar-controls">
+        <!-- Status -->
+        <span class="status-badge">
+          <span class="status-dot-wrapper" id="statusDot">
+            <span class="status-dot"></span>
+          </span>
+          <span id="statusText" class="status-text">Connecting&hellip;</span>
+        </span>
+
+        <!-- Timer -->
+        <span class="timer-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <span>Refresh in <span id="countdown" class="countdown">30s</span></span>
+        </span>
+
+        <!-- Refresh -->
+        <button id="refreshBtn" class="btn-refresh">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"/>
+            <polyline points="1 20 1 14 7 14"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
           <span>Refresh</span>
         </button>
       </div>
     </header>
 
-    <!-- Error Panel -->
-    <div id="errorPanel" class="hidden mb-8 bg-red-500/10 border border-red-500/20 rounded-2xl p-5 flex items-start gap-4">
-      <div class="p-2 bg-red-500/20 rounded-lg text-red-400 mt-0.5">
-        <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+    <!-- ═══ Error Panel ══════════════════════════════════════ -->
+    <div id="errorPanel" class="error-panel hidden">
+      <div class="error-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
       </div>
-      <div class="flex-1">
-        <h3 class="text-red-400 font-medium text-base m-0 mb-1">Unable to reach telemetry server</h3>
-        <p class="text-red-400/80 text-sm m-0 mb-3">The dashboard will keep retrying automatically. Last successful update: <span id="errLast" class="num-data text-red-300">never</span>.</p>
-        <button id="retryBtn" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/20 rounded-lg px-4 py-2 text-sm font-medium transition-colors">
-          Try Again Now
-        </button>
+      <div class="error-body">
+        <h3>Unable to reach telemetry server</h3>
+        <p>The dashboard will keep retrying automatically. Last successful update: <span id="errLast" class="err-last">never</span>.</p>
+        <button id="retryBtn" class="btn-retry">Try Again Now</button>
       </div>
     </div>
 
-    <!-- SECTION 1: INSTALLATION -->
-    <section class="mb-10 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 md:p-8">
-      <div class="flex items-center justify-between mb-8">
-        <div class="flex items-center gap-3">
-          <div class="p-2 bg-brand-500/10 text-brand-400 rounded-lg"><i data-lucide="download" class="w-5 h-5"></i></div>
-          <h2 class="text-xl font-semibold text-white tracking-tight m-0">Installations</h2>
-        </div>
-      </div>
-      
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div class="bg-zinc-950/50 border border-zinc-800/50 rounded-xl p-5">
-          <div class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Total Installs</div>
-          <div class="text-3xl font-bold text-brand-400 tracking-tight num-data" id="kpi-totalInstalls">—</div>
-        </div>
-        <div class="bg-zinc-950/50 border border-zinc-800/50 rounded-xl p-5">
-          <div class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Unique Versions</div>
-          <div class="text-3xl font-bold text-zinc-100 tracking-tight num-data" id="kpi-installVersions">—</div>
-        </div>
-        <div class="bg-zinc-950/50 border border-zinc-800/50 rounded-xl p-5">
-          <div class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Countries Reached</div>
-          <div class="text-3xl font-bold text-zinc-100 tracking-tight num-data" id="kpi-installCountries">—</div>
+    <!-- ═══════════════════════════════════════════════════════
+         SECTION 1 — Installations
+         ═══════════════════════════════════════════════════════ -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-title-group">
+          <div class="section-icon section-icon-green">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </div>
+          <h2 class="section-title">Installations</h2>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Install Versions -->
-        <div class="space-y-4">
-          <h3 class="text-sm font-medium text-zinc-400 flex items-center gap-2"><i data-lucide="pie-chart" class="w-4 h-4"></i> Version Distribution</h3>
-          <div class="h-[240px] relative"><canvas id="chart-installVersion"></canvas></div>
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Total Installs</div>
+          <div class="kpi-value kpi-green" id="kpi-totalInstalls">&mdash;</div>
         </div>
-        <div class="space-y-4">
-          <h3 class="text-sm font-medium text-zinc-400 flex items-center gap-2"><i data-lucide="list" class="w-4 h-4"></i> Version Breakdown</h3>
-          <div class="bg-zinc-950/50 border border-zinc-800/50 rounded-xl overflow-hidden max-h-[240px] overflow-y-auto">
-            <table class="w-full text-sm text-left">
-              <thead class="text-xs text-zinc-500 uppercase bg-zinc-900/50 border-b border-zinc-800/50 sticky top-0">
-                <tr><th class="px-4 py-3 font-medium">Version</th><th class="px-4 py-3 font-medium text-right">Installs</th><th class="px-4 py-3 font-medium text-right">Share</th></tr>
+        <div class="kpi-card">
+          <div class="kpi-label">Unique Versions</div>
+          <div class="kpi-value kpi-white" id="kpi-installVersions">&mdash;</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Countries Reached</div>
+          <div class="kpi-value kpi-white" id="kpi-installCountries">&mdash;</div>
+        </div>
+      </div>
+
+      <!-- Charts + Tables -->
+      <div class="chart-table-grid">
+        <div class="chart-box">
+          <h3 class="chart-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+            Version Distribution
+          </h3>
+          <div class="chart-canvas-wrapper">
+            <canvas id="chart-installVersion"></canvas>
+          </div>
+        </div>
+        <div class="chart-box">
+          <h3 class="chart-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+            Version Breakdown
+          </h3>
+          <div class="table-wrapper">
+            <table class="table-inner">
+              <thead>
+                <tr><th>Version</th><th>Installs</th><th>Share</th></tr>
               </thead>
-              <tbody id="tbl-installVersion" class="divide-y divide-zinc-800/50"></tbody>
+              <tbody id="tbl-installVersion"></tbody>
             </table>
           </div>
         </div>
-        
-        <!-- Install Countries -->
-        <div class="space-y-4 pt-4 border-t border-zinc-800/50 lg:border-t-0 lg:pt-0">
-          <h3 class="text-sm font-medium text-zinc-400 flex items-center gap-2"><i class="w-4 h-4" data-lucide="bar-chart-2"></i> Top Countries</h3>
-          <div class="h-[240px] relative"><canvas id="chart-installCountry"></canvas></div>
-        </div>
-        <div class="space-y-4 pt-4 border-t border-zinc-800/50 lg:border-t-0 lg:pt-0">
-          <h3 class="text-sm font-medium text-zinc-400 flex items-center gap-2"><i class="w-4 h-4" data-lucide="globe"></i> Country Breakdown</h3>
-          <div class="bg-zinc-950/50 border border-zinc-800/50 rounded-xl overflow-hidden max-h-[240px] overflow-y-auto">
-            <table class="w-full text-sm text-left">
-              <thead class="text-xs text-zinc-500 uppercase bg-zinc-900/50 border-b border-zinc-800/50 sticky top-0">
-                <tr><th class="px-4 py-3 font-medium">Country</th><th class="px-4 py-3 font-medium text-right">Installs</th><th class="px-4 py-3 font-medium text-right">Share</th></tr>
-              </thead>
-              <tbody id="tbl-installCountry" class="divide-y divide-zinc-800/50"></tbody>
-            </table>
+
+        <div class="chart-box">
+          <h3 class="chart-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
+            </svg>
+            Top Countries
+          </h3>
+          <div class="chart-canvas-wrapper">
+            <canvas id="chart-installCountry"></canvas>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- SECTION 2: ACTIVE CLIENTS -->
-    <section class="mb-10 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 md:p-8">
-      <div class="flex items-center justify-between mb-8">
-        <div class="flex items-center gap-3">
-          <div class="p-2 bg-blue-500/10 text-blue-400 rounded-lg"><i data-lucide="users" class="w-5 h-5"></i></div>
-          <h2 class="text-xl font-semibold text-white tracking-tight m-0">Active Clients</h2>
-        </div>
-      </div>
-      
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div class="bg-zinc-950/50 border border-zinc-800/50 rounded-xl p-5">
-          <div class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Open Clients</div>
-          <div class="text-3xl font-bold text-blue-400 tracking-tight num-data" id="kpi-openClients">—</div>
-        </div>
-        <div class="bg-zinc-950/50 border border-zinc-800/50 rounded-xl p-5">
-          <div class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Online Users</div>
-          <div class="text-3xl font-bold text-zinc-100 tracking-tight num-data" id="kpi-activeUsers">—</div>
-        </div>
-        <div class="bg-zinc-950/50 border border-zinc-800/50 rounded-xl p-5">
-          <div class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">AFK Users</div>
-          <div class="text-3xl font-bold text-zinc-500 tracking-tight num-data" id="kpi-afkUsers">—</div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div class="space-y-4">
-          <h3 class="text-sm font-medium text-zinc-400">Client Version Distribution</h3>
-          <div class="h-[240px] relative"><canvas id="chart-clientVersion"></canvas></div>
-        </div>
-        <div class="space-y-4">
-          <h3 class="text-sm font-medium text-zinc-400">Active Locations</h3>
-          <div class="h-[240px] relative"><canvas id="chart-clientLocation"></canvas></div>
-        </div>
-
-        <div class="space-y-4 pt-4 border-t border-zinc-800/50 lg:border-t-0 lg:pt-0">
-          <div class="bg-zinc-950/50 border border-zinc-800/50 rounded-xl overflow-hidden max-h-[240px] overflow-y-auto">
-            <table class="w-full text-sm text-left">
-              <thead class="text-xs text-zinc-500 uppercase bg-zinc-900/50 border-b border-zinc-800/50 sticky top-0">
-                <tr><th class="px-4 py-3 font-medium">Version</th><th class="px-4 py-3 font-medium text-right">Clients</th><th class="px-4 py-3 font-medium text-right">Share</th></tr>
+        <div class="chart-box">
+          <h3 class="chart-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+            Country Breakdown
+          </h3>
+          <div class="table-wrapper">
+            <table class="table-inner">
+              <thead>
+                <tr><th>Country</th><th>Installs</th><th>Share</th></tr>
               </thead>
-              <tbody id="tbl-clientVersion" class="divide-y divide-zinc-800/50"></tbody>
-            </table>
-          </div>
-        </div>
-        <div class="space-y-4 pt-4 border-t border-zinc-800/50 lg:border-t-0 lg:pt-0">
-          <div class="bg-zinc-950/50 border border-zinc-800/50 rounded-xl overflow-hidden max-h-[240px] overflow-y-auto">
-            <table class="w-full text-sm text-left">
-              <thead class="text-xs text-zinc-500 uppercase bg-zinc-900/50 border-b border-zinc-800/50 sticky top-0">
-                <tr><th class="px-4 py-3 font-medium">Country</th><th class="px-4 py-3 font-medium text-right">Clients</th><th class="px-4 py-3 font-medium text-right">Share</th></tr>
-              </thead>
-              <tbody id="tbl-clientLocation" class="divide-y divide-zinc-800/50"></tbody>
+              <tbody id="tbl-installCountry"></tbody>
             </table>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SECTION 3: SERVERS -->
-    <section class="mb-10 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 md:p-8">
-      <div class="flex items-center justify-between mb-8">
-        <div class="flex items-center gap-3">
-          <div class="p-2 bg-purple-500/10 text-purple-400 rounded-lg"><i data-lucide="server" class="w-5 h-5"></i></div>
-          <h2 class="text-xl font-semibold text-white tracking-tight m-0">Server Analytics</h2>
-        </div>
-      </div>
-      
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-        <div class="bg-zinc-950/50 border border-zinc-800/50 rounded-xl p-5">
-          <div class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Global Uptime</div>
-          <div class="text-2xl font-bold text-purple-400 tracking-tight num-data" id="kpi-uptime">—</div>
-        </div>
-        <div class="bg-zinc-950/50 border border-zinc-800/50 rounded-xl p-5">
-          <div class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Running</div>
-          <div class="text-2xl font-bold text-zinc-100 tracking-tight num-data" id="kpi-running">—</div>
-        </div>
-        <div class="bg-zinc-950/50 border border-zinc-800/50 rounded-xl p-5">
-          <div class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Created</div>
-          <div class="text-2xl font-bold text-zinc-100 tracking-tight num-data" id="kpi-created">—</div>
-        </div>
-        <div class="bg-zinc-950/50 border border-zinc-800/50 rounded-xl p-5">
-          <div class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Deleted</div>
-          <div class="text-2xl font-bold text-zinc-500 tracking-tight num-data" id="kpi-deleted">—</div>
+    <!-- ═══════════════════════════════════════════════════════
+         SECTION 2 — Active Clients
+         ═══════════════════════════════════════════════════════ -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-title-group">
+          <div class="section-icon section-icon-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <h2 class="section-title">Active Clients</h2>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div class="space-y-4">
-          <h3 class="text-sm font-medium text-zinc-400">Server Types</h3>
-          <div class="h-[240px] relative"><canvas id="chart-serverType"></canvas></div>
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Open Clients</div>
+          <div class="kpi-value kpi-blue" id="kpi-openClients">&mdash;</div>
         </div>
-        <div class="space-y-4">
-          <h3 class="text-sm font-medium text-zinc-400 invisible">Breakdown</h3> <!-- Invisible for alignment -->
-          <div class="bg-zinc-950/50 border border-zinc-800/50 rounded-xl overflow-hidden max-h-[240px] overflow-y-auto">
-            <table class="w-full text-sm text-left">
-              <thead class="text-xs text-zinc-500 uppercase bg-zinc-900/50 border-b border-zinc-800/50 sticky top-0">
-                <tr><th class="px-4 py-3 font-medium">Type</th><th class="px-4 py-3 font-medium text-right">Servers</th><th class="px-4 py-3 font-medium text-right">Share</th></tr>
+        <div class="kpi-card">
+          <div class="kpi-label">Online Users</div>
+          <div class="kpi-value kpi-white" id="kpi-activeUsers">&mdash;</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">AFK Users</div>
+          <div class="kpi-value kpi-muted" id="kpi-afkUsers">&mdash;</div>
+        </div>
+      </div>
+
+      <!-- Charts + Tables -->
+      <div class="chart-table-grid">
+        <div class="chart-box">
+          <h3 class="chart-title">Client Version Distribution</h3>
+          <div class="chart-canvas-wrapper">
+            <canvas id="chart-clientVersion"></canvas>
+          </div>
+        </div>
+        <div class="chart-box">
+          <h3 class="chart-title">Version Breakdown</h3>
+          <div class="table-wrapper">
+            <table class="table-inner">
+              <thead>
+                <tr><th>Version</th><th>Clients</th><th>Share</th></tr>
               </thead>
-              <tbody id="tbl-serverType" class="divide-y divide-zinc-800/50"></tbody>
+              <tbody id="tbl-clientVersion"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="chart-box">
+          <h3 class="chart-title">Active Locations</h3>
+          <div class="chart-canvas-wrapper">
+            <canvas id="chart-clientLocation"></canvas>
+          </div>
+        </div>
+        <div class="chart-box">
+          <h3 class="chart-title">Location Breakdown</h3>
+          <div class="table-wrapper">
+            <table class="table-inner">
+              <thead>
+                <tr><th>Country</th><th>Clients</th><th>Share</th></tr>
+              </thead>
+              <tbody id="tbl-clientLocation"></tbody>
             </table>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="pt-8 pb-12 border-t border-zinc-800/60 text-center">
-      <div class="flex items-center justify-center gap-2 mb-2">
-        <i data-lucide="shield-check" class="w-4 h-4 text-brand-500"></i>
-        <strong class="text-zinc-200 font-medium text-sm">Pocket MC Telemetry</strong>
+    <!-- ═══════════════════════════════════════════════════════
+         SECTION 3 — Server Analytics
+         ═══════════════════════════════════════════════════════ -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-title-group">
+          <div class="section-icon section-icon-purple">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/>
+            </svg>
+          </div>
+          <h2 class="section-title">Server Analytics</h2>
+        </div>
       </div>
-      <p class="text-zinc-500 text-xs max-w-md mx-auto">
+
+      <!-- KPIs (4-column) -->
+      <div class="kpi-grid kpi-grid-4">
+        <div class="kpi-card">
+          <div class="kpi-label">Global Uptime</div>
+          <div class="kpi-value kpi-purple" id="kpi-uptime">&mdash;</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Running</div>
+          <div class="kpi-value kpi-white" id="kpi-running">&mdash;</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Created</div>
+          <div class="kpi-value kpi-white" id="kpi-created">&mdash;</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Deleted</div>
+          <div class="kpi-value kpi-muted" id="kpi-deleted">&mdash;</div>
+        </div>
+      </div>
+
+      <!-- Chart + Table -->
+      <div class="chart-table-grid">
+        <div class="chart-box">
+          <h3 class="chart-title">Server Types</h3>
+          <div class="chart-canvas-wrapper">
+            <canvas id="chart-serverType"></canvas>
+          </div>
+        </div>
+        <div class="chart-box">
+          <h3 class="chart-title">Type Breakdown</h3>
+          <div class="table-wrapper">
+            <table class="table-inner">
+              <thead>
+                <tr><th>Type</th><th>Servers</th><th>Share</th></tr>
+              </thead>
+              <tbody id="tbl-serverType"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ Footer ═══════════════════════════════════════════ -->
+    <footer class="app-footer">
+      <div class="footer-brand">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>Pocket MC Telemetry</span>
+      </div>
+      <p class="footer-text">
         Anonymous telemetry data collected securely to improve performance and understand real-world application usage patterns.
       </p>
     </footer>
+
   </div>
-
-  <script>
-    // Initialize Lucide Icons
-    lucide.createIcons();
-
-    /* ============================================================
-     * Pocket MC Telemetry Dashboard
-     * ============================================================ */
-    (function () {
-      'use strict';
-
-      const API_URL = 'https://pocket-mc-proxy.onrender.com/api/telemetry/stats';
-      const REFRESH_INTERVAL = 30;
-
-      // Theme configuration matching Tailwind colors
-      const styleConfig = {
-        textPrimary: '#e4e4e7',   // zinc-200
-        textMuted: '#71717a',     // zinc-500
-        border: '#27272a',        // zinc-800
-        bgSurface: '#18181b',     // zinc-900
-        bgTooltip: '#09090b',     // zinc-950
-        font: '"Inter", sans-serif',
-        
-        // Refined Minimalist Palette
-        palettePrimary: ['#22c55e', '#16a34a', '#15803d', '#166534', '#14532d', '#052e16'], // Greens
-        paletteSecondary: ['#3b82f6', '#2563eb', '#1d4ed8', '#1e40af', '#1e3a8a', '#172554'], // Blues
-        paletteTertiary: ['#a855f7', '#9333ea', '#7e22ce', '#6b21a8', '#581c87', '#3b0764']  // Purples
-      };
-
-      Chart.defaults.color = styleConfig.textMuted;
-      Chart.defaults.borderColor = styleConfig.border;
-      Chart.defaults.font.family = styleConfig.font;
-
-      const charts = {};
-      let countdown = REFRESH_INTERVAL;
-      let lastSuccess = null;
-      let timerId = null;
-
-      const $ = (id) => document.getElementById(id);
-      const fmt = (n) => (n == null ? '—' : Number(n).toLocaleString());
-      const pct = (n, total) => total ? ((n / total) * 100).toFixed(1) + '%' : '0%';
-
-      function sortedEntries(obj) {
-        return Object.entries(obj || {}).sort((a, b) => b[1] - a[1]);
-      }
-
-      function renderTable(tbodyId, entries) {
-        const tbody = $(tbodyId);
-        if (!entries.length) {
-          tbody.innerHTML = `<tr><td colspan="3" class="text-zinc-500 text-center p-6 italic">No data available</td></tr>`;
-          return;
-        }
-        const total = entries.reduce((s, [, v]) => s + v, 0);
-        tbody.innerHTML = entries.map(([k, v]) => `
-          <tr class="hover:bg-zinc-800/30 transition-colors">
-            <td class="px-4 py-2.5 font-medium text-zinc-300">${escapeHtml(k)}</td>
-            <td class="px-4 py-2.5 text-right num-data text-zinc-200">${fmt(v)}</td>
-            <td class="px-4 py-2.5 text-right num-data text-zinc-500">${pct(v, total)}</td>
-          </tr>`).join('');
-      }
-
-      function escapeHtml(s) {
-        return String(s).replace(/[&<>"']/g, (c) => ({
-          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-        }[c]));
-      }
-
-      function upsertChart(id, type, data, options) {
-        if (charts[id]) {
-          charts[id].data = data;
-          charts[id].options = options;
-          charts[id].update();
-          return;
-        }
-        const ctx = $(id).getContext('2d');
-        charts[id] = new Chart(ctx, { type, data, options });
-      }
-
-      function getTooltipOpts() {
-        return {
-          backgroundColor: styleConfig.bgTooltip,
-          titleColor: styleConfig.textPrimary,
-          bodyColor: styleConfig.textMuted,
-          borderColor: styleConfig.border,
-          borderWidth: 1,
-          padding: 12,
-          cornerRadius: 8,
-          displayColors: true,
-          boxPadding: 4
-        };
-      }
-
-      function doughnutOpts() {
-        return {
-          responsive: true, maintainAspectRatio: false,
-          cutout: '75%',
-          plugins: {
-            legend: { position: 'right', labels: { boxWidth: 12, padding: 16, usePointStyle: true, pointStyle: 'circle' } },
-            tooltip: getTooltipOpts()
-          },
-          layout: { padding: 10 }
-        };
-      }
-      
-      function pieOpts() { 
-        const o = doughnutOpts(); o.cutout = 0; return o; 
-      }
-      
-      function barHorizOpts() {
-        return {
-          indexAxis: 'y',
-          responsive: true, maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: getTooltipOpts()
-          },
-          scales: {
-            x: { 
-              grid: { color: styleConfig.border, drawBorder: false }, 
-              ticks: { precision: 0, color: styleConfig.textMuted },
-              border: { display: false }
-            },
-            y: { 
-              grid: { display: false },
-              ticks: { color: styleConfig.textPrimary, font: { weight: 500 } },
-              border: { display: false }
-            }
-          },
-          layout: { padding: { right: 20 } }
-        };
-      }
-
-      function getColorArr(basePalette, length) {
-        // Repeat palette if dataset is larger than palette size
-        return Array.from({ length }, (_, i) => basePalette[i % basePalette.length]);
-      }
-
-      function render(stats) {
-        // SECTION 1: INSTALLS
-        const installVersion = sortedEntries(stats.installVersionDistribution);
-        const installCountry = sortedEntries(stats.installLocationDistribution);
-
-        $('kpi-totalInstalls').textContent = fmt(stats.totalInstalls);
-        $('kpi-installVersions').textContent = fmt(installVersion.length);
-        $('kpi-installCountries').textContent = fmt(installCountry.length);
-
-        upsertChart('chart-installVersion', 'doughnut', {
-          labels: installVersion.map(([k]) => k),
-          datasets: [{ 
-            data: installVersion.map(([, v]) => v), 
-            backgroundColor: getColorArr(styleConfig.palettePrimary, installVersion.length), 
-            borderColor: styleConfig.bgSurface, 
-            borderWidth: 2,
-            hoverOffset: 4
-          }]
-        }, doughnutOpts());
-        renderTable('tbl-installVersion', installVersion);
-
-        upsertChart('chart-installCountry', 'bar', {
-          labels: installCountry.map(([k]) => k),
-          datasets: [{ 
-            data: installCountry.map(([, v]) => v), 
-            backgroundColor: styleConfig.palettePrimary[0], 
-            borderRadius: 4,
-            barThickness: 16
-          }]
-        }, barHorizOpts());
-        renderTable('tbl-installCountry', installCountry);
-
-
-        // SECTION 2: CLIENTS
-        const open = Number(stats.openClients) || 0;
-        const active = Number(stats.activeUsers) || 0;
-        const afk = Math.max(0, open - active);
-
-        $('kpi-openClients').textContent = fmt(open);
-        $('kpi-activeUsers').textContent = fmt(active);
-        $('kpi-afkUsers').textContent = fmt(afk);
-
-        const clientVersion = sortedEntries(stats.versionDistribution);
-        const clientLocation = sortedEntries(stats.locationDistribution);
-
-        upsertChart('chart-clientVersion', 'doughnut', {
-          labels: clientVersion.map(([k]) => k),
-          datasets: [{ 
-            data: clientVersion.map(([, v]) => v), 
-            backgroundColor: getColorArr(styleConfig.paletteSecondary, clientVersion.length), 
-            borderColor: styleConfig.bgSurface, 
-            borderWidth: 2,
-            hoverOffset: 4
-          }]
-        }, doughnutOpts());
-
-        upsertChart('chart-clientLocation', 'bar', {
-          labels: clientLocation.map(([k]) => k),
-          datasets: [{ 
-            data: clientLocation.map(([, v]) => v), 
-            backgroundColor: styleConfig.paletteSecondary[0], 
-            borderRadius: 4,
-            barThickness: 16
-          }]
-        }, barHorizOpts());
-
-        renderTable('tbl-clientVersion', clientVersion);
-        renderTable('tbl-clientLocation', clientLocation);
-
-
-        // SECTION 3: SERVERS
-        const uptime = Number(stats.globalUptimeHours) || 0;
-        $('kpi-uptime').textContent = uptime.toLocaleString(undefined, { maximumFractionDigits: 1 });
-        $('kpi-running').textContent = fmt(stats.totalRunningServers);
-        $('kpi-created').textContent = fmt(stats.totalServersCreated);
-        $('kpi-deleted').textContent = fmt(stats.totalServersDeleted);
-
-        const serverType = sortedEntries(stats.serverTypeDistribution);
-        upsertChart('chart-serverType', 'pie', {
-          labels: serverType.map(([k]) => k),
-          datasets: [{ 
-            data: serverType.map(([, v]) => v), 
-            backgroundColor: getColorArr(styleConfig.paletteTertiary, serverType.length), 
-            borderColor: styleConfig.bgSurface, 
-            borderWidth: 2,
-            hoverOffset: 4
-          }]
-        }, pieOpts());
-        renderTable('tbl-serverType', serverType);
-      }
-
-      async function fetchStats() {
-        setStatus('loading');
-        try {
-          const res = await fetch(API_URL, { cache: 'no-store' });
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          const data = await res.json();
-          render(data);
-          
-          lastSuccess = new Date();
-          $('errLast').textContent = lastSuccess.toLocaleTimeString();
-          $('errorPanel').classList.add('hidden');
-          setStatus('ok');
-        } catch (err) {
-          console.error('[telemetry] fetch failed', err);
-          $('errorPanel').classList.remove('hidden');
-          $('errLast').textContent = lastSuccess ? lastSuccess.toLocaleTimeString() : 'never';
-          setStatus('error');
-          
-          // Generate mock data on failure to keep the UI looking nice for the demo
-          // REMOVE THIS in production if you don't want fallback mock data
-          renderMockData();
-        }
-      }
-
-      function setStatus(state) {
-        const dotWrapper = $('statusDot');
-        const dot = dotWrapper.querySelector('.status-dot');
-        const txt = $('statusText');
-        
-        // Reset classes
-        dotWrapper.className = 'status-dot-wrapper w-2 h-2 rounded-full';
-        dot.className = 'status-dot w-2 h-2 rounded-full';
-        
-        if (state === 'error') {
-          dotWrapper.classList.add('bg-red-500');
-          dot.classList.add('bg-red-500');
-          txt.textContent = 'Disconnected';
-          txt.className = 'font-medium text-red-400';
-          // Stop pulse on error
-          dotWrapper.style.animation = 'none';
-        } else if (state === 'loading') {
-          dotWrapper.classList.add('bg-brand-500/50');
-          dot.classList.add('bg-brand-400');
-          txt.textContent = 'Updating…';
-          txt.className = 'font-medium text-zinc-300';
-          dotWrapper.style.animation = '';
-        } else {
-          dotWrapper.classList.add('bg-brand-500');
-          dot.classList.add('bg-brand-500');
-          txt.textContent = 'Live';
-          txt.className = 'font-medium text-brand-400';
-          dotWrapper.style.animation = '';
-        }
-      }
-
-      function tick() {
-        countdown -= 1;
-        if (countdown <= 0) {
-          countdown = REFRESH_INTERVAL;
-          fetchStats();
-        }
-        $('countdown').textContent = countdown + 's';
-      }
-
-      function startLoop() {
-        if (timerId) clearInterval(timerId);
-        countdown = REFRESH_INTERVAL;
-        $('countdown').textContent = countdown + 's';
-        timerId = setInterval(tick, 1000);
-      }
-
-      function manualRefresh() {
-        const btnIcon = $('refreshBtn').querySelector('i');
-        btnIcon.classList.add('animate-spin');
-        setTimeout(() => btnIcon.classList.remove('animate-spin'), 1000);
-        
-        countdown = REFRESH_INTERVAL;
-        $('countdown').textContent = countdown + 's';
-        fetchStats();
-      }
-      
-      // MOCK DATA FALLBACK (For demonstration purposes when API is down)
-      function renderMockData() {
-        render({
-          totalInstalls: 14205,
-          installVersionDistribution: { 'v1.2.0': 8500, 'v1.1.5': 4200, 'v1.1.0': 1005, 'Legacy': 500 },
-          installLocationDistribution: { 'United States': 5200, 'Germany': 3100, 'UK': 2100, 'Brazil': 1800, 'Japan': 1205, 'Others': 800 },
-          openClients: 1240,
-          activeUsers: 950,
-          versionDistribution: { 'v1.2.0': 900, 'v1.1.5': 250, 'v1.1.0': 90 },
-          locationDistribution: { 'United States': 450, 'Germany': 250, 'UK': 200, 'Brazil': 180, 'Japan': 160 },
-          globalUptimeHours: 8540.5,
-          totalRunningServers: 312,
-          totalServersCreated: 4500,
-          totalServersDeleted: 4188,
-          serverTypeDistribution: { 'Survival': 150, 'Creative': 80, 'Minigames': 50, 'Lobby': 32 }
-        });
-      }
-
-      document.addEventListener('DOMContentLoaded', () => {
-        $('refreshBtn').addEventListener('click', manualRefresh);
-        $('retryBtn').addEventListener('click', manualRefresh);
-        fetchStats();
-        startLoop();
-      });
-    })();
-  </script>
 </body>
 </html>
