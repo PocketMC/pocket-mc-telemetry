@@ -920,3 +920,85 @@ body {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* ── Global Activity Map ─────────────────────────────────── */
+.map-container-box {
+  /* jsVectorMap Theme Variables */
+  --jvm-zoom-btn-bg-color: #27272a;
+  --jvm-zoom-btn-color: #a1a1aa;
+  --jvm-zoom-btn-size: 28px;
+  --jvm-zoom-btn-radius: 6px;
+  --jvm-border-color: #3f3f46;
+  
+  width: 100%;
+  height: 350px;
+  background: #18181b;
+  border-radius: 12px;
+  border: 1px solid #27272a;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Custom Tooltip Theme */
+.jvm-tooltip {
+  background: rgba(9, 9, 11, 0.95);
+  border: 1px solid #3f3f46;
+  border-radius: 6px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  padding: 6px 10px;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Region Labels (Fade in on zoom) */
+#world-map text {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none; /* Prevent labels from blocking region clicks */
+}
+
+#world-map.map-zoomed-in text {
+  opacity: 1;
+}
+
+/* Marker Pulse Animation */
+.jvm-marker {
+  stroke-width: 2;
+  cursor: pointer;
+  animation: markerPulse 2s infinite;
+}
+
+@keyframes markerPulse {
+  0% {
+    stroke-width: 2px;
+    stroke-opacity: 1;
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.4));
+  }
+  50% {
+    stroke-width: 6px;
+    stroke-opacity: 0.2;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+  }
+  100% {
+    stroke-width: 2px;
+    stroke-opacity: 1;
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.4));
+  }
+}
+
+/* Map Zoom Buttons Hover State */
+.jvm-zoom-btn {
+  transition: background-color 0.15s, color 0.15s;
+  font-family: monospace;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.jvm-zoom-btn:hover {
+  background-color: #3f3f46;
+  color: #fff;
+}
