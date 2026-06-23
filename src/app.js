@@ -5,8 +5,33 @@
 (function () {
   'use strict';
 
-  const API_URL = 'https://pocket-mc-proxy.onrender.com/api/telemetry/stats';
+  const TELEMETRY_PROXIES = [
+    "https://pocket-mc-proxy.onrender.com/api/telemetry/stats",
+    "https://pocket-mc-proxy-3fqm.onrender.com/api/telemetry/stats",
+    "",
+  ];
   const REFRESH_INTERVAL = 30;
+
+  const GLOBAL_METRIC_DEFAULTS = {
+    totalInstalls: 0,
+    installVersionDistribution: {},
+    installLocationDistribution: {},
+    globalUptimeHours: 0,
+    totalServersCreated: 0,
+    totalServersDeleted: 0,
+  };
+
+  const LIVE_METRIC_FIELDS = [
+    'openClients',
+    'activeUsers',
+    'totalRunningServers',
+  ];
+
+  const LIVE_DISTRIBUTION_FIELDS = [
+    'serverTypeDistribution',
+    'versionDistribution',
+    'locationDistribution',
+  ];
 
   // ── Theme Configuration ──────────────────────────────────────────
   const theme = {
@@ -45,6 +70,73 @@
   const $ = (id) => document.getElementById(id);
   const fmt = (n) => (n == null ? '—' : Number(n).toLocaleString());
   const pct = (n, total) => (total ? ((n / total) * 100).toFixed(1) + '%' : '0%');
+
+  function toNumber(value) {
+    const num = Number(value);
+    return Number.isFinite(num) ? num : 0;
+  }
+
+  function addDistribution(target, source) {
+    Object.entries(source || {}).forEach(([key, value]) => {
+      target[key] = toNumber(target[key]) + toNumber(value);
+    });
+  }
+
+  function aggregateTelemetry(proxyResults, totalProxies) {
+    const responses = proxyResults
+      .filter((result) => result.status === 'fulfilled')
+      .map((result) => result.value);
+
+    if (!responses.length) {
+      throw new Error('No telemetry proxies are online');
+    }
+
+    const firstSuccessfulResponse = responses[0];
+    const aggregated = {
+      ...GLOBAL_METRIC_DEFAULTS,
+      ...firstSuccessfulResponse,
+      _telemetry: {
+        totalProxies,
+        onlineProxies: responses.length,
+        offlineProxies: totalProxies - responses.length,
+      },
+    };
+
+    LIVE_METRIC_FIELDS.forEach((field) => {
+      aggregated[field] = responses.reduce((sum, response) => sum + toNumber(response[field]), 0);
+    });
+
+    LIVE_DISTRIBUTION_FIELDS.forEach((field) => {
+      aggregated[field] = {};
+      responses.forEach((response) => addDistribution(aggregated[field], response[field]));
+    });
+
+    return aggregated;
+  }
+
+  async function fetchProxyStats(url) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+    try {
+      const res = await fetch(url, { cache: 'no-store', signal: controller.signal });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return await res.json();
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
+  async function fetchAggregatedStats() {
+    const proxyUrls = TELEMETRY_PROXIES.map((url) => url.trim()).filter(Boolean);
+
+    if (!proxyUrls.length) {
+      throw new Error('No telemetry proxy URLs configured');
+    }
+
+    const proxyResults = await Promise.allSettled(proxyUrls.map(fetchProxyStats));
+    return aggregateTelemetry(proxyResults, proxyUrls.length);
+  }
 
   function sortedEntries(obj) {
     return Object.entries(obj || {}).sort((a, b) => b[1] - a[1]);
@@ -525,18 +617,10 @@
 
     const btnIcon = $('refreshBtn')?.querySelector('svg');
     if (btnIcon) btnIcon.classList.add('btn-spin');
-    
-    // Add abort controller to prevent indefinitely hanging requests
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     try {
       showSkeletons();
-      const res = await fetch(API_URL, { cache: 'no-store', signal: controller.signal });
-      clearTimeout(timeoutId);
-
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const data = await res.json();
+      const data = await fetchAggregatedStats();
       render(data);
 
       lastSuccess = new Date();
