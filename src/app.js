@@ -35,22 +35,22 @@
 
   // ── Theme Configuration ──────────────────────────────────────────
   const theme = {
-    textPrimary: '#e4e4e7',
-    textMuted: '#71717a',
-    border: '#27272a',
-    bgSurface: '#18181b',
-    bgTooltip: '#09090b',
+    textPrimary: '#f8fafc',
+    textMuted: '#94a3b8',
+    border: 'rgba(148, 163, 184, 0.14)',
+    bgSurface: 'rgba(15, 23, 42, 0.82)',
+    bgTooltip: 'rgba(7, 10, 14, 0.96)',
     font: '"Inter", sans-serif',
-    paletteGreen:  '#22c55e',
-    paletteBlue:   '#3b82f6',
-    palettePurple: '#a855f7',
+    paletteGreen:  '#34d399',
+    paletteBlue:   '#60a5fa',
+    palettePurple: '#c084fc',
   };
 
   // Multi‑value palettes (cycled if more entries than palette length)
   const palettes = {
-    green:  ['#22c55e','#16a34a','#15803d','#166534','#14532d','#052e16'],
-    blue:   ['#3b82f6','#2563eb','#1d4ed8','#1e40af','#1e3a8a','#172554'],
-    purple: ['#a855f7','#9333ea','#7e22ce','#6b21a8','#581c87','#3b0764'],
+    green:  ['#bbf7d0','#86efac','#4ade80','#22c55e','#10b981','#059669'],
+    blue:   ['#bfdbfe','#93c5fd','#60a5fa','#3b82f6','#2563eb','#1d4ed8'],
+    purple: ['#e9d5ff','#d8b4fe','#c084fc','#a855f7','#9333ea','#7e22ce'],
   };
 
   // ── Chart.js defaults ─────────────────────────────────────────────
@@ -207,7 +207,7 @@
       plugins: { legend: { display: false }, tooltip: tooltipOpts() },
       scales: {
         x: {
-          grid: { color: theme.border, drawBorder: false },
+          grid: { color: 'rgba(148, 163, 184, 0.10)', drawBorder: false },
           ticks: {
             precision: 0,
             color: theme.textMuted,
@@ -248,9 +248,13 @@
     return {
       data: data.map(([, v]) => v),
       backgroundColor: showSingleColor
-        ? palette[0]
+        ? palette[3] || palette[0]
         : getColorArr(palette, count),
-      borderRadius: small ? 3 : 4,
+      borderColor: 'rgba(255, 255, 255, 0.18)',
+      borderWidth: 1,
+      borderSkipped: false,
+      hoverBackgroundColor: palette[1] || palette[0],
+      borderRadius: small ? 8 : 10,
       barThickness: small ? (count > 4 ? 10 : 14) : (count > 5 ? 14 : 18),
       categoryPercentage: small ? 0.7 : 0.8,
       barPercentage: small ? 0.55 : 0.6,
@@ -355,30 +359,30 @@
       },
       regionStyle: {
         initial: {
-          fill: '#27272a', // Default empty region
-          stroke: '#18181b',
-          strokeWidth: 0.5,
+          fill: '#17211f', // Default empty region
+          stroke: '#0b1110',
+          strokeWidth: 0.65,
           fillOpacity: 1
         },
         hover: {
-          fill: '#3f3f46',
+          fill: '#334155',
           cursor: 'pointer'
         }
       },
       series: {
         regions: [{
           attribute: 'fill',
-          scale: ['#064e3b', '#10b981', '#f59e0b', '#ef4444'], // Dark Green -> Light Green -> Yellow -> Red
+          scale: ['#12352d', '#0f766e', '#34d399', '#bef264'], // refined emerald heat scale
           values: regionData
         }]
       },
       markers: markers,
       markerStyle: {
         initial: {
-          fill: '#3b82f6', // Blue for active users
-          stroke: '#60a5fa',
-          strokeWidth: 1.5,
-          r: 5 // Dot radius
+          fill: '#60a5fa', // Blue for active users
+          stroke: '#bfdbfe',
+          strokeWidth: 2,
+          r: 5.5 // Dot radius
         },
         hover: {
           fill: '#60a5fa',
@@ -646,6 +650,40 @@
     fetchStats();
   }
 
+  // ── Dashboard and chart tabs ─────────────────────────────────────
+  function initDashboardTabs() {
+    const tabs = [...document.querySelectorAll('.dashboard-tab')];
+    if (!tabs.length) return;
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((item) => item.classList.remove('is-active'));
+        tab.classList.add('is-active');
+      });
+    });
+  }
+
+  function initChartTabs() {
+    const tabs = [...document.querySelectorAll('.chart-tab')];
+    const boxes = [...document.querySelectorAll('[data-chart-group]')];
+    if (!tabs.length || !boxes.length) return;
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const filter = tab.getAttribute('data-chart-filter');
+        tabs.forEach((item) => item.classList.remove('is-active'));
+        tab.classList.add('is-active');
+
+        boxes.forEach((box) => {
+          const visible = filter === 'all' || box.getAttribute('data-chart-group') === filter;
+          box.classList.toggle('is-hidden-by-tab', !visible);
+        });
+
+        setTimeout(() => Object.values(charts).forEach((chart) => chart?.resize()), 50);
+      });
+    });
+  }
+
   // ── Collapse toggle ──────────────────────────────────────────────
   function initCollapseToggles() {
     document.querySelectorAll('.collapse-toggle').forEach(btn => {
@@ -701,6 +739,8 @@
     triggerRefresh();
     startAutoRefresh();
     initCollapseToggles();
+    initDashboardTabs();
+    initChartTabs();
     window.addEventListener('resize', handleResize);
   });
 })();
