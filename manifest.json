@@ -4,8 +4,8 @@
   "description": "Live anonymous telemetry for Pocket MC: installs, active clients, and server analytics.",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#09090b",
-  "theme_color": "#22c55e",
+  "background_color": "#090909",
+  "theme_color": "#090909",
   "orientation": "portrait",
   "icons": [
     {
@@ -15,6 +15,9 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["utilities", "productivity"],
+  "categories": [
+    "utilities",
+    "productivity"
+  ],
   "lang": "en"
 }

@@ -35,22 +35,64 @@
 
   // ── Theme Configuration ──────────────────────────────────────────
   const theme = {
-    textPrimary: '#f8fafc',
-    textMuted: '#94a3b8',
-    border: 'rgba(148, 163, 184, 0.14)',
-    bgSurface: 'rgba(15, 23, 42, 0.82)',
-    bgTooltip: 'rgba(7, 10, 14, 0.96)',
+    textPrimary: '#f5f5f5',
+    textMuted: '#9ca3af',
+    border: 'rgba(255, 255, 255, 0.10)',
+    bgSurface: '#121212',
+    bgTooltip: 'rgba(9, 9, 9, 0.98)',
     font: '"Inter", sans-serif',
-    paletteGreen:  '#34d399',
+    paletteGreen:  '#2dd4bf',
     paletteBlue:   '#60a5fa',
-    palettePurple: '#c084fc',
+    palettePurple: '#a78bfa',
   };
 
   // Multi‑value palettes (cycled if more entries than palette length)
+
+  const STATUS_COLORS = {
+    online: '#22c55e',
+    active: '#22c55e',
+    starting: '#f59e0b',
+    stopping: '#fb7185',
+    offline: '#71717a',
+    error: '#ef4444',
+    installed: '#14b8a6',
+    unknown: '#60a5fa',
+  };
+
+  function normalizeStatus(value, fallback = 'unknown') {
+    return String(value || fallback).trim().toLowerCase().replace(/\s+/g, '-');
+  }
+
+  function statusColor(status) {
+    return STATUS_COLORS[normalizeStatus(status)] || STATUS_COLORS.unknown;
+  }
+
+  function countryStatus(stats, country, count, installedOnly = false) {
+    const statusSources = [
+      stats.locationStatusDistribution,
+      stats.userStateLocationDistribution,
+      stats.statusLocationDistribution,
+      stats.countryStatusDistribution,
+    ];
+
+    for (const source of statusSources) {
+      const value = source?.[country];
+      if (!value) continue;
+      if (typeof value === 'string') return normalizeStatus(value);
+      if (typeof value === 'object') {
+        const [status] = Object.entries(value).sort((a, b) => Number(b[1]) - Number(a[1]))[0] || [];
+        if (status) return normalizeStatus(status);
+      }
+    }
+
+    if (installedOnly) return 'installed';
+    return count > 0 ? 'online' : 'offline';
+  }
+
   const palettes = {
-    green:  ['#bbf7d0','#86efac','#4ade80','#22c55e','#10b981','#059669'],
+    green:  ['#99f6e4','#5eead4','#2dd4bf','#14b8a6','#0f766e','#115e59'],
     blue:   ['#bfdbfe','#93c5fd','#60a5fa','#3b82f6','#2563eb','#1d4ed8'],
-    purple: ['#e9d5ff','#d8b4fe','#c084fc','#a855f7','#9333ea','#7e22ce'],
+    purple: ['#ddd6fe','#c4b5fd','#a78bfa','#8b5cf6','#7c3aed','#6d28d9'],
   };
 
   // ── Chart.js defaults ─────────────────────────────────────────────
@@ -288,7 +330,8 @@
           name: country,
           coords: match.coords,
           activeCount: count,
-          style: { initial: { fill: '#3b82f6', stroke: '#60a5fa' } } // Blue
+          status: countryStatus(stats, country, Number(count) || 0),
+          style: { initial: { fill: statusColor(countryStatus(stats, country, Number(count) || 0)), stroke: '#090909' } }
         });
       }
     }
@@ -303,7 +346,8 @@
             name: country,
             coords: match.coords,
             isInstalledOnly: true,
-            style: { initial: { fill: '#22c55e', stroke: '#16a34a' } } // Green
+            status: 'installed',
+            style: { initial: { fill: statusColor('installed'), stroke: '#090909' } }
           });
         }
       }
@@ -359,35 +403,35 @@
       },
       regionStyle: {
         initial: {
-          fill: '#17211f', // Default empty region
-          stroke: '#0b1110',
-          strokeWidth: 0.65,
+          fill: '#151515',
+          stroke: '#252525',
+          strokeWidth: 0.55,
           fillOpacity: 1
         },
         hover: {
-          fill: '#334155',
+          fill: '#242424',
           cursor: 'pointer'
         }
       },
       series: {
         regions: [{
           attribute: 'fill',
-          scale: ['#12352d', '#0f766e', '#34d399', '#bef264'], // refined emerald heat scale
+          scale: ['#12312e', '#0f766e', '#14b8a6', '#5eead4'],
           values: regionData
         }]
       },
       markers: markers,
       markerStyle: {
         initial: {
-          fill: '#60a5fa', // Blue for active users
-          stroke: '#bfdbfe',
-          strokeWidth: 2,
-          r: 5.5 // Dot radius
+          fill: STATUS_COLORS.unknown,
+          stroke: '#090909',
+          strokeWidth: 1.25,
+          r: 3.75
         },
         hover: {
-          fill: '#60a5fa',
-          stroke: '#93c5fd',
-          r: 6
+          stroke: '#f5f5f5',
+          strokeWidth: 1.5,
+          r: 4.5
         }
       },
       onRegionTooltipShow(event, tooltip, code) {
@@ -403,13 +447,13 @@
         if (marker.isInstalledOnly) {
           tooltip.text(
             `<div style="font-weight:600;margin-bottom:2px;">${marker.name}</div>
-             <div style="color:#a1a1aa">Active: <span style="color:#22c55e;font-weight:600">0</span></div>`,
+             <div style="color:#a1a1aa">State: <span style="color:${statusColor(marker.status)};font-weight:600">Installed</span></div>`,
             true
           );
         } else {
           tooltip.text(
             `<div style="font-weight:600;margin-bottom:2px;">${marker.name}</div>
-             <div style="color:#a1a1aa">Active: <span style="color:#3b82f6;font-weight:600">${fmt(marker.activeCount)}</span></div>`,
+             <div style="color:#a1a1aa">${escapeHtml(marker.status || 'online')}: <span style="color:${statusColor(marker.status)};font-weight:600">${fmt(marker.activeCount)}</span></div>`,
             true
           );
         }
@@ -425,7 +469,7 @@
         if (marker.isInstalledOnly) {
           showToast(marker.name, 'No active players', '#22c55e');
         } else {
-          showToast(marker.name, `${fmt(marker.activeCount)} Active Players`, '#3b82f6');
+          showToast(marker.name, `${fmt(marker.activeCount)} ${escapeHtml(marker.status || 'online')} clients`, statusColor(marker.status));
         }
       }
     });
@@ -657,8 +701,21 @@
 
     tabs.forEach((tab) => {
       tab.addEventListener('click', () => {
+        const targetId = tab.getAttribute('data-tab-target');
         tabs.forEach((item) => item.classList.remove('is-active'));
         tab.classList.add('is-active');
+
+        tabs.forEach((item) => {
+          const section = $(item.getAttribute('data-tab-target'));
+          if (section) section.hidden = item.getAttribute('data-tab-target') !== targetId;
+        });
+
+        setTimeout(() => {
+          Object.values(charts).forEach((chart) => chart?.resize());
+          if (targetId === 'global-map-section' && worldMapInstance) {
+            worldMapInstance.updateSize?.();
+          }
+        }, 50);
       });
     });
   }

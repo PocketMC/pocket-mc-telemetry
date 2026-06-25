@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#22c55e" />
+  <meta name="theme-color" content="#090909" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="apple-touch-icon"
@@ -83,10 +83,11 @@
     </header>
 
     <nav class="dashboard-tabs" aria-label="Dashboard sections">
-      <a href="#overview" class="dashboard-tab is-active" data-tab-target="overview">Overview</a>
+      <a href="#overview" class="dashboard-tab is-active" data-tab-target="overview">Installs</a>
+      <a href="#client-section" class="dashboard-tab" data-tab-target="client-section">Clients</a>
       <a href="#global-map-section" class="dashboard-tab" data-tab-target="global-map-section">Heat map</a>
-      <a href="#charts-section" class="dashboard-tab" data-tab-target="charts-section">Charts</a>
       <a href="#server-section" class="dashboard-tab" data-tab-target="server-section">Servers</a>
+      <a href="#charts-section" class="dashboard-tab" data-tab-target="charts-section">Charts</a>
     </nav>
 
     <!-- ═══ Error Panel ══════════════════════════════════════ -->
@@ -198,7 +199,7 @@
     <!-- ═══════════════════════════════════════════════════════════
          SECTION 2 — Active Clients (KPIs + Tables only)
          ═══════════════════════════════════════════════════════════ -->
-    <section class="section-card">
+    <section id="client-section" class="section-card" hidden>
       <div class="section-header">
         <div class="section-title-group">
           <div class="section-icon section-icon-blue">
@@ -268,7 +269,7 @@
     <!-- ═══════════════════════════════════════════════════════════
          SECTION 3 — Server Analytics (KPIs + Tables only)
          ═══════════════════════════════════════════════════════════ -->
-    <section id="server-section" class="section-card">
+    <section id="server-section" class="section-card" hidden>
       <div class="section-header">
         <div class="section-title-group">
           <div class="section-icon section-icon-purple">
@@ -327,7 +328,7 @@
     <!-- ═══════════════════════════════════════════════════════════
          SECTION 4 — Global Activity Map
          ═══════════════════════════════════════════════════════════ -->
-    <section id="global-map-section" class="section-card section-map">
+    <section id="global-map-section" class="section-card section-map" hidden>
       <div class="section-header section-header-stacked">
         <div class="section-title-group">
           <div class="section-icon section-icon-blue">
@@ -341,8 +342,12 @@
           <h2 class="section-title">Global Activity Heat Map</h2>
         </div>
         <div class="map-legend" aria-label="Map legend">
-          <span><i class="legend-dot legend-install"></i>Install density</span>
-          <span><i class="legend-dot legend-active"></i>Live clients</span>
+          <span><i class="legend-dot legend-install"></i>Installed only</span>
+          <span><i class="legend-dot legend-online"></i>Online</span>
+          <span><i class="legend-dot legend-starting"></i>Starting</span>
+          <span><i class="legend-dot legend-stopping"></i>Stopping</span>
+          <span><i class="legend-dot legend-offline"></i>Offline</span>
+          <span><i class="legend-dot legend-error"></i>Error</span>
         </div>
       </div>
 
@@ -350,14 +355,14 @@
         <div id="world-map" class="world-map"></div>
       </div>
       <p class="map-note">
-        Country-level telemetry only. Heat intensity represents install density; dots indicate live clients without exact player locations.
+        Country-level telemetry only. Heat intensity represents install density; small dots indicate user state without exact player locations.
       </p>
     </section>
 
     <!-- ═══════════════════════════════════════════════════════════
          SECTION 5 — Charts (collapsible, at the very bottom)
          ═══════════════════════════════════════════════════════════ -->
-    <section id="charts-section" class="section-card section-charts">
+    <section id="charts-section" class="section-card section-charts" hidden>
       <div class="section-header">
         <div class="section-title-group">
           <div class="section-icon section-icon-green">
