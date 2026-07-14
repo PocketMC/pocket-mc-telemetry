@@ -7,6 +7,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -38,9 +39,9 @@ body {
 /* ── Overlay UI ─────────────────────────────────────────────── */
 .overlay-ui {
   position: absolute;
-  top: 24px;
-  left: 24px;
-  right: 24px;
+  top: calc(24px + env(safe-area-inset-top, 0px));
+  left: calc(24px + env(safe-area-inset-left, 0px));
+  right: calc(24px + env(safe-area-inset-right, 0px));
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -108,8 +109,8 @@ body {
 /* ── Legend ─────────────────────────────────────────────────── */
 .legend-overlay {
   position: absolute;
-  bottom: 24px;
-  left: 24px;
+  bottom: calc(24px + env(safe-area-inset-bottom, 16px));
+  left: calc(24px + env(safe-area-inset-left, 0px));
   pointer-events: auto;
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(4px);

@@ -8,6 +8,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html {
@@ -60,7 +61,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-top: 16px;
   margin-bottom: 20px;
   background: rgba(15, 15, 15, 0.6);
   backdrop-filter: blur(8px);
@@ -81,7 +81,6 @@ body {
     gap: 24px;
     padding: 24px;
     margin-bottom: 28px;
-    margin-top: 24px;
     top: 24px;
   }
 }
@@ -90,7 +89,6 @@ body {
   .topbar {
     padding: 32px;
     margin-bottom: 32px;
-    margin-top: 32px;
     top: 32px;
   }
 }
