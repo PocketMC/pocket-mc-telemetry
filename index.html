@@ -12,18 +12,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#22c55e" />
+  <meta name="theme-color" content="#000000" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="apple-touch-icon"
     href="https://raw.githubusercontent.com/PocketMC/pocket-mc-website/refs/heads/master/public/logo.webp" />
-  <link rel="stylesheet" href="src/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.css"
     integrity="sha384-DkPMVIJ2hERal/WJDrT3mRGo8KOwiHVdjiyRxCFlUnMdvu52V0Y1CL1yULYSDn4h" crossorigin="anonymous" />
+  <link rel="stylesheet" href="src/style.css" />
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"
-    integrity="sha384-NrKB+u6Ts6AtkIhwPixiKTzgSKNblyhlk0Sohlgar9UHUBzai/sgnNNWWd291xqt" crossorigin="anonymous"
-    defer></script>
+
   <script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.js"
     integrity="sha384-5T42pwmm9Eq6IKYKkuugmsyxvzvXDazwImzsC76X6lihpgExlMJYSrAtpb5JGZsW" crossorigin="anonymous"
     defer></script>
@@ -54,47 +52,8 @@
         </div>
       </div>
 
-      <div class="topbar-controls">
-        <!-- Last Updated -->
-        <span class="last-updated-badge">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <polyline points="12 6 12 12 16 14" />
-          </svg>
-          <span>Last updated: <span id="lastUpdated" class="last-updated-time">never</span></span>
-        </span>
-
-        <!-- Refresh -->
-        <button id="refreshBtn" class="btn-refresh">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="23 4 23 10 17 10" />
-            <polyline points="1 20 1 14 7 14" />
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-          </svg>
-          <span>Refresh</span>
-        </button>
-      </div>
     </header>
 
-    <!-- ═══ Error Panel ══════════════════════════════════════ -->
-    <div id="errorPanel" class="error-panel hidden">
-      <div class="error-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-          <line x1="12" y1="9" x2="12" y2="13" />
-          <line x1="12" y1="17" x2="12.01" y2="17" />
-        </svg>
-      </div>
-      <div class="error-body">
-        <h3>Unable to reach telemetry server</h3>
-        <p>The dashboard will keep retrying automatically. Last successful update: <span id="errLast"
-            class="err-last">never</span>.</p>
-        <button id="retryBtn" class="btn-retry">Try Again Now</button>
-      </div>
-    </div>
 
     <!-- ═══════════════════════════════════════════════════════════
          SECTION 1 — Installations (KPIs + Tables only)
@@ -329,6 +288,10 @@
           </div>
           <h2 class="section-title">Global Activity Map</h2>
         </div>
+        <a href="heatmap.html" class="btn-refresh" style="text-decoration: none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+          <span>Fullscreen</span>
+        </a>
       </div>
 
       <div class="map-container-box">
@@ -341,71 +304,6 @@
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         SECTION 5 — Charts (collapsible, at the very bottom)
-         ═══════════════════════════════════════════════════════════ -->
-    <section class="section-card section-charts">
-      <div class="section-header">
-        <div class="section-title-group">
-          <div class="section-icon section-icon-green">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="20" x2="18" y2="10" />
-              <line x1="12" y1="20" x2="12" y2="4" />
-              <line x1="6" y1="20" x2="6" y2="14" />
-            </svg>
-          </div>
-          <h2 class="section-title">Charts</h2>
-        </div>
-      </div>
-
-      <!-- Toggle -->
-      <button class="collapse-toggle" data-target="allCharts" aria-expanded="false">
-        <span class="collapse-toggle-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </span>
-        <span class="collapse-toggle-text">Show charts</span>
-      </button>
-
-      <!-- All charts -->
-      <div id="allCharts" class="chart-collapse collapse-body collapsed">
-        <div class="chart-grid">
-          <div class="chart-box">
-            <h3 class="chart-title">Version Distribution</h3>
-            <div class="chart-canvas-wrapper">
-              <canvas id="chart-installVersion"></canvas>
-            </div>
-          </div>
-          <div class="chart-box">
-            <h3 class="chart-title">Top Countries</h3>
-            <div class="chart-canvas-wrapper">
-              <canvas id="chart-installCountry"></canvas>
-            </div>
-          </div>
-          <div class="chart-box">
-            <h3 class="chart-title">Client Version Distribution</h3>
-            <div class="chart-canvas-wrapper">
-              <canvas id="chart-clientVersion"></canvas>
-            </div>
-          </div>
-          <div class="chart-box">
-            <h3 class="chart-title">Active Locations</h3>
-            <div class="chart-canvas-wrapper">
-              <canvas id="chart-clientLocation"></canvas>
-            </div>
-          </div>
-          <div class="chart-box">
-            <h3 class="chart-title">Server Types</h3>
-            <div class="chart-canvas-wrapper">
-              <canvas id="chart-serverType"></canvas>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <!-- ═══ Footer ═══════════════════════════════════════════ -->
     <footer class="app-footer">

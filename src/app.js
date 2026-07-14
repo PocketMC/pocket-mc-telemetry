@@ -35,31 +35,25 @@
 
   // ── Theme Configuration ──────────────────────────────────────────
   const theme = {
-    textPrimary: '#e4e4e7',
-    textMuted: '#71717a',
-    border: '#27272a',
-    bgSurface: '#18181b',
-    bgTooltip: '#09090b',
+    textPrimary: '#f8fafc',
+    textMuted: '#94a3b8',
+    border: 'rgba(51, 65, 85, 0.3)',
+    bgSurface: 'rgba(15, 23, 42, 0.85)',
+    bgTooltip: 'rgba(15, 23, 42, 0.95)',
     font: '"Inter", sans-serif',
-    paletteGreen:  '#22c55e',
-    paletteBlue:   '#3b82f6',
-    palettePurple: '#a855f7',
+    paletteGreen:  '#34d399',
+    paletteBlue:   '#38bdf8',
+    palettePurple: '#a78bfa',
   };
 
   // Multi‑value palettes (cycled if more entries than palette length)
   const palettes = {
-    green:  ['#22c55e','#16a34a','#15803d','#166534','#14532d','#052e16'],
-    blue:   ['#3b82f6','#2563eb','#1d4ed8','#1e40af','#1e3a8a','#172554'],
-    purple: ['#a855f7','#9333ea','#7e22ce','#6b21a8','#581c87','#3b0764'],
+    green:  ['#10b981', '#059669', '#34d399', '#047857', '#6ee7b7', '#064e3b'],
+    blue:   ['#0ea5e9', '#0284c7', '#38bdf8', '#0369a1', '#7dd3fc', '#0c4a6e'],
+    purple: ['#8b5cf6', '#7c3aed', '#a78bfa', '#6d28d9', '#c4b5fd', '#4c1d95'],
   };
 
-  // ── Chart.js defaults ─────────────────────────────────────────────
-  Chart.defaults.color = theme.textMuted;
-  Chart.defaults.borderColor = theme.border;
-  Chart.defaults.font.family = theme.font;
-
   // ── State ────────────────────────────────────────────────────────
-  const charts = {};
   let worldMapInstance = null;
 
 
@@ -116,7 +110,7 @@
 
   async function fetchProxyStats(url) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
 
     try {
       const res = await fetch(url, { cache: 'no-store', signal: controller.signal });
@@ -167,96 +161,7 @@
       .join('');
   }
 
-  // ── Chart helpers ────────────────────────────────────────────────
-  function upsertChart(id, type, data, options) {
-    if (charts[id]) {
-      charts[id].data = data;
-      charts[id].options = options;
-      charts[id].update();
-      return;
-    }
-    const ctx = $(id).getContext('2d');
-    charts[id] = new Chart(ctx, { type, data, options });
-  }
 
-  function tooltipOpts() {
-    return {
-      backgroundColor: theme.bgTooltip,
-      titleColor: theme.textPrimary,
-      bodyColor: theme.textMuted,
-      borderColor: theme.border,
-      borderWidth: 1,
-      padding: 12,
-      cornerRadius: 8,
-      displayColors: true,
-      boxPadding: 4,
-    };
-  }
-
-  /** Detect small screen (< 640px) for responsive chart tweaks */
-  function isSmallScreen() {
-    return window.innerWidth < 640;
-  }
-
-  function barHorizOpts() {
-    const small = isSmallScreen();
-    return {
-      indexAxis: 'y',
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: tooltipOpts() },
-      scales: {
-        x: {
-          grid: { color: theme.border, drawBorder: false },
-          ticks: {
-            precision: 0,
-            color: theme.textMuted,
-            font: { size: small ? 9 : 11 },
-            maxTicksLimit: 5,
-            autoSkip: true,
-          },
-          border: { display: false },
-          suggestedMax: undefined,
-        },
-        y: {
-          grid: { display: false },
-          ticks: {
-            color: theme.textPrimary,
-            font: { weight: 500, size: small ? 10 : 12 },
-            maxTicksLimit: small ? 8 : 20,
-            callback: small
-              ? function (value, index, ticks) {
-                  const label = this.getLabelForValue(value);
-                  return label.length > 14 ? label.substring(0, 12) + '\u2026' : label;
-                }
-              : undefined,
-          },
-          border: { display: false },
-        },
-      },
-      layout: { padding: { right: small ? 6 : 20 } },
-    };
-  }
-
-  function getColorArr(palette, length) {
-    return Array.from({ length }, (_, i) => palette[i % palette.length]);
-  }
-
-  function barDataset(data, palette, showSingleColor) {
-    const count = data.length;
-    const small = isSmallScreen();
-    return {
-      data: data.map(([, v]) => v),
-      backgroundColor: showSingleColor
-        ? palette[0]
-        : getColorArr(palette, count),
-      borderRadius: small ? 3 : 4,
-      barThickness: small ? (count > 4 ? 10 : 14) : (count > 5 ? 14 : 18),
-      categoryPercentage: small ? 0.7 : 0.8,
-      barPercentage: small ? 0.55 : 0.6,
-      maxBarThickness: small ? 16 : 28,
-    };
-  }
 
   // ── Global Activity Map ──────────────────────────────────────────
   function initMap(stats) {
@@ -284,7 +189,14 @@
           name: country,
           coords: match.coords,
           activeCount: count,
-          style: { initial: { fill: '#3b82f6', stroke: '#60a5fa' } } // Blue
+          style: { 
+            initial: { 
+              fill: '#10b981',
+              stroke: 'none',
+              strokeWidth: 0,
+              r: 3
+            } 
+          }
         });
       }
     }
@@ -299,7 +211,14 @@
             name: country,
             coords: match.coords,
             isInstalledOnly: true,
-            style: { initial: { fill: '#22c55e', stroke: '#16a34a' } } // Green
+            style: { 
+              initial: { 
+                fill: '#ffffff',
+                stroke: 'none',
+                strokeWidth: 0,
+                r: 3
+              } 
+            }
           });
         }
       }
@@ -312,85 +231,54 @@
       }
       worldMapInstance.removeMarkers();
       worldMapInstance.addMarkers(markers);
+      $('world-map')?.classList.remove('skeleton');
       return;
     }
 
+    $('world-map')?.classList.remove('skeleton');
     // Initialize Map
     worldMapInstance = new jsVectorMap({
       selector: '#world-map',
       map: 'world',
       backgroundColor: 'transparent',
       zoomOnScroll: true,
-      zoomButtons: true,
+      zoomButtons: false,
       draggable: true,
       bindTouchEvents: true,
-      labels: {
-        regions: {
-          render(code) {
-            // Only display labels for mapped countries to avoid cluttering small islands
-            const entry = Object.entries(COUNTRY_MAP).find(([, val]) => val.iso === code);
-            return entry ? entry[0] : null;
-          }
-        }
-      },
-      regionLabelStyle: {
-        initial: {
-          fontFamily: 'inherit',
-          fontWeight: 500,
-          fontSize: 10,
-          fill: '#a1a1aa',
-          cursor: 'default'
-        }
-      },
-      onViewportChange: function(scale) {
-        const mapBox = $('world-map');
-        if (mapBox) {
-          // Fade in labels when scaled past 2.0x zoom
-          if (scale > 2.0) {
-            mapBox.classList.add('map-zoomed-in');
-          } else {
-            mapBox.classList.remove('map-zoomed-in');
-          }
-        }
-      },
+      
       regionStyle: {
         initial: {
-          fill: '#27272a', // Default empty region
-          stroke: '#18181b',
+          fill: '#1a1a1a', // Dark Gray
+          stroke: '#000000',
           strokeWidth: 0.5,
           fillOpacity: 1
         },
         hover: {
-          fill: '#3f3f46',
+          fill: '#2a2a2a',
           cursor: 'pointer'
         }
       },
-      series: {
-        regions: [{
-          attribute: 'fill',
-          scale: ['#064e3b', '#10b981', '#f59e0b', '#ef4444'], // Dark Green -> Light Green -> Yellow -> Red
-          values: regionData
-        }]
-      },
+      
       markers: markers,
       markerStyle: {
         initial: {
-          fill: '#3b82f6', // Blue for active users
-          stroke: '#60a5fa',
-          strokeWidth: 1.5,
-          r: 5 // Dot radius
+          fill: '#0ea5e9',
+          stroke: 'none',
+          strokeWidth: 0,
+          r: 3
         },
         hover: {
-          fill: '#60a5fa',
-          stroke: '#93c5fd',
-          r: 6
+          fill: '#38bdf8',
+          stroke: 'none',
+          strokeWidth: 0,
+          r: 4
         }
       },
       onRegionTooltipShow(event, tooltip, code) {
         const installs = regionData[code] || 0;
         tooltip.text(
           `<div style="font-weight:600;margin-bottom:2px;">${tooltip.text()}</div>
-           <div style="color:#a1a1aa">Installs: <span style="color:#22c55e;font-weight:600">${fmt(installs)}</span></div>`,
+           <div style="color:#94a3b8">Installs: <span style="color:#10b981;font-weight:600">${fmt(installs)}</span></div>`,
           true
         );
       },
@@ -399,13 +287,13 @@
         if (marker.isInstalledOnly) {
           tooltip.text(
             `<div style="font-weight:600;margin-bottom:2px;">${marker.name}</div>
-             <div style="color:#a1a1aa">Active: <span style="color:#22c55e;font-weight:600">0</span></div>`,
+             <div style="color:#94a3b8">Active: <span style="color:#10b981;font-weight:600">0</span></div>`,
             true
           );
         } else {
           tooltip.text(
             `<div style="font-weight:600;margin-bottom:2px;">${marker.name}</div>
-             <div style="color:#a1a1aa">Active: <span style="color:#3b82f6;font-weight:600">${fmt(marker.activeCount)}</span></div>`,
+             <div style="color:#94a3b8">Active: <span style="color:#0ea5e9;font-weight:600">${fmt(marker.activeCount)}</span></div>`,
             true
           );
         }
@@ -419,9 +307,9 @@
       onMarkerClick(event, index) {
         const marker = markers[index];
         if (marker.isInstalledOnly) {
-          showToast(marker.name, 'No active players', '#22c55e');
+          showToast(marker.name, 'No active players', '#10b981');
         } else {
-          showToast(marker.name, `${fmt(marker.activeCount)} Active Players`, '#3b82f6');
+          showToast(marker.name, `${fmt(marker.activeCount)} Active Players`, '#0ea5e9');
         }
       }
     });
@@ -455,13 +343,6 @@
     }, 2500);
   }
 
-  // ── Update "Last updated" display ────────────────────────────────
-  function updateLastUpdated() {
-    const el = $('lastUpdated');
-    if (lastSuccess) {
-      el.textContent = lastSuccess.toLocaleTimeString();
-    }
-  }
 
   // ── Main render ──────────────────────────────────────────────────
   function render(stats) {
@@ -473,26 +354,7 @@
     $('kpi-installVersions').textContent = fmt(installVersion.length);
     $('kpi-installCountries').textContent = fmt(installCountry.length);
 
-    upsertChart(
-      'chart-installVersion',
-      'bar',
-      {
-        labels: installVersion.map(([k]) => k),
-        datasets: [barDataset(installVersion, palettes.green, false)],
-      },
-      barHorizOpts()
-    );
     renderTable('tbl-installVersion', installVersion);
-
-    upsertChart(
-      'chart-installCountry',
-      'bar',
-      {
-        labels: installCountry.map(([k]) => k),
-        datasets: [barDataset(installCountry, palettes.green, true)],
-      },
-      barHorizOpts()
-    );
     renderTable('tbl-installCountry', installCountry);
 
     // ── SECTION 2: CLIENTS ───────────────────────────────────────
@@ -507,26 +369,6 @@
     const clientVersion = sortedEntries(stats.versionDistribution);
     const clientLocation = sortedEntries(stats.locationDistribution);
 
-    upsertChart(
-      'chart-clientVersion',
-      'bar',
-      {
-        labels: clientVersion.map(([k]) => k),
-        datasets: [barDataset(clientVersion, palettes.blue, false)],
-      },
-      barHorizOpts()
-    );
-
-    upsertChart(
-      'chart-clientLocation',
-      'bar',
-      {
-        labels: clientLocation.map(([k]) => k),
-        datasets: [barDataset(clientLocation, palettes.blue, true)],
-      },
-      barHorizOpts()
-    );
-
     renderTable('tbl-clientVersion', clientVersion);
     renderTable('tbl-clientLocation', clientLocation);
 
@@ -539,16 +381,6 @@
     $('kpi-deleted').textContent = fmt(stats.totalServersDeleted);
 
     const serverType = sortedEntries(stats.serverTypeDistribution);
-
-    upsertChart(
-      'chart-serverType',
-      'bar',
-      {
-        labels: serverType.map(([k]) => k),
-        datasets: [barDataset(serverType, palettes.purple, false)],
-      },
-      barHorizOpts()
-    );
     renderTable('tbl-serverType', serverType);
 
     initMap(stats);
@@ -615,28 +447,17 @@
     if (isFetching) return;
     isFetching = true;
 
-    const btnIcon = $('refreshBtn')?.querySelector('svg');
-    if (btnIcon) btnIcon.classList.add('btn-spin');
-
     try {
       showSkeletons();
       const data = await fetchAggregatedStats();
       render(data);
 
       lastSuccess = new Date();
-      updateLastUpdated();
-      $('errLast').textContent = lastSuccess.toLocaleTimeString();
-      $('errorPanel').classList.add('hidden');
     } catch (err) {
       console.error('[telemetry] fetch failed', err);
-      $('errorPanel').classList.remove('hidden');
-      $('errLast').textContent = lastSuccess
-        ? lastSuccess.toLocaleTimeString()
-        : 'never';
       // Graceful degradation: we leave the existing UI untouched instead of mocking data
     } finally {
       isFetching = false;
-      if (btnIcon) btnIcon.classList.remove('btn-spin');
     }
   }
 
@@ -646,47 +467,6 @@
     fetchStats();
   }
 
-  // ── Collapse toggle ──────────────────────────────────────────────
-  function initCollapseToggles() {
-    document.querySelectorAll('.collapse-toggle').forEach(btn => {
-      btn.addEventListener('click', function () {
-        const targetId = this.getAttribute('data-target');
-        const body = document.getElementById(targetId);
-        if (!body) return;
-
-        const isOpen = this.getAttribute('aria-expanded') === 'true';
-
-        if (isOpen) {
-          body.classList.add('collapsed');
-          this.setAttribute('aria-expanded', 'false');
-          this.querySelector('.collapse-toggle-text').textContent = 'Show charts';
-        } else {
-          body.classList.remove('collapsed');
-          this.setAttribute('aria-expanded', 'true');
-          this.querySelector('.collapse-toggle-text').textContent = 'Hide charts';
-
-          const canvases = body.querySelectorAll('canvas');
-          canvases.forEach(canvas => {
-            const chartId = canvas.id;
-            if (charts[chartId]) {
-              setTimeout(() => charts[chartId].resize(), 50);
-            }
-          });
-        }
-      });
-    });
-  }
-
-  // ── Resize handler ───────────────────────────────────────────────
-  let resizeTimer = null;
-  function handleResize() {
-    if (resizeTimer) clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      Object.values(charts).forEach(chart => {
-        if (chart) chart.resize();
-      });
-    }, 200);
-  }
 
   // ── Auto-refresh loop ──────────────────────────────────────
   function startAutoRefresh() {
@@ -696,11 +476,7 @@
 
   // ── Boot ─────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
-    $('refreshBtn').addEventListener('click', triggerRefresh);
-    $('retryBtn').addEventListener('click', triggerRefresh);
     triggerRefresh();
     startAutoRefresh();
-    initCollapseToggles();
-    window.addEventListener('resize', handleResize);
   });
 })();

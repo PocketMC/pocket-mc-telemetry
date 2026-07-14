@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pocket MC — Global Heatmap</title>
+  <meta name="description" content="Live fullscreen global heatmap for Pocket MC telemetry." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <meta name="theme-color" content="#000000" />
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.css" integrity="sha384-DkPMVIJ2hERal/WJDrT3mRGo8KOwiHVdjiyRxCFlUnMdvu52V0Y1CL1yULYSDn4h" crossorigin="anonymous" />
+  <link rel="stylesheet" href="src/heatmap.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.js" integrity="sha384-5T42pwmm9Eq6IKYKkuugmsyxvzvXDazwImzsC76X6lihpgExlMJYSrAtpb5JGZsW" crossorigin="anonymous" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/maps/world.js" integrity="sha384-sGlkSOVF9H+QNNQrLV9xrMIyghEgioD3M3gPd9/tV0mh9qJX75AyCl0l7+OVJ3CD" crossorigin="anonymous" defer></script>
+  <script src="src/countries.js" defer></script>
+  <script src="src/heatmap.js" defer></script>
+</head>
+<body>
+  <div id="heatmap-container">
+    <div class="overlay-ui">
+      <a href="index.html" class="btn-back">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back to Dashboard
+      </a>
+
+    </div>
+    <div id="world-map"></div>
+    <div class="legend-overlay">
+      <div class="legend-item"><span class="legend-dot active"></span> Active Users</div>
+      <div class="legend-item"><span class="legend-dot installed"></span> Installed Regions</div>
+    </div>
+  </div>
+</body>
+</html>
