@@ -10,13 +10,16 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   background: radial-gradient(circle at center, #121212 0%, #000000 100%);
   color: #f8fafc;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
 }
 
 #heatmap-container {
@@ -106,44 +109,9 @@ body {
   100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
 }
 
-/* ── Legend ─────────────────────────────────────────────────── */
-.legend-overlay {
-  position: absolute;
-  bottom: calc(24px + env(safe-area-inset-bottom, 16px));
-  left: calc(24px + env(safe-area-inset-left, 0px));
-  pointer-events: auto;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 10px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  z-index: 10;
-}
 
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.8125rem;
-  color: #cbd5e1;
-}
 
-.legend-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
 
-.legend-dot.active {
-  background: #10b981;
-}
-
-.legend-dot.installed {
-  background: #ffffff;
-}
 
 /* ── Map Tooltip ────────────────────────────────────────────── */
 .jvm-tooltip {
