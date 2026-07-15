@@ -972,6 +972,22 @@ body {
   cursor: pointer;
 }
 
+.jvm-marker[fill="#10b981"] {
+  animation: activePulse 2s infinite;
+}
+
+@keyframes activePulse {
+  0% {
+    filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.2));
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.8));
+  }
+  100% {
+    filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.2));
+  }
+}
+
 /* Map Zoom Buttons Hover State */
 .jvm-zoom-btn {
   transition: background-color 0.15s, color 0.15s;

@@ -201,28 +201,28 @@
       },
       onRegionTooltipShow(event, tooltip, code) {
         const installs = regionData[code] || 0;
+        const countryName = tooltip.text();
+        const activeCount = (stats.locationDistribution || {})[countryName] || 0;
         tooltip.text(
-          `<div style="font-weight:600;margin-bottom:2px;">${tooltip.text()}</div>
-           <div style="color:#94a3b8">Installs: <span style="color:#10b981;font-weight:600">${fmt(installs)}</span></div>`,
+          `<div style="font-weight:600;margin-bottom:2px;">${countryName}</div>
+           <div style="color:#94a3b8">Active Users: <span style="color:#10b981;font-weight:600">${fmt(activeCount)}</span></div>
+           <div style="color:#94a3b8">Installs: <span style="color:#ffffff;font-weight:600">${fmt(installs)}</span></div>`,
           true
         );
       },
       onMarkerTooltipShow(event, tooltip, index) {
         const marker = markers[index];
-        if (marker.isInstalledOnly) {
-          tooltip.text(
-            `<div style="font-weight:600;margin-bottom:2px;">${marker.name}</div>
-             <div style="color:#94a3b8">Active: <span style="color:#10b981;font-weight:600">0</span></div>`,
-            true
-          );
-        } else {
-          tooltip.text(
-            `<div style="font-weight:600;margin-bottom:2px;">${marker.name}</div>
-             <div style="color:#94a3b8">Active: <span style="color:#0ea5e9;font-weight:600">${fmt(marker.activeCount)}</span></div>`,
-            true
-          );
-        }
-      }
+        const countryName = marker.name;
+        const installs = (stats.installLocationDistribution || {})[countryName] || 0;
+        const activeCount = (stats.locationDistribution || {})[countryName] || 0;
+
+        tooltip.text(
+          `<div style="font-weight:600;margin-bottom:2px;">${countryName}</div>
+           <div style="color:#94a3b8">Active Users: <span style="color:#10b981;font-weight:600">${fmt(activeCount)}</span></div>
+           <div style="color:#94a3b8">Installs: <span style="color:#ffffff;font-weight:600">${fmt(installs)}</span></div>`,
+          true
+        );
+      },
     });
   }
 
