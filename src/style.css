@@ -29,6 +29,19 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Gracefully fade out scrolling content before it hits the mobile status bar */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: max(72px, calc(env(safe-area-inset-top, 40px) + 32px));
+  background: linear-gradient(to bottom, #000000 30%, rgba(0, 0, 0, 0.7) 60%, transparent 100%);
+  z-index: 49;
+  pointer-events: none;
+}
+
 /* ── Scrollbar ─────────────────────────────────────────────── */
 ::-webkit-scrollbar { display: none; width: 0; height: 0; }
 * { scrollbar-width: none; -ms-overflow-style: none; }
@@ -64,6 +77,7 @@ body {
   margin-bottom: 20px;
   background: rgba(15, 15, 15, 0.6);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   padding: 16px;
