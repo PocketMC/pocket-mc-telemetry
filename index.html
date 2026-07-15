@@ -12,11 +12,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#000000" />
+  <meta name="theme-color" content="#050505" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <link rel="apple-touch-icon"
-    href="https://raw.githubusercontent.com/PocketMC/pocket-mc-website/refs/heads/master/public/logo.webp" />
+  <link rel="apple-touch-icon" href="icon.svg" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.css"
     integrity="sha384-DkPMVIJ2hERal/WJDrT3mRGo8KOwiHVdjiyRxCFlUnMdvu52V0Y1CL1yULYSDn4h" crossorigin="anonymous" />
   <link rel="stylesheet" href="src/style.css" />
@@ -54,12 +53,11 @@
 
     </header>
 
-
     <!-- ═══════════════════════════════════════════════════════════
-         SECTION 1 — Installations (KPIs + Tables only)
+         SECTION 1 — Installations
          ═══════════════════════════════════════════════════════════ -->
     <section class="section-card">
-      <div class="section-header">
+      <div class="section-header" style="flex-direction: column; align-items: flex-start; gap: 4px;">
         <div class="section-title-group">
           <div class="section-icon section-icon-green">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -71,6 +69,7 @@
           </div>
           <h2 class="section-title">Installations</h2>
         </div>
+        <div class="insight-text" id="insight-installs"></div>
       </div>
 
       <!-- KPIs -->
@@ -86,6 +85,10 @@
         <div class="kpi-card">
           <div class="kpi-label">Countries Reached</div>
           <div class="kpi-value kpi-white" id="kpi-installCountries">&mdash;</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Avg per Country</div>
+          <div class="kpi-value kpi-purple" id="kpi-avgInstalls">&mdash;</div>
         </div>
       </div>
 
@@ -147,7 +150,7 @@
          SECTION 2 — Active Clients (KPIs + Tables only)
          ═══════════════════════════════════════════════════════════ -->
     <section class="section-card">
-      <div class="section-header">
+      <div class="section-header" style="flex-direction: column; align-items: flex-start; gap: 4px;">
         <div class="section-title-group">
           <div class="section-icon section-icon-blue">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -160,6 +163,7 @@
           </div>
           <h2 class="section-title">Active Clients</h2>
         </div>
+        <div class="insight-text" id="insight-clients"></div>
       </div>
 
       <!-- KPIs -->
@@ -175,6 +179,11 @@
         <div class="kpi-card">
           <div class="kpi-label">AFK Users</div>
           <div class="kpi-value kpi-muted" id="kpi-afkUsers">&mdash;</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Server Density</div>
+          <div class="kpi-value kpi-purple" id="kpi-serverDensity">&mdash;</div>
+          <div class="kpi-subtext">Users per Server</div>
         </div>
       </div>
 
@@ -217,7 +226,7 @@
          SECTION 3 — Server Analytics (KPIs + Tables only)
          ═══════════════════════════════════════════════════════════ -->
     <section class="section-card">
-      <div class="section-header">
+      <div class="section-header" style="flex-direction: column; align-items: flex-start; gap: 4px;">
         <div class="section-title-group">
           <div class="section-icon section-icon-purple">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -228,34 +237,35 @@
               <line x1="6" y1="18" x2="6.01" y2="18" />
             </svg>
           </div>
-          <h2 class="section-title">Server Analytics</h2>
+          <h2 class="section-title">Live Servers</h2>
         </div>
+        <div class="insight-text" id="insight-servers"></div>
       </div>
 
-      <!-- KPIs (4-column) -->
-      <div class="kpi-grid kpi-grid-4">
+      <!-- KPIs -->
+      <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-label">Global Uptime</div>
           <div class="kpi-value kpi-purple" id="kpi-uptime">&mdash;</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">Running</div>
-          <div class="kpi-value kpi-white" id="kpi-running">&mdash;</div>
+          <div class="kpi-label">Running Servers</div>
+          <div class="kpi-value kpi-green" id="kpi-totalServers">&mdash;</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">Created</div>
-          <div class="kpi-value kpi-white" id="kpi-created">&mdash;</div>
+          <div class="kpi-label">Servers Created</div>
+          <div class="kpi-value kpi-blue" id="kpi-totalServersCreated">&mdash;</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">Deleted</div>
-          <div class="kpi-value kpi-muted" id="kpi-deleted">&mdash;</div>
+          <div class="kpi-label">Servers Deleted</div>
+          <div class="kpi-value kpi-red" id="kpi-totalServersDeleted">&mdash;</div>
         </div>
       </div>
 
       <!-- Table -->
       <div class="chart-table-grid">
         <div class="chart-box">
-          <h3 class="chart-title">Type Breakdown</h3>
+          <h3 class="chart-title">Server Types</h3>
           <div class="table-wrapper">
             <table class="table-inner">
               <thead>
@@ -320,7 +330,8 @@
       </p>
     </footer>
 
-  </div>
+  </div> <!-- end app-wrapper -->
+
 </body>
 
 </html>

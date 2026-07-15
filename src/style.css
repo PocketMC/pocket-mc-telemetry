@@ -1017,3 +1017,21 @@ body::before {
   background-color: rgba(255, 255, 255, 0.1);
   color: #f8fafc;
 }
+
+/* ==========================================================================
+   NEW FEATURES (TICKER, SPOTLIGHT, DONUT, RETENTION)
+   ========================================================================== */
+
+/* ── Inline Auto-Insights ──────────────────────────────────── */
+.insight-text {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.4;
+  margin-top: 2px;
+}
+.spotlight-highlight {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ── Custom Scrollbar ────────────────────────────────────────── */

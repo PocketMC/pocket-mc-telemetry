@@ -161,9 +161,38 @@
       .join('');
   }
 
+  function renderNewFeatures(stats, installVersion, clientVersion, serverType, installCountry) {
+    // 2. Spotlight Auto-Insights inline
+    const insightInstalls = $('insight-installs');
+    const insightClients = $('insight-clients');
+    const insightServers = $('insight-servers');
 
+    const topServer = serverType.length ? serverType[0] : null;
+    const topLoc = installCountry.length ? installCountry[0] : null;
+    const topVer = clientVersion.length ? clientVersion[0] : null;
 
-  // ── Global Activity Map ──────────────────────────────────────────
+    if (insightServers && topServer) {
+      insightServers.innerHTML = `<span class="spotlight-highlight">${escapeHtml(topServer[0])}</span> is dominating as the top server type.`;
+    }
+    if (insightInstalls && topLoc) {
+      insightInstalls.innerHTML = `<span class="spotlight-highlight">${escapeHtml(topLoc[0])}</span> leads the world in installations today.`;
+    }
+    if (insightClients && topVer) {
+      const totalClients = clientVersion.reduce((s, [, v]) => s + v, 0);
+      insightClients.innerHTML = `<span class="spotlight-highlight">v${escapeHtml(topVer[0])}</span> makes up ${pct(topVer[1], totalClients)} of all live servers.`;
+    }
+
+    // Removed Uptime and Retention per user request
+    
+    // 6. Density Gauge
+    const densityEl = $('kpi-serverDensity');
+    if (densityEl) {
+      const users = Number(stats.activeUsers) || 0;
+      const servers = Number(stats.totalRunningServers) || 0;
+      const density = servers > 0 ? (users / servers).toFixed(1) : 0;
+      densityEl.textContent = density;
+    }
+  }
   function initMap(stats) {
     const mapBox = $('world-map');
     if (!mapBox) return;
@@ -349,10 +378,15 @@
     // ── SECTION 1: INSTALLS ──────────────────────────────────────
     const installVersion = sortedEntries(stats.installVersionDistribution);
     const installCountry = sortedEntries(stats.installLocationDistribution);
+    
+    const totalInstalls = Number(stats.totalInstalls) || 0;
+    const countriesReached = installCountry.length;
+    const avgInstalls = countriesReached > 0 ? (totalInstalls / countriesReached).toFixed(1) : 0;
 
     $('kpi-totalInstalls').textContent = fmt(stats.totalInstalls);
     $('kpi-installVersions').textContent = fmt(installVersion.length);
-    $('kpi-installCountries').textContent = fmt(installCountry.length);
+    $('kpi-installCountries').textContent = fmt(countriesReached);
+    $('kpi-avgInstalls').textContent = avgInstalls;
 
     renderTable('tbl-installVersion', installVersion);
     renderTable('tbl-installCountry', installCountry);
@@ -373,15 +407,16 @@
     renderTable('tbl-clientLocation', clientLocation);
 
     // ── SECTION 3: SERVERS ───────────────────────────────────────
-    const uptime = Number(stats.globalUptimeHours) || 0;
-    $('kpi-uptime').textContent =
-      uptime.toLocaleString(undefined, { maximumFractionDigits: 1 }) + 'h';
-    $('kpi-running').textContent = fmt(stats.totalRunningServers);
-    $('kpi-created').textContent = fmt(stats.totalServersCreated);
-    $('kpi-deleted').textContent = fmt(stats.totalServersDeleted);
+    $('kpi-totalServers').textContent = fmt(stats.totalRunningServers);
+    $('kpi-totalServersCreated').textContent = fmt(stats.totalServersCreated);
+    $('kpi-totalServersDeleted').textContent = fmt(stats.totalServersDeleted);
+    $('kpi-uptime').textContent = fmt(Math.round(stats.globalUptimeHours)) + ' Hrs';
 
     const serverType = sortedEntries(stats.serverTypeDistribution);
     renderTable('tbl-serverType', serverType);
+    
+    // ── RENDER NEW FEATURES ──────────────────────────────────────
+    renderNewFeatures(stats, installVersion, clientVersion, serverType, installCountry);
 
     initMap(stats);
   }
@@ -396,13 +431,14 @@
       'kpi-totalInstalls',
       'kpi-installVersions',
       'kpi-installCountries',
-      'kpi-openClients',
+      'kpi-avgInstalls',
       'kpi-activeUsers',
       'kpi-afkUsers',
+      'kpi-totalServers',
+      'kpi-totalServersCreated',
+      'kpi-totalServersDeleted',
       'kpi-uptime',
-      'kpi-running',
-      'kpi-created',
-      'kpi-deleted',
+      'kpi-retention',
     ];
 
     kpis.forEach((id) => {
