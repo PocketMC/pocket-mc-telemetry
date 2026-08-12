@@ -10,6 +10,7 @@
     "https://pocket-mc-proxy-3fqm.onrender.com/api/telemetry/stats",
     "https://pocket-mc-proxy-20d5.onrender.com/api/telemetry/stats",
     "https://pocket-mc-proxy-n2qx.onrender.com/api/telemetry/stats",
+    "https://pocketmc-welcome-bot-1e5d.onrender.com",
   ];
   const REFRESH_INTERVAL = 30;
 
