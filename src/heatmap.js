@@ -1,5 +1,5 @@
 /**
- * Pocket MC Fullscreen Heatmap
+ * PocketMC Fullscreen Heatmap
  * Smooth, glowing aesthetic for live telemetry
  */
 (function () {

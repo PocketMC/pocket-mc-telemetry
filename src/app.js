@@ -1,5 +1,5 @@
 /**
- * Pocket MC Telemetry Dashboard
+ * PocketMC Telemetry Dashboard
  * Live anonymous usage analytics
  */
 (function () {

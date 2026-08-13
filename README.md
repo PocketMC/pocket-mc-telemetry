@@ -1,6 +1,6 @@
-# Pocket MC Telemetry Dashboard
+# PocketMC Telemetry Dashboard
 
-A real-time telemetry dashboard designed for Pocket MC. This dashboard visualizes live, anonymous analytics regarding client installations, active server statistics, and global usage data.
+A real-time telemetry dashboard designed for PocketMC. This dashboard visualizes live, anonymous analytics regarding client installations, active server statistics, and global usage data.
 
 ## Architecture and Technology Stack
 
