@@ -418,7 +418,6 @@
     renderTable('tbl-installCountry', installCountry);
 
     // ── SECTION 2: CLIENTS ───────────────────────────────────────
-    const open = Number(stats.openClients) || 0;
     const active = Number(stats.activeUsers) || 0;
     const afk = Math.max(0, open - active);
 
