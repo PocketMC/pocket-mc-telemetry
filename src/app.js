@@ -16,12 +16,6 @@
 
   const GLOBAL_METRIC_DEFAULTS = {
     totalInstalls: 0,
-    activeUsers7d: 0,
-    inactiveUsers7d: 0,
-    activeUsers30d: 0,
-    activeUsers24h: 0,
-    concurrentOnlineClients: 0,
-    concurrentServerHosts: 0,
     installVersionDistribution: {},
     installLocationDistribution: {},
     globalUptimeHours: 0,
@@ -184,8 +178,10 @@
     }
     if (insightInstalls) {
       const totalInstalls = Number(stats.totalInstalls) || 0;
-      const active7d = Number(stats.activeUsers7d) || 0;
-      if (totalInstalls > 0) {
+      const open = Number(stats.openClients) || 0;
+      const hasActive7d = stats.activeUsers7d !== undefined && stats.activeUsers7d !== null;
+      const active7d = hasActive7d ? Math.max(Number(stats.activeUsers7d), open) : open;
+      if (totalInstalls > 0 && active7d > 0) {
         insightInstalls.innerHTML = `<span class="spotlight-highlight">${pct(active7d, totalInstalls)}</span> (${fmt(active7d)}) of registered users have been active in the last 7 days.`;
       } else if (topLoc) {
         insightInstalls.innerHTML = `<span class="spotlight-highlight">${escapeHtml(topLoc[0])}</span> leads the world in installations today.`;
@@ -394,8 +390,12 @@
     const installCountry = sortedEntries(stats.installLocationDistribution);
     
     const totalInstalls = Number(stats.totalInstalls) || 0;
-    const active7d = Number(stats.activeUsers7d) || 0;
-    const inactive7d = Number(stats.inactiveUsers7d) || Math.max(0, totalInstalls - active7d);
+    const open = Number(stats.openClients) || 0;
+    const hasActive7d = stats.activeUsers7d !== undefined && stats.activeUsers7d !== null;
+    const active7d = hasActive7d ? Math.max(Number(stats.activeUsers7d), open) : open;
+    const inactive7d = hasActive7d && stats.inactiveUsers7d !== undefined
+      ? Number(stats.inactiveUsers7d)
+      : Math.max(0, totalInstalls - active7d);
     const countriesReached = installCountry.length;
     const avgInstalls = countriesReached > 0 ? (totalInstalls / countriesReached).toFixed(1) : 0;
 
