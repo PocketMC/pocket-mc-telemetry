@@ -98,6 +98,14 @@
       },
     };
 
+    // Pick windowed activity metrics from any updated proxy during rolling deployments
+    ['activeUsers7d', 'inactiveUsers7d', 'activeUsers30d', 'activeUsers24h'].forEach((field) => {
+      const val = responses.map((r) => r[field]).find((v) => v !== undefined && v !== null);
+      if (val !== undefined && val !== null) {
+        aggregated[field] = val;
+      }
+    });
+
     LIVE_METRIC_FIELDS.forEach((field) => {
       aggregated[field] = responses.reduce((sum, response) => sum + toNumber(response[field]), 0);
     });
