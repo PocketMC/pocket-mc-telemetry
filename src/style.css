@@ -531,6 +531,13 @@ body::before {
 .kpi-white  { color: #f8fafc; }
 .kpi-muted  { color: #94a3b8; }
 
+.kpi-subtext {
+  font-size: 0.6875rem;
+  color: #64748b;
+  margin-top: 4px;
+  line-height: 1.3;
+}
+
 /* 4‑column variant for servers */
 .kpi-grid-4 {
   grid-template-columns: 1fr 1fr;

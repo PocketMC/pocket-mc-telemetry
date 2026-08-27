@@ -16,6 +16,12 @@
 
   const GLOBAL_METRIC_DEFAULTS = {
     totalInstalls: 0,
+    activeUsers7d: 0,
+    inactiveUsers7d: 0,
+    activeUsers30d: 0,
+    activeUsers24h: 0,
+    concurrentOnlineClients: 0,
+    concurrentServerHosts: 0,
     installVersionDistribution: {},
     installLocationDistribution: {},
     globalUptimeHours: 0,
@@ -176,8 +182,14 @@
     if (insightServers && topServer) {
       insightServers.innerHTML = `<span class="spotlight-highlight">${escapeHtml(topServer[0])}</span> is dominating as the top server type.`;
     }
-    if (insightInstalls && topLoc) {
-      insightInstalls.innerHTML = `<span class="spotlight-highlight">${escapeHtml(topLoc[0])}</span> leads the world in installations today.`;
+    if (insightInstalls) {
+      const totalInstalls = Number(stats.totalInstalls) || 0;
+      const active7d = Number(stats.activeUsers7d) || 0;
+      if (totalInstalls > 0) {
+        insightInstalls.innerHTML = `<span class="spotlight-highlight">${pct(active7d, totalInstalls)}</span> (${fmt(active7d)}) of registered users have been active in the last 7 days.`;
+      } else if (topLoc) {
+        insightInstalls.innerHTML = `<span class="spotlight-highlight">${escapeHtml(topLoc[0])}</span> leads the world in installations today.`;
+      }
     }
     if (insightClients && topVer) {
       const totalClients = clientVersion.reduce((s, [, v]) => s + v, 0);
@@ -377,15 +389,19 @@
 
   // ── Main render ──────────────────────────────────────────────────
   function render(stats) {
-    // ── SECTION 1: INSTALLS ──────────────────────────────────────
+    // ── SECTION 1: INSTALLS & USER BASE ──────────────────────────
     const installVersion = sortedEntries(stats.installVersionDistribution);
     const installCountry = sortedEntries(stats.installLocationDistribution);
     
     const totalInstalls = Number(stats.totalInstalls) || 0;
+    const active7d = Number(stats.activeUsers7d) || 0;
+    const inactive7d = Number(stats.inactiveUsers7d) || Math.max(0, totalInstalls - active7d);
     const countriesReached = installCountry.length;
     const avgInstalls = countriesReached > 0 ? (totalInstalls / countriesReached).toFixed(1) : 0;
 
-    $('kpi-totalInstalls').textContent = fmt(stats.totalInstalls);
+    $('kpi-totalInstalls').textContent = fmt(totalInstalls);
+    $('kpi-activeUsers7d').textContent = fmt(active7d);
+    $('kpi-inactiveUsers7d').textContent = fmt(inactive7d);
     $('kpi-installVersions').textContent = fmt(installVersion.length);
     $('kpi-installCountries').textContent = fmt(countriesReached);
     $('kpi-avgInstalls').textContent = avgInstalls;
@@ -431,16 +447,19 @@
 
     const kpis = [
       'kpi-totalInstalls',
+      'kpi-activeUsers7d',
+      'kpi-inactiveUsers7d',
       'kpi-installVersions',
       'kpi-installCountries',
       'kpi-avgInstalls',
+      'kpi-openClients',
       'kpi-activeUsers',
       'kpi-afkUsers',
+      'kpi-serverDensity',
       'kpi-totalServers',
       'kpi-totalServersCreated',
       'kpi-totalServersDeleted',
       'kpi-uptime',
-      'kpi-retention',
     ];
 
     kpis.forEach((id) => {

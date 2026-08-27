@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PocketMC — Telemetry Dashboard</title>
+  <title>PocketMC : Telemetry Dashboard</title>
   <meta name="description"
-    content="Live anonymous telemetry for PocketMC: installs, active clients, and server analytics." />
+    content="Live anonymous telemetry for PocketMC: installs, active users, and server analytics." />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -54,7 +54,7 @@
     </header>
 
     <!-- ═══════════════════════════════════════════════════════════
-         SECTION 1 — Installations
+         SECTION 1 — Installations & User Base
          ═══════════════════════════════════════════════════════════ -->
     <section class="section-card">
       <div class="section-header" style="flex-direction: column; align-items: flex-start; gap: 4px;">
@@ -67,7 +67,7 @@
               <line x1="12" y1="15" x2="12" y2="3" />
             </svg>
           </div>
-          <h2 class="section-title">Installations</h2>
+          <h2 class="section-title">Installations & User Base</h2>
         </div>
         <div class="insight-text" id="insight-installs"></div>
       </div>
@@ -76,19 +76,33 @@
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-label">Total Installs</div>
-          <div class="kpi-value kpi-green" id="kpi-totalInstalls">&mdash;</div>
+          <div class="kpi-value kpi-green" id="kpi-totalInstalls">-</div>
+          <div class="kpi-subtext">Lifetime installations</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">Unique Versions</div>
-          <div class="kpi-value kpi-white" id="kpi-installVersions">&mdash;</div>
+          <div class="kpi-label">Active Users (7d)</div>
+          <div class="kpi-value kpi-blue" id="kpi-activeUsers7d">-</div>
+          <div class="kpi-subtext">Active in last 7 days</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Inactive Users</div>
+          <div class="kpi-value kpi-muted" id="kpi-inactiveUsers7d">-</div>
+          <div class="kpi-subtext">No activity > 7 days</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Countries Reached</div>
-          <div class="kpi-value kpi-white" id="kpi-installCountries">&mdash;</div>
+          <div class="kpi-value kpi-white" id="kpi-installCountries">-</div>
+          <div class="kpi-subtext">Global distribution</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Unique Versions</div>
+          <div class="kpi-value kpi-white" id="kpi-installVersions">-</div>
+          <div class="kpi-subtext">Distinct builds installed</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Avg per Country</div>
-          <div class="kpi-value kpi-purple" id="kpi-avgInstalls">&mdash;</div>
+          <div class="kpi-value kpi-purple" id="kpi-avgInstalls">-</div>
+          <div class="kpi-subtext">Installs per nation</div>
         </div>
       </div>
 
@@ -147,7 +161,7 @@
     </section>
 
     <!-- ═══════════════════════════════════════════════════════════
-         SECTION 2 — Active Clients (KPIs + Tables only)
+         SECTION 2 — Real-Time Active Clients
          ═══════════════════════════════════════════════════════════ -->
     <section class="section-card">
       <div class="section-header" style="flex-direction: column; align-items: flex-start; gap: 4px;">
@@ -161,7 +175,7 @@
               <path d="M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
           </div>
-          <h2 class="section-title">Active Clients</h2>
+          <h2 class="section-title">Active Clients (Real-Time)</h2>
         </div>
         <div class="insight-text" id="insight-clients"></div>
       </div>
@@ -170,19 +184,22 @@
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-label">Open Clients</div>
-          <div class="kpi-value kpi-blue" id="kpi-openClients">&mdash;</div>
+          <div class="kpi-value kpi-blue" id="kpi-openClients">-</div>
+          <div class="kpi-subtext">Currently open apps</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">Online Users</div>
-          <div class="kpi-value kpi-white" id="kpi-activeUsers">&mdash;</div>
+          <div class="kpi-label">Online Hosts</div>
+          <div class="kpi-value kpi-white" id="kpi-activeUsers">-</div>
+          <div class="kpi-subtext">Active server instances</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">AFK Users</div>
-          <div class="kpi-value kpi-muted" id="kpi-afkUsers">&mdash;</div>
+          <div class="kpi-label">Idle Clients</div>
+          <div class="kpi-value kpi-muted" id="kpi-afkUsers">-</div>
+          <div class="kpi-subtext">Open without servers</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Server Density</div>
-          <div class="kpi-value kpi-purple" id="kpi-serverDensity">&mdash;</div>
+          <div class="kpi-value kpi-purple" id="kpi-serverDensity">-</div>
           <div class="kpi-subtext">Users per Server</div>
         </div>
       </div>
@@ -246,19 +263,19 @@
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-label">Global Uptime</div>
-          <div class="kpi-value kpi-purple" id="kpi-uptime">&mdash;</div>
+          <div class="kpi-value kpi-purple" id="kpi-uptime">-</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Running Servers</div>
-          <div class="kpi-value kpi-green" id="kpi-totalServers">&mdash;</div>
+          <div class="kpi-value kpi-green" id="kpi-totalServers">-</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Servers Created</div>
-          <div class="kpi-value kpi-blue" id="kpi-totalServersCreated">&mdash;</div>
+          <div class="kpi-value kpi-blue" id="kpi-totalServersCreated">-</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Servers Deleted</div>
-          <div class="kpi-value kpi-red" id="kpi-totalServersDeleted">&mdash;</div>
+          <div class="kpi-value kpi-red" id="kpi-totalServersDeleted">-</div>
         </div>
       </div>
 

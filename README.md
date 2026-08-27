@@ -42,8 +42,8 @@ Built as a lightweight, high-performance static Progressive Web App (PWA), the d
 ## Key Features
 
 ### 1. Real-Time Telemetry & Insights
-- **Installations:** Tracks total install volume, unique client version adoption, country reach, and average installs per country.
-- **Active Clients:** Real-time visibility into open instances, actively engaged users, AFK clients, and calculated server density (users per server).
+- **Installations & User Base:** Tracks total lifetime install volume, rolling 7-day active users (WAU), inactive users (dormant > 7 days), unique client version adoption, country reach, and average installs per country.
+- **Active Clients:** Real-time visibility into open instances, actively engaged hosting users, idle/AFK clients, and calculated server density (users per server).
 - **Server Health:** Global uptime monitoring, active running servers, and lifetime creation vs deletion lifecycle counts.
 - **Engine Breakdown:** Real-time distribution across Bedrock (BDS), Fabric, Paper, NeoForge, and custom server types.
 
