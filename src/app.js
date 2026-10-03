@@ -10,8 +10,8 @@
     "https://pocket-mc-proxy-3fqm.onrender.com/api/telemetry/stats",
     "https://pocket-mc-proxy-20d5.onrender.com/api/telemetry/stats",
     "https://pocket-mc-proxy-n2qx.onrender.com/api/telemetry/stats",
-    "https://pocketmc-welcome-bot-1e5d.onrender.com",
   ];
+  const DISCORD_BOT_KEEP_ALIVE_URL = "https://pocketmc-welcome-bot-1e5d.onrender.com/health";
   const REFRESH_INTERVAL = 30;
 
   const GLOBAL_METRIC_DEFAULTS = {
@@ -81,7 +81,8 @@
   function aggregateTelemetry(proxyResults, totalProxies) {
     const responses = proxyResults
       .filter((result) => result.status === 'fulfilled')
-      .map((result) => result.value);
+      .map((result) => result.value)
+      .filter((val) => val && (val.totalInstalls !== undefined || val.openClients !== undefined));
 
     if (!responses.length) {
       throw new Error('No telemetry proxies are online');
@@ -513,7 +514,10 @@
 
     try {
       showSkeletons();
-      const data = await fetchAggregatedStats();
+      const [data] = await Promise.all([
+        fetchAggregatedStats(),
+        fetch(DISCORD_BOT_KEEP_ALIVE_URL, { cache: 'no-store' }).catch(() => null),
+      ]);
       render(data);
 
       lastSuccess = new Date();
