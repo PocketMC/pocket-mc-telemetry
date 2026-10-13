@@ -713,6 +713,27 @@
     }
   }
 
+  // ── Info Tooltips (Touch & Mobile Support) ────────────────────────
+  function setupInfoTooltips() {
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.info-btn');
+      const allWraps = document.querySelectorAll('.info-wrap.active');
+
+      if (btn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const wrap = btn.closest('.info-wrap');
+        const isActive = wrap?.classList.contains('active');
+        allWraps.forEach((w) => w.classList.remove('active'));
+        if (wrap && !isActive) {
+          wrap.classList.add('active');
+        }
+      } else {
+        allWraps.forEach((w) => w.classList.remove('active'));
+      }
+    });
+  }
+
   // ── Boot ─────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
     // Theme setup
@@ -729,6 +750,7 @@
       refreshBtn.addEventListener('click', triggerRefresh);
     }
 
+    setupInfoTooltips();
     triggerRefresh();
     startAutoRefresh();
   });

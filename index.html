@@ -146,15 +146,25 @@
             </svg>
           </div>
           <div class="kpi-value kpi-green" id="kpi-totalInstalls">-</div>
-          <div class="kpi-label">Total Installs</div>
-          <div class="kpi-subtext">Lifetime installations</div>
+          <div class="kpi-label">
+            <span>Total Installs</span>
+            <span class="info-wrap">
+              <button type="button" class="info-btn" aria-label="Lifetime installations">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                </svg>
+              </button>
+              <span class="info-tooltip" role="tooltip">Lifetime installations</span>
+            </span>
+          </div>
         </div>
 
         <!-- Active Users (7D) -->
         <div class="kpi-card">
           <div class="kpi-icon-top text-blue">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
               <circle cx="9" cy="7" r="4" />
               <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
@@ -162,8 +172,18 @@
             </svg>
           </div>
           <div class="kpi-value kpi-blue" id="kpi-activeUsers7d">-</div>
-          <div class="kpi-label">Active Users (7D)</div>
-          <div class="kpi-subtext">Active in last 7 days</div>
+          <div class="kpi-label">
+            <span>Active Users (7D)</span>
+            <span class="info-wrap">
+              <button type="button" class="info-btn" aria-label="Active in last 7 days">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                </svg>
+              </button>
+              <span class="info-tooltip" role="tooltip">Active in last 7 days</span>
+            </span>
+          </div>
         </div>
 
         <!-- Inactive Users -->
@@ -178,8 +198,18 @@
             </svg>
           </div>
           <div class="kpi-value" id="kpi-inactiveUsers7d">-</div>
-          <div class="kpi-label">Inactive Users</div>
-          <div class="kpi-subtext">Not active in 7+ days</div>
+          <div class="kpi-label">
+            <span>Inactive Users</span>
+            <span class="info-wrap">
+              <button type="button" class="info-btn" aria-label="Not active in 7+ days">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                </svg>
+              </button>
+              <span class="info-tooltip" role="tooltip">Not active in 7+ days</span>
+            </span>
+          </div>
         </div>
 
         <!-- Countries Reached -->
@@ -193,8 +223,18 @@
             </svg>
           </div>
           <div class="kpi-value" id="kpi-installCountries">-</div>
-          <div class="kpi-label">Countries Reached</div>
-          <div class="kpi-subtext">Global distribution</div>
+          <div class="kpi-label">
+            <span>Countries Reached</span>
+            <span class="info-wrap">
+              <button type="button" class="info-btn" aria-label="Global distribution">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                </svg>
+              </button>
+              <span class="info-tooltip" role="tooltip">Global distribution</span>
+            </span>
+          </div>
         </div>
 
         <!-- Unique Versions -->
@@ -208,8 +248,18 @@
             </svg>
           </div>
           <div class="kpi-value" id="kpi-installVersions">-</div>
-          <div class="kpi-label">Unique Versions</div>
-          <div class="kpi-subtext">Distinct builds installed</div>
+          <div class="kpi-label">
+            <span>Unique Versions</span>
+            <span class="info-wrap">
+              <button type="button" class="info-btn" aria-label="Distinct builds installed">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                </svg>
+              </button>
+              <span class="info-tooltip" role="tooltip">Distinct builds installed</span>
+            </span>
+          </div>
         </div>
 
         <!-- Avg per Country -->
@@ -223,8 +273,18 @@
             </svg>
           </div>
           <div class="kpi-value kpi-blue" id="kpi-avgInstalls">-</div>
-          <div class="kpi-label">Avg per Country</div>
-          <div class="kpi-subtext">Installs per nation</div>
+          <div class="kpi-label">
+            <span>Avg per Country</span>
+            <span class="info-wrap">
+              <button type="button" class="info-btn" aria-label="Installs per nation">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                </svg>
+              </button>
+              <span class="info-tooltip" role="tooltip">Installs per nation</span>
+            </span>
+          </div>
         </div>
       </div>
 
@@ -233,8 +293,18 @@
         <!-- Version Breakdown -->
         <div class="breakdown-card">
           <div class="breakdown-header">
-            <h3 class="breakdown-title">Version Breakdown</h3>
-            <span class="breakdown-subtitle">Installations by version</span>
+            <h3 class="breakdown-title">
+              <span>Version Breakdown</span>
+              <span class="info-wrap">
+                <button type="button" class="info-btn" aria-label="Installations by version">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                  </svg>
+                </button>
+                <span class="info-tooltip" role="tooltip">Installations by version</span>
+              </span>
+            </h3>
           </div>
           <div class="breakdown-list" id="tbl-installVersion"></div>
         </div>
@@ -242,8 +312,18 @@
         <!-- Top Countries Breakdown with Flags -->
         <div class="breakdown-card">
           <div class="breakdown-header">
-            <h3 class="breakdown-title">Top Countries</h3>
-            <span class="breakdown-subtitle">Installations by country</span>
+            <h3 class="breakdown-title">
+              <span>Top Countries</span>
+              <span class="info-wrap">
+                <button type="button" class="info-btn" aria-label="Installations by country">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                  </svg>
+                </button>
+                <span class="info-tooltip" role="tooltip">Installations by country</span>
+              </span>
+            </h3>
           </div>
           <div class="breakdown-list" id="tbl-installCountry"></div>
         </div>
@@ -288,8 +368,18 @@
               </svg>
             </div>
           </div>
-          <div class="kpi-label">Open Clients</div>
-          <div class="kpi-subtext">Currently open apps</div>
+          <div class="kpi-label">
+            <span>Open Clients</span>
+            <span class="info-wrap">
+              <button type="button" class="info-btn" aria-label="Currently open apps">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                </svg>
+              </button>
+              <span class="info-tooltip" role="tooltip">Currently open apps</span>
+            </span>
+          </div>
         </div>
 
         <!-- Online Hosts -->
@@ -306,8 +396,18 @@
               </svg>
             </div>
           </div>
-          <div class="kpi-label">Online Hosts</div>
-          <div class="kpi-subtext">Active server instances</div>
+          <div class="kpi-label">
+            <span>Online Hosts</span>
+            <span class="info-wrap">
+              <button type="button" class="info-btn" aria-label="Active server instances">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                </svg>
+              </button>
+              <span class="info-tooltip" role="tooltip">Active server instances</span>
+            </span>
+          </div>
         </div>
 
         <!-- Idle Clients -->
@@ -322,8 +422,18 @@
               </svg>
             </div>
           </div>
-          <div class="kpi-label">Idle Clients</div>
-          <div class="kpi-subtext">Open without servers</div>
+          <div class="kpi-label">
+            <span>Idle Clients</span>
+            <span class="info-wrap">
+              <button type="button" class="info-btn" aria-label="Open without servers">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                </svg>
+              </button>
+              <span class="info-tooltip" role="tooltip">Open without servers</span>
+            </span>
+          </div>
         </div>
 
         <!-- Server Density -->
@@ -338,8 +448,18 @@
               </svg>
             </div>
           </div>
-          <div class="kpi-label">Server Density</div>
-          <div class="kpi-subtext">Users per server</div>
+          <div class="kpi-label">
+            <span>Server Density</span>
+            <span class="info-wrap">
+              <button type="button" class="info-btn" aria-label="Users per server">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                </svg>
+              </button>
+              <span class="info-tooltip" role="tooltip">Users per server</span>
+            </span>
+          </div>
         </div>
       </div>
 
@@ -348,8 +468,18 @@
         <!-- Active Clients by Version -->
         <div class="breakdown-card">
           <div class="breakdown-header">
-            <h3 class="breakdown-title">Active Clients by Version</h3>
-            <span class="breakdown-subtitle">Clients currently using each version</span>
+            <h3 class="breakdown-title">
+              <span>Active Clients by Version</span>
+              <span class="info-wrap">
+                <button type="button" class="info-btn" aria-label="Clients currently using each version">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                  </svg>
+                </button>
+                <span class="info-tooltip" role="tooltip">Clients currently using each version</span>
+              </span>
+            </h3>
           </div>
           <div class="breakdown-list" id="tbl-clientVersion"></div>
         </div>
@@ -357,8 +487,18 @@
         <!-- Active Clients by Location with Flags -->
         <div class="breakdown-card">
           <div class="breakdown-header">
-            <h3 class="breakdown-title">Active Clients by Location</h3>
-            <span class="breakdown-subtitle">Top countries with active clients</span>
+            <h3 class="breakdown-title">
+              <span>Active Clients by Location</span>
+              <span class="info-wrap">
+                <button type="button" class="info-btn" aria-label="Top countries with active clients">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                  </svg>
+                </button>
+                <span class="info-tooltip" role="tooltip">Top countries with active clients</span>
+              </span>
+            </h3>
           </div>
           <div class="breakdown-list" id="tbl-clientLocation"></div>
         </div>
@@ -401,8 +541,18 @@
               </svg>
             </div>
           </div>
-          <div class="kpi-label">Global Uptime</div>
-          <div class="kpi-subtext">Lifetime server hours</div>
+          <div class="kpi-label">
+            <span>Global Uptime</span>
+            <span class="info-wrap">
+              <button type="button" class="info-btn" aria-label="Lifetime server hours">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                </svg>
+              </button>
+              <span class="info-tooltip" role="tooltip">Lifetime server hours</span>
+            </span>
+          </div>
         </div>
 
         <!-- Running Servers -->
@@ -419,8 +569,18 @@
               </svg>
             </div>
           </div>
-          <div class="kpi-label">Running Servers</div>
-          <div class="kpi-subtext">Currently online</div>
+          <div class="kpi-label">
+            <span>Running Servers</span>
+            <span class="info-wrap">
+              <button type="button" class="info-btn" aria-label="Currently online">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                </svg>
+              </button>
+              <span class="info-tooltip" role="tooltip">Currently online</span>
+            </span>
+          </div>
         </div>
 
         <!-- Servers Created -->
@@ -436,8 +596,18 @@
               </svg>
             </div>
           </div>
-          <div class="kpi-label">Servers Created</div>
-          <div class="kpi-subtext">Total servers ever</div>
+          <div class="kpi-label">
+            <span>Servers Created</span>
+            <span class="info-wrap">
+              <button type="button" class="info-btn" aria-label="Total servers ever">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                </svg>
+              </button>
+              <span class="info-tooltip" role="tooltip">Total servers ever</span>
+            </span>
+          </div>
         </div>
 
         <!-- Servers Deleted -->
@@ -453,8 +623,18 @@
               </svg>
             </div>
           </div>
-          <div class="kpi-label">Servers Deleted</div>
-          <div class="kpi-subtext">Removed by users</div>
+          <div class="kpi-label">
+            <span>Servers Deleted</span>
+            <span class="info-wrap">
+              <button type="button" class="info-btn" aria-label="Removed by users">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                </svg>
+              </button>
+              <span class="info-tooltip" role="tooltip">Removed by users</span>
+            </span>
+          </div>
         </div>
       </div>
 
