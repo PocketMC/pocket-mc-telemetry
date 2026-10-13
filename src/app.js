@@ -311,33 +311,66 @@
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
     const regionData = {};
-    const markers = [];
+    const activeByIso = {};
+    const isoToName = {};
 
-    // Region Data: Install Locations
-    for (const [country, count] of Object.entries(stats.installLocationDistribution || {})) {
-      if (typeof COUNTRY_MAP !== 'undefined') {
-        const match = COUNTRY_MAP[country];
-        if (match) regionData[match.iso] = Number(count) || 0;
+    // Build reverse ISO lookup table
+    if (typeof COUNTRY_MAP !== 'undefined') {
+      for (const [country, info] of Object.entries(COUNTRY_MAP)) {
+        if (info && info.iso && !isoToName[info.iso]) {
+          isoToName[info.iso] = country;
+        }
       }
     }
 
-    const activeCountries = new Set(Object.keys(stats.locationDistribution || {}));
+    // Aggregate install count by ISO code
+    for (const [country, count] of Object.entries(stats.installLocationDistribution || {})) {
+      if (typeof COUNTRY_MAP !== 'undefined') {
+        const match = COUNTRY_MAP[country];
+        if (match && match.iso) {
+          regionData[match.iso] = (regionData[match.iso] || 0) + (Number(count) || 0);
+        }
+      }
+    }
 
-    // Marker Data: Live Active Dots (Blue)
+    // Aggregate active users by ISO code
     for (const [country, count] of Object.entries(stats.locationDistribution || {})) {
       if (typeof COUNTRY_MAP !== 'undefined') {
         const match = COUNTRY_MAP[country];
-        if (match) {
+        if (match && match.iso) {
+          activeByIso[match.iso] = (activeByIso[match.iso] || 0) + (Number(count) || 0);
+        }
+      }
+    }
+
+    const markers = [];
+    const plottedIsos = new Set();
+
+    // 1. Live Active Markers (Blue/Cyan) : Countries with real-time active users
+    for (const [country, count] of Object.entries(stats.locationDistribution || {})) {
+      if (typeof COUNTRY_MAP !== 'undefined') {
+        const match = COUNTRY_MAP[country];
+        if (match && match.iso && match.coords && !plottedIsos.has(match.iso)) {
+          plottedIsos.add(match.iso);
+          const totalActive = activeByIso[match.iso] || Number(count) || 0;
           markers.push({
             name: country,
+            iso: match.iso,
             coords: match.coords,
-            activeCount: count,
+            activeCount: totalActive,
+            isLive: true,
             style: {
               initial: {
-                fill: isDark ? '#38bdf8' : '#2563eb',
-                stroke: isDark ? '#ffffff' : '#ffffff',
+                fill: isDark ? '#38bdf8' : '#0284c7',
+                stroke: '#ffffff',
                 strokeWidth: 1.5,
-                r: 4
+                r: 4.5
+              },
+              hover: {
+                fill: isDark ? '#7dd3fc' : '#0369a1',
+                stroke: '#ffffff',
+                strokeWidth: 2,
+                r: 6
               }
             }
           });
@@ -345,35 +378,38 @@
       }
     }
 
-    // Marker Data: Installed Locations (Green / Subtle)
+    // 2. Registered Install Markers (Emerald/Green) : Countries with installs but currently offline
     for (const [country, count] of Object.entries(stats.installLocationDistribution || {})) {
-      if (!activeCountries.has(country)) {
-        if (typeof COUNTRY_MAP !== 'undefined') {
-          const match = COUNTRY_MAP[country];
-          if (match) {
-            markers.push({
-              name: country,
-              coords: match.coords,
-              isInstalledOnly: true,
-              style: {
-                initial: {
-                  fill: isDark ? '#22c55e' : '#16a34a',
-                  stroke: isDark ? '#141414' : '#ffffff',
-                  strokeWidth: 1,
-                  r: 3
-                }
+      if (typeof COUNTRY_MAP !== 'undefined') {
+        const match = COUNTRY_MAP[country];
+        if (match && match.iso && match.coords && !plottedIsos.has(match.iso)) {
+          plottedIsos.add(match.iso);
+          markers.push({
+            name: country,
+            iso: match.iso,
+            coords: match.coords,
+            isInstalledOnly: true,
+            style: {
+              initial: {
+                fill: isDark ? '#22c55e' : '#16a34a',
+                stroke: isDark ? '#141414' : '#ffffff',
+                strokeWidth: 1,
+                r: 3.5
+              },
+              hover: {
+                fill: isDark ? '#4ade80' : '#15803d',
+                stroke: isDark ? '#ffffff' : '#ffffff',
+                strokeWidth: 1.5,
+                r: 5
               }
-            });
-          }
+            }
+          });
         }
       }
     }
 
-    // If an instance exists and theme hasn't forced a rebuild, update series values dynamically
+    // If an instance exists and theme hasn't forced a rebuild, update markers dynamically
     if (worldMapInstance) {
-      if (worldMapInstance.series && worldMapInstance.series.regions && worldMapInstance.series.regions[0]) {
-        worldMapInstance.series.regions[0].setValues(regionData);
-      }
       worldMapInstance.removeMarkers();
       worldMapInstance.addMarkers(markers);
       return;
@@ -393,46 +429,36 @@
 
       regionStyle: {
         initial: {
-          fill: isDark ? '#1c1c1c' : '#e2e8f0',
-          stroke: isDark ? '#141414' : '#cbd5e1',
+          fill: isDark ? '#18181b' : '#f1f5f9',
+          stroke: isDark ? '#27272a' : '#cbd5e1',
           strokeWidth: 0.5,
           fillOpacity: 1
         },
         hover: {
-          fill: isDark ? '#2a2a2a' : '#cbd5e1',
+          fill: isDark ? '#27272a' : '#e2e8f0',
           cursor: 'pointer'
         }
-      },
-
-      series: {
-        regions: [
-          {
-            attribute: 'fill',
-            scale: isDark ? ['#262626', '#3b82f6'] : ['#dbeafe', '#2563eb'],
-            values: regionData
-          }
-        ]
       },
 
       markers: markers,
       markerStyle: {
         initial: {
-          fill: isDark ? '#38bdf8' : '#2563eb',
+          fill: isDark ? '#38bdf8' : '#0284c7',
           stroke: '#ffffff',
-          strokeWidth: 1,
-          r: 3.5
+          strokeWidth: 1.5,
+          r: 4
         },
         hover: {
-          fill: isDark ? '#7dd3fc' : '#1d4ed8',
-          r: 5,
+          fill: isDark ? '#7dd3fc' : '#0369a1',
+          r: 5.5,
           cursor: 'pointer'
         }
       },
 
       onRegionTooltipShow(event, tooltip, code) {
-        const installs = regionData[code] || 0;
-        const countryName = tooltip.text();
-        const activeCount = (stats.locationDistribution || {})[countryName] || 0;
+        const countryName = isoToName[code] || tooltip.text() || code;
+        const installs = regionData[code] || (stats.installLocationDistribution || {})[countryName] || 0;
+        const activeCount = activeByIso[code] || (stats.locationDistribution || {})[countryName] || 0;
         const flagHtml = renderCountryFlag(countryName);
 
         tooltip.text(
@@ -451,9 +477,11 @@
 
       onMarkerTooltipShow(event, tooltip, index) {
         const marker = markers[index];
+        if (!marker) return;
         const countryName = marker.name;
-        const installs = (stats.installLocationDistribution || {})[countryName] || 0;
-        const activeCount = (stats.locationDistribution || {})[countryName] || 0;
+        const iso = marker.iso;
+        const installs = (iso && regionData[iso]) || (stats.installLocationDistribution || {})[countryName] || 0;
+        const activeCount = (iso && activeByIso[iso]) || (stats.locationDistribution || {})[countryName] || marker.activeCount || 0;
         const flagHtml = renderCountryFlag(countryName);
 
         tooltip.text(
@@ -471,21 +499,26 @@
       },
 
       onRegionClick(event, code) {
-        const installs = regionData[code] || 0;
-        let name = code;
-        if (typeof COUNTRY_MAP !== 'undefined') {
-          const entry = Object.entries(COUNTRY_MAP).find(([, val]) => val.iso === code);
-          if (entry) name = entry[0];
-        }
-        showToast(name, `${fmt(installs)} Total Installs`, 'var(--accent-green)');
+        const countryName = isoToName[code] || code;
+        const installs = regionData[code] || (stats.installLocationDistribution || {})[countryName] || 0;
+        const activeCount = activeByIso[code] || (stats.locationDistribution || {})[countryName] || 0;
+        const detail = activeCount > 0 
+          ? `${fmt(activeCount)} Active : ${fmt(installs)} Installs`
+          : `${fmt(installs)} Total Installs`;
+        showToast(countryName, detail, 'var(--accent-green)');
       },
 
       onMarkerClick(event, index) {
         const marker = markers[index];
-        if (marker.isInstalledOnly) {
-          showToast(marker.name, 'No active players currently', 'var(--accent-green)');
+        if (!marker) return;
+        const countryName = marker.name;
+        const iso = marker.iso;
+        const installs = (iso && regionData[iso]) || (stats.installLocationDistribution || {})[countryName] || 0;
+        const activeCount = (iso && activeByIso[iso]) || (stats.locationDistribution || {})[countryName] || marker.activeCount || 0;
+        if (activeCount > 0) {
+          showToast(countryName, `${fmt(activeCount)} Active Players`, 'var(--accent-blue)');
         } else {
-          showToast(marker.name, `${fmt(marker.activeCount)} Active Players`, 'var(--accent-blue)');
+          showToast(countryName, `${fmt(installs)} Total Installs`, 'var(--accent-green)');
         }
       }
     });

@@ -22,6 +22,13 @@
   // ── Helpers ──────────────────────────────────────────────────────
   const $ = (id) => document.getElementById(id);
   const fmt = (n) => (n == null ? '-' : Number(n).toLocaleString());
+  const escapeHtml = (s) => String(s || '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[c] || c));
 
   function toNumber(value) {
     const num = Number(value);
@@ -84,52 +91,97 @@
     if (!mapBox) return;
 
     const regionData = {};
-    const markers = [];
+    const activeByIso = {};
+    const isoToName = {};
 
-    // Region Data: Install Locations (Choropleth)
-    for (const [country, count] of Object.entries(stats.installLocationDistribution || {})) {
-      const match = COUNTRY_MAP[country];
-      if (match) regionData[match.iso] = Number(count) || 0;
-    }
-
-    // Marker Data: Active Client Locations
-    const activeCountries = new Set(Object.keys(stats.locationDistribution || {}));
-    
-    for (const [country, count] of Object.entries(stats.locationDistribution || {})) {
-      const match = COUNTRY_MAP[country];
-      if (match) {
-        markers.push({
-          name: country,
-          coords: match.coords,
-          activeCount: count,
-          style: { 
-            initial: { 
-              fill: '#10b981',
-              stroke: 'none',
-              strokeWidth: 0,
-              r: 3
-            } 
-          }
-        });
+    // Build reverse ISO lookup table
+    if (typeof COUNTRY_MAP !== 'undefined') {
+      for (const [country, info] of Object.entries(COUNTRY_MAP)) {
+        if (info && info.iso && !isoToName[info.iso]) {
+          isoToName[info.iso] = country;
+        }
       }
     }
 
-    // Marker Data: Ever Installed Locations
+    // Aggregate install count by ISO code
     for (const [country, count] of Object.entries(stats.installLocationDistribution || {})) {
-      if (!activeCountries.has(country)) {
+      if (typeof COUNTRY_MAP !== 'undefined') {
         const match = COUNTRY_MAP[country];
-        if (match) {
+        if (match && match.iso) {
+          regionData[match.iso] = (regionData[match.iso] || 0) + (Number(count) || 0);
+        }
+      }
+    }
+
+    // Aggregate active users by ISO code
+    for (const [country, count] of Object.entries(stats.locationDistribution || {})) {
+      if (typeof COUNTRY_MAP !== 'undefined') {
+        const match = COUNTRY_MAP[country];
+        if (match && match.iso) {
+          activeByIso[match.iso] = (activeByIso[match.iso] || 0) + (Number(count) || 0);
+        }
+      }
+    }
+
+    const markers = [];
+    const plottedIsos = new Set();
+
+    // 1. Live Active Markers (Blue/Cyan) : Countries with real-time active users
+    for (const [country, count] of Object.entries(stats.locationDistribution || {})) {
+      if (typeof COUNTRY_MAP !== 'undefined') {
+        const match = COUNTRY_MAP[country];
+        if (match && match.iso && match.coords && !plottedIsos.has(match.iso)) {
+          plottedIsos.add(match.iso);
+          const totalActive = activeByIso[match.iso] || Number(count) || 0;
           markers.push({
             name: country,
+            iso: match.iso,
+            coords: match.coords,
+            activeCount: totalActive,
+            isLive: true,
+            style: { 
+              initial: { 
+                fill: '#38bdf8',
+                stroke: '#ffffff',
+                strokeWidth: 1.5,
+                r: 4.5
+              },
+              hover: {
+                fill: '#7dd3fc',
+                stroke: '#ffffff',
+                strokeWidth: 2,
+                r: 6
+              }
+            }
+          });
+        }
+      }
+    }
+
+    // 2. Registered Install Markers (Emerald/Green) : Countries with installs but currently offline
+    for (const [country, count] of Object.entries(stats.installLocationDistribution || {})) {
+      if (typeof COUNTRY_MAP !== 'undefined') {
+        const match = COUNTRY_MAP[country];
+        if (match && match.iso && match.coords && !plottedIsos.has(match.iso)) {
+          plottedIsos.add(match.iso);
+          markers.push({
+            name: country,
+            iso: match.iso,
             coords: match.coords,
             isInstalledOnly: true,
             style: { 
               initial: { 
-                fill: '#ffffff', // White
-                stroke: 'none',
-                strokeWidth: 0,
-                r: 3
-              } 
+                fill: '#22c55e',
+                stroke: '#141414',
+                strokeWidth: 1,
+                r: 3.5
+              },
+              hover: {
+                fill: '#4ade80',
+                stroke: '#ffffff',
+                strokeWidth: 1.5,
+                r: 5
+              }
             }
           });
         }
@@ -137,9 +189,6 @@
     }
 
     if (worldMapInstance) {
-      if (worldMapInstance.series.regions[0]) {
-        worldMapInstance.series.regions[0].setValues(regionData);
-      }
       worldMapInstance.removeMarkers();
       worldMapInstance.addMarkers(markers);
       return;
@@ -173,13 +222,13 @@
       },
       regionStyle: {
         initial: {
-          fill: '#1a1a1a', // Dark Gray
-          stroke: '#000000',
+          fill: '#18181b',
+          stroke: '#27272a',
           strokeWidth: 0.5,
           fillOpacity: 1
         },
         hover: {
-          fill: '#2a2a2a',
+          fill: '#27272a',
           cursor: 'pointer'
         }
       },
@@ -187,39 +236,40 @@
       markers: markers,
       markerStyle: {
         initial: {
-          fill: '#0ea5e9',
-          stroke: 'none',
-          strokeWidth: 0,
-          r: 3
+          fill: '#38bdf8',
+          stroke: '#ffffff',
+          strokeWidth: 1.5,
+          r: 4
         },
         hover: {
-          fill: '#38bdf8',
-          stroke: 'none',
-          strokeWidth: 0,
-          r: 4
+          fill: '#7dd3fc',
+          r: 5.5,
+          cursor: 'pointer'
         }
       },
       onRegionTooltipShow(event, tooltip, code) {
-        const installs = regionData[code] || 0;
-        const countryName = tooltip.text();
-        const activeCount = (stats.locationDistribution || {})[countryName] || 0;
+        const countryName = isoToName[code] || tooltip.text() || code;
+        const installs = regionData[code] || (stats.installLocationDistribution || {})[countryName] || 0;
+        const activeCount = activeByIso[code] || (stats.locationDistribution || {})[countryName] || 0;
         tooltip.text(
-          `<div style="font-weight:600;margin-bottom:2px;">${countryName}</div>
-           <div style="color:#94a3b8">Active Users: <span style="color:#10b981;font-weight:600">${fmt(activeCount)}</span></div>
-           <div style="color:#94a3b8">Installs: <span style="color:#ffffff;font-weight:600">${fmt(installs)}</span></div>`,
+          `<div style="font-weight:600;margin-bottom:2px;">${escapeHtml(countryName)}</div>
+           <div style="color:#94a3b8">Active Users: <span style="color:#38bdf8;font-weight:600">${fmt(activeCount)}</span></div>
+           <div style="color:#94a3b8">Total Installs: <span style="color:#22c55e;font-weight:600">${fmt(installs)}</span></div>`,
           true
         );
       },
       onMarkerTooltipShow(event, tooltip, index) {
         const marker = markers[index];
+        if (!marker) return;
         const countryName = marker.name;
-        const installs = (stats.installLocationDistribution || {})[countryName] || 0;
-        const activeCount = (stats.locationDistribution || {})[countryName] || 0;
+        const iso = marker.iso;
+        const installs = (iso && regionData[iso]) || (stats.installLocationDistribution || {})[countryName] || 0;
+        const activeCount = (iso && activeByIso[iso]) || (stats.locationDistribution || {})[countryName] || marker.activeCount || 0;
 
         tooltip.text(
-          `<div style="font-weight:600;margin-bottom:2px;">${countryName}</div>
-           <div style="color:#94a3b8">Active Users: <span style="color:#10b981;font-weight:600">${fmt(activeCount)}</span></div>
-           <div style="color:#94a3b8">Installs: <span style="color:#ffffff;font-weight:600">${fmt(installs)}</span></div>`,
+          `<div style="font-weight:600;margin-bottom:2px;">${escapeHtml(countryName)}</div>
+           <div style="color:#94a3b8">Active Users: <span style="color:#38bdf8;font-weight:600">${fmt(activeCount)}</span></div>
+           <div style="color:#94a3b8">Total Installs: <span style="color:#22c55e;font-weight:600">${fmt(installs)}</span></div>`,
           true
         );
       },

@@ -5,6 +5,7 @@
 An interactive, real-time analytics dashboard and global geospatial monitor for PocketMC.
 
 [![Deployment](https://img.shields.io/badge/deployment-GitHub_Pages-22c55e?style=flat-square)](https://pocketmc.github.io/pocket-mc-telemetry/)
+[![Website](https://img.shields.io/badge/website-PocketMC-0284c7?style=flat-square)](https://pocketmc.github.io/pocket-mc-website/)
 [![PWA](https://img.shields.io/badge/PWA-Ready-3b82f6?style=flat-square)](manifest.json)
 [![License: MIT](https://img.shields.io/badge/license-MIT-a855f7?style=flat-square)](LICENSE)
 [![Dependencies](https://img.shields.io/badge/dependencies-zero_build-10b981?style=flat-square)](index.html)
@@ -32,7 +33,7 @@ Built as a lightweight, high-performance static Progressive Web App (PWA), the d
 |  +---------------------------+  +------------------------------------+  |
 |                                                                         |
 |  +-------------------------------------------------------------------+  |
-|  | Global Activity Map & Heatmap (Live Node Density + Choropleth)     |  |
+|  | Global Activity Map & Heatmap (Active Now + Registered Installs)    |  |
 |  +-------------------------------------------------------------------+  |
 +-------------------------------------------------------------------------+
 ```
@@ -51,7 +52,7 @@ Built as a lightweight, high-performance static Progressive Web App (PWA), the d
 - **Dual-Marker Visualization:**
   - **Blue Pulsing Markers:** Represent live, active sessions currently communicating with telemetry nodes.
   - **Green Static Markers:** Indicate registered installations and historic regions with zero current live traffic.
-- **Logic-Driven Choropleth:** Dynamic color gradient (`#064e3b` to `#ef4444`) scaled proportionally by installation volume without hardcoded step counts.
+- **Neutral Executive Canvas:** Clean vector landmass with high-contrast borders and rich interactive hover cards displaying country flags, active users, and total install counts.
 - **Zoom-Aware Typography:** Vector country labels automatically fade in past a 2.0x zoom threshold to prevent visual clutter on mobile and desktop viewports.
 - **Mobile-Optimized Touch:** Native gesture recognition supporting finger pinch-to-zoom, panning, and responsive bottom toast notifications on marker taps.
 

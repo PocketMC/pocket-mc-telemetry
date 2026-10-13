@@ -156,14 +156,18 @@ body {
 
 @keyframes activePulse {
   0% {
-    filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.2));
+    filter: drop-shadow(0 0 2px rgba(56, 189, 248, 0.2));
   }
   50% {
-    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.8));
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.8));
   }
   100% {
-    filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.2));
+    filter: drop-shadow(0 0 2px rgba(56, 189, 248, 0.2));
   }
+}
+
+.jvm-marker[fill="#38bdf8"] {
+  animation: activePulse 2s infinite;
 }
 
 #world-map text {
@@ -174,4 +178,59 @@ body {
 
 #world-map.map-zoomed-in text {
   opacity: 1;
+}
+
+/* ── Map Legend Overlay ─────────────────────────────────────── */
+.map-legend-overlay {
+  position: absolute;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  left: calc(20px + env(safe-area-inset-left, 0px));
+  background: rgba(18, 18, 18, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #94a3b8;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.legend-marker {
+  width: 9px;
+  height: 9px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.marker-live {
+  background-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+  animation: liveMarkerPulse 2.2s infinite ease-in-out;
+}
+
+.marker-installed {
+  background-color: #22c55e;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.25);
+}
+
+@keyframes liveMarkerPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.85;
+  }
 }

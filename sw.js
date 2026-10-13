@@ -2,7 +2,7 @@
  * PocketMC Telemetry : Service Worker
  * Provides offline support and PWA installability.
  */
-const CACHE = 'pmc-telemetry-v34';
+const CACHE = 'pmc-telemetry-v35';
 
 // Assets to cache on install
 const PRECACHE = [

@@ -1184,46 +1184,71 @@ body {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-card);
   border-radius: 8px;
-  padding: 4px 8px;
+  padding: 5px 10px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 0.625rem;
+  gap: 12px;
+  font-size: 0.6875rem;
+  font-weight: 500;
   color: var(--text-secondary);
   box-shadow: var(--shadow-sm);
   z-index: 10;
+  backdrop-filter: blur(6px);
 }
 
 @media (min-width: 640px) {
   .map-legend-overlay {
     bottom: 12px;
     left: 12px;
-    padding: 6px 12px;
-    gap: 14px;
-    font-size: 0.6875rem;
+    padding: 6px 14px;
+    gap: 16px;
+    font-size: 0.75rem;
   }
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
 }
 
 .legend-marker {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 9999px;
+  flex-shrink: 0;
 }
 
 .marker-live {
-  background-color: var(--accent-blue);
-  box-shadow: 0 0 0 2px var(--accent-blue-subtle);
+  background-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+  animation: liveMarkerPulse 2.2s infinite ease-in-out;
+}
+
+html[data-theme='light'] .marker-live {
+  background-color: #0284c7;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.25);
 }
 
 .marker-installed {
-  background-color: var(--accent-green);
-  box-shadow: 0 0 0 2px var(--accent-green-subtle);
+  background-color: #22c55e;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.25);
+}
+
+html[data-theme='light'] .marker-installed {
+  background-color: #16a34a;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.25);
+}
+
+@keyframes liveMarkerPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.85;
+  }
 }
 
 .map-note {
