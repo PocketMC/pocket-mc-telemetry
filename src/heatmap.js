@@ -21,7 +21,7 @@
 
   // ── Helpers ──────────────────────────────────────────────────────
   const $ = (id) => document.getElementById(id);
-  const fmt = (n) => (n == null ? '—' : Number(n).toLocaleString());
+  const fmt = (n) => (n == null ? '-' : Number(n).toLocaleString());
 
   function toNumber(value) {
     const num = Number(value);

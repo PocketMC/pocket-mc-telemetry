@@ -1,25 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>PocketMC : Telemetry Dashboard</title>
   <meta name="description"
-    content="Live anonymous telemetry for PocketMC: installs, active users, and server analytics." />
+    content="Live anonymous telemetry for PocketMC: installations, active clients, and server analytics." />
+
+  <!-- Pre-render theme initialization to prevent Flash of Unstyled Theme -->
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem('pmc-theme');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#050505" />
+  <meta name="theme-color" content="#f1f5f9" id="meta-theme-color" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="apple-touch-icon" href="icon.svg" />
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.css"
     integrity="sha384-DkPMVIJ2hERal/WJDrT3mRGo8KOwiHVdjiyRxCFlUnMdvu52V0Y1CL1yULYSDn4h" crossorigin="anonymous" />
   <link rel="stylesheet" href="src/style.css" />
-
 
   <script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.js"
     integrity="sha384-5T42pwmm9Eq6IKYKkuugmsyxvzvXDazwImzsC76X6lihpgExlMJYSrAtpb5JGZsW" crossorigin="anonymous"
@@ -37,318 +47,514 @@
 </head>
 
 <body>
-  <div class="app-wrapper">
+  <div class="app-wrapper" id="overview">
 
-    <!-- ═══ Topbar ═══════════════════════════════════════════ -->
+    <!-- ═══ TOPBAR ═══════════════════════════════════════════ -->
     <header class="topbar">
+      <!-- Brand Link -->
       <div class="topbar-left">
-        <img class="logo-mark"
-          src="https://raw.githubusercontent.com/PocketMC/pocket-mc-website/refs/heads/master/public/logo.webp"
-          alt="PocketMC logo" width="44" height="44" />
-        <div>
-          <h1 class="header-title">PocketMC Telemetry</h1>
-          <p class="header-sub">Live anonymous usage analytics</p>
-        </div>
+        <a href="#overview" class="brand-link" aria-label="PocketMC Telemetry home">
+          <img class="logo-mark"
+            src="https://raw.githubusercontent.com/PocketMC/pocket-mc-website/refs/heads/master/public/logo.webp"
+            onerror="this.src='icon.svg'" alt="PocketMC logo" width="32" height="32" />
+          <div class="brand-text">
+            <span class="brand-name">PocketMC</span>
+            <span class="brand-sub">Telemetry</span>
+          </div>
+        </a>
       </div>
 
+      <!-- Desktop Navigation Pills -->
+      <nav class="nav-pills-group" aria-label="Main Navigation">
+        <a href="#overview" class="nav-pill active">Overview</a>
+        <a href="#section-installs" class="nav-pill">Versions</a>
+        <a href="#section-map" class="nav-pill">Countries</a>
+        <a href="#section-servers" class="nav-pill">Servers</a>
+      </nav>
+
+      <!-- Actions Group (Live Status, Refresh, GitHub, Theme Toggle) -->
+      <div class="topbar-actions-group">
+        <!-- Live Status Pill & Refresh Button -->
+        <div class="topbar-status-group">
+          <div class="live-status-pill">
+            <span class="live-dot" aria-hidden="true"></span>
+            <span class="live-title">Live Data</span>
+            <span class="live-separator" aria-hidden="true">|</span>
+            <span class="live-time" id="statusCaption">Updated just now</span>
+          </div>
+          <button type="button" class="btn-refresh" id="refreshBtn" title="Refresh live telemetry now" aria-label="Refresh live telemetry">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10" />
+              <polyline points="1 20 1 14 7 14" />
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+            </svg>
+            <span>Refresh</span>
+          </button>
+        </div>
+
+        <!-- Actions: GitHub & Theme Toggle -->
+        <div class="nav-actions">
+          <a href="https://github.com/PocketMC/pocket-mc-telemetry" target="_blank" rel="noopener noreferrer"
+            class="icon-btn" title="View on GitHub" aria-label="View PocketMC Telemetry on GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+            </svg>
+          </a>
+
+          <button type="button" class="icon-btn" id="themeToggle" title="Toggle color theme" aria-label="Toggle theme">
+            <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" />
+              <path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" />
+            </svg>
+            <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+            </svg>
+          </button>
+        </div>
+      </div>
     </header>
 
     <!-- ═══════════════════════════════════════════════════════════
-         SECTION 1 — Installations & User Base
+         SECTION 1 : Installations & User Base
          ═══════════════════════════════════════════════════════════ -->
-    <section class="section-card">
-      <div class="section-header" style="flex-direction: column; align-items: flex-start; gap: 4px;">
-        <div class="section-title-group">
-          <div class="section-icon section-icon-green">
+    <section class="section-card" id="section-installs">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-icon-badge section-icon-blue">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </div>
+          <div class="section-header-text">
+            <h2 class="section-title">Installations & User Base</h2>
+            <div class="insight-text" id="insight-installs">Synchronizing telemetry data...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPIs (Responsive 2-Col Mobile -> 3-Col Tablet -> 6-Col Desktop) -->
+      <div class="kpi-grid kpi-grid-6">
+        <!-- Total Installs -->
+        <div class="kpi-card">
+          <div class="kpi-icon-top text-green">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <polyline points="7 10 12 15 17 10" />
               <line x1="12" y1="15" x2="12" y2="3" />
             </svg>
           </div>
-          <h2 class="section-title">Installations & User Base</h2>
-        </div>
-        <div class="insight-text" id="insight-installs"></div>
-      </div>
-
-      <!-- KPIs -->
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label">Total Installs</div>
           <div class="kpi-value kpi-green" id="kpi-totalInstalls">-</div>
+          <div class="kpi-label">Total Installs</div>
           <div class="kpi-subtext">Lifetime installations</div>
         </div>
+
+        <!-- Active Users (7D) -->
         <div class="kpi-card">
-          <div class="kpi-label">Active Users (7d)</div>
+          <div class="kpi-icon-top text-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </div>
           <div class="kpi-value kpi-blue" id="kpi-activeUsers7d">-</div>
+          <div class="kpi-label">Active Users (7D)</div>
           <div class="kpi-subtext">Active in last 7 days</div>
         </div>
+
+        <!-- Inactive Users -->
         <div class="kpi-card">
+          <div class="kpi-icon-top text-slate">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <line x1="17" x2="22" y1="8" y2="13" />
+              <line x1="22" x2="17" y1="8" y2="13" />
+            </svg>
+          </div>
+          <div class="kpi-value" id="kpi-inactiveUsers7d">-</div>
           <div class="kpi-label">Inactive Users</div>
-          <div class="kpi-value kpi-muted" id="kpi-inactiveUsers7d">-</div>
-          <div class="kpi-subtext">No activity > 7 days</div>
+          <div class="kpi-subtext">Not active in 7+ days</div>
         </div>
+
+        <!-- Countries Reached -->
         <div class="kpi-card">
+          <div class="kpi-icon-top text-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="2" x2="22" y1="12" y2="12" />
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
+          </div>
+          <div class="kpi-value" id="kpi-installCountries">-</div>
           <div class="kpi-label">Countries Reached</div>
-          <div class="kpi-value kpi-white" id="kpi-installCountries">-</div>
           <div class="kpi-subtext">Global distribution</div>
         </div>
+
+        <!-- Unique Versions -->
         <div class="kpi-card">
+          <div class="kpi-icon-top text-purple">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+              <path d="m3.3 7 8.7 5 8.7-5" />
+              <path d="M12 22V12" />
+            </svg>
+          </div>
+          <div class="kpi-value" id="kpi-installVersions">-</div>
           <div class="kpi-label">Unique Versions</div>
-          <div class="kpi-value kpi-white" id="kpi-installVersions">-</div>
           <div class="kpi-subtext">Distinct builds installed</div>
         </div>
+
+        <!-- Avg per Country -->
         <div class="kpi-card">
+          <div class="kpi-icon-top text-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" x2="18" y1="20" y2="10" />
+              <line x1="12" x2="12" y1="20" y2="4" />
+              <line x1="6" x2="6" y1="20" y2="14" />
+            </svg>
+          </div>
+          <div class="kpi-value kpi-blue" id="kpi-avgInstalls">-</div>
           <div class="kpi-label">Avg per Country</div>
-          <div class="kpi-value kpi-purple" id="kpi-avgInstalls">-</div>
           <div class="kpi-subtext">Installs per nation</div>
         </div>
       </div>
 
-      <!-- Tables -->
-      <div class="chart-table-grid">
-        <div class="chart-box">
-          <h3 class="chart-title">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="8" y1="6" x2="21" y2="6" />
-              <line x1="8" y1="12" x2="21" y2="12" />
-              <line x1="8" y1="18" x2="21" y2="18" />
-              <line x1="3" y1="6" x2="3.01" y2="6" />
-              <line x1="3" y1="12" x2="3.01" y2="12" />
-              <line x1="3" y1="18" x2="3.01" y2="18" />
-            </svg>
-            Version Breakdown
-          </h3>
-          <div class="table-wrapper">
-            <table class="table-inner">
-              <thead>
-                <tr>
-                  <th>Version</th>
-                  <th>Installs</th>
-                  <th>Share</th>
-                </tr>
-              </thead>
-              <tbody id="tbl-installVersion"></tbody>
-            </table>
+      <!-- Breakdowns (2 Columns, Scrollable Containers) -->
+      <div class="breakdown-grid">
+        <!-- Version Breakdown -->
+        <div class="breakdown-card">
+          <div class="breakdown-header">
+            <h3 class="breakdown-title">Version Breakdown</h3>
+            <span class="breakdown-subtitle">Installations by version</span>
           </div>
+          <div class="breakdown-list" id="tbl-installVersion"></div>
         </div>
-        <div class="chart-box">
-          <h3 class="chart-title">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="2" y1="12" x2="22" y2="12" />
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-            </svg>
-            Country Breakdown
-          </h3>
-          <div class="table-wrapper">
-            <table class="table-inner">
-              <thead>
-                <tr>
-                  <th>Country</th>
-                  <th>Installs</th>
-                  <th>Share</th>
-                </tr>
-              </thead>
-              <tbody id="tbl-installCountry"></tbody>
-            </table>
+
+        <!-- Top Countries Breakdown with Flags -->
+        <div class="breakdown-card">
+          <div class="breakdown-header">
+            <h3 class="breakdown-title">Top Countries</h3>
+            <span class="breakdown-subtitle">Installations by country</span>
           </div>
+          <div class="breakdown-list" id="tbl-installCountry"></div>
         </div>
       </div>
     </section>
 
     <!-- ═══════════════════════════════════════════════════════════
-         SECTION 2 — Real-Time Active Clients
+         SECTION 2 : Real-Time Active Clients
          ═══════════════════════════════════════════════════════════ -->
-    <section class="section-card">
-      <div class="section-header" style="flex-direction: column; align-items: flex-start; gap: 4px;">
-        <div class="section-title-group">
-          <div class="section-icon section-icon-blue">
+    <section class="section-card" id="section-clients">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-icon-badge section-icon-green">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9" />
+              <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5" />
+              <circle cx="12" cy="12" r="2" />
+              <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5" />
+              <path d="M19.1 4.9C23 8.8 23 15.2 19.1 19.1" />
             </svg>
           </div>
-          <h2 class="section-title">Active Clients (Real-Time)</h2>
+          <div class="section-header-text">
+            <h2 class="section-title">Active Clients (Real-Time)</h2>
+            <div class="insight-text" id="insight-clients">Gathering active node telemetry...</div>
+          </div>
         </div>
-        <div class="insight-text" id="insight-clients"></div>
       </div>
 
-      <!-- KPIs -->
-      <div class="kpi-grid">
+      <!-- KPIs (4 Column Grid) -->
+      <div class="kpi-grid kpi-grid-4">
+        <!-- Open Clients -->
         <div class="kpi-card">
+          <div class="kpi-card-head">
+            <div class="kpi-value kpi-blue" id="kpi-openClients">-</div>
+            <div class="kpi-corner-icon text-blue">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="14" x="2" y="3" rx="2" />
+                <line x1="8" x2="16" y1="21" y2="21" />
+                <line x1="12" x2="12" y1="17" y2="21" />
+              </svg>
+            </div>
+          </div>
           <div class="kpi-label">Open Clients</div>
-          <div class="kpi-value kpi-blue" id="kpi-openClients">-</div>
           <div class="kpi-subtext">Currently open apps</div>
         </div>
+
+        <!-- Online Hosts -->
         <div class="kpi-card">
+          <div class="kpi-card-head">
+            <div class="kpi-value kpi-green" id="kpi-activeUsers">-</div>
+            <div class="kpi-corner-icon text-green">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="8" x="2" y="2" rx="2" />
+                <rect width="20" height="8" x="2" y="14" rx="2" />
+                <line x1="6" x2="6.01" y1="6" y2="6" />
+                <line x1="6" x2="6.01" y1="18" y2="18" />
+              </svg>
+            </div>
+          </div>
           <div class="kpi-label">Online Hosts</div>
-          <div class="kpi-value kpi-white" id="kpi-activeUsers">-</div>
           <div class="kpi-subtext">Active server instances</div>
         </div>
+
+        <!-- Idle Clients -->
         <div class="kpi-card">
+          <div class="kpi-card-head">
+            <div class="kpi-value" id="kpi-afkUsers">-</div>
+            <div class="kpi-corner-icon text-slate">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+          </div>
           <div class="kpi-label">Idle Clients</div>
-          <div class="kpi-value kpi-muted" id="kpi-afkUsers">-</div>
           <div class="kpi-subtext">Open without servers</div>
         </div>
+
+        <!-- Server Density -->
         <div class="kpi-card">
+          <div class="kpi-card-head">
+            <div class="kpi-value kpi-purple" id="kpi-serverDensity">-</div>
+            <div class="kpi-corner-icon text-purple">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+                <path d="M22 12A10 10 0 0 0 12 2v10z" />
+              </svg>
+            </div>
+          </div>
           <div class="kpi-label">Server Density</div>
-          <div class="kpi-value kpi-purple" id="kpi-serverDensity">-</div>
-          <div class="kpi-subtext">Users per Server</div>
+          <div class="kpi-subtext">Users per server</div>
         </div>
       </div>
 
-      <!-- Tables -->
-      <div class="chart-table-grid">
-        <div class="chart-box">
-          <h3 class="chart-title">Version Breakdown</h3>
-          <div class="table-wrapper">
-            <table class="table-inner">
-              <thead>
-                <tr>
-                  <th>Version</th>
-                  <th>Clients</th>
-                  <th>Share</th>
-                </tr>
-              </thead>
-              <tbody id="tbl-clientVersion"></tbody>
-            </table>
+      <!-- Breakdowns (2 Columns, Scrollable Containers) -->
+      <div class="breakdown-grid">
+        <!-- Active Clients by Version -->
+        <div class="breakdown-card">
+          <div class="breakdown-header">
+            <h3 class="breakdown-title">Active Clients by Version</h3>
+            <span class="breakdown-subtitle">Clients currently using each version</span>
           </div>
+          <div class="breakdown-list" id="tbl-clientVersion"></div>
         </div>
-        <div class="chart-box">
-          <h3 class="chart-title">Location Breakdown</h3>
-          <div class="table-wrapper">
-            <table class="table-inner">
-              <thead>
-                <tr>
-                  <th>Country</th>
-                  <th>Clients</th>
-                  <th>Share</th>
-                </tr>
-              </thead>
-              <tbody id="tbl-clientLocation"></tbody>
-            </table>
+
+        <!-- Active Clients by Location with Flags -->
+        <div class="breakdown-card">
+          <div class="breakdown-header">
+            <h3 class="breakdown-title">Active Clients by Location</h3>
+            <span class="breakdown-subtitle">Top countries with active clients</span>
           </div>
+          <div class="breakdown-list" id="tbl-clientLocation"></div>
         </div>
       </div>
     </section>
 
     <!-- ═══════════════════════════════════════════════════════════
-         SECTION 3 — Server Analytics (KPIs + Tables only)
+         SECTION 3 : Live Servers
          ═══════════════════════════════════════════════════════════ -->
-    <section class="section-card">
-      <div class="section-header" style="flex-direction: column; align-items: flex-start; gap: 4px;">
-        <div class="section-title-group">
-          <div class="section-icon section-icon-purple">
+    <section class="section-card" id="section-servers">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-icon-badge section-icon-purple">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
-              <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
-              <line x1="6" y1="6" x2="6.01" y2="6" />
-              <line x1="6" y1="18" x2="6.01" y2="18" />
+              <rect width="20" height="8" x="2" y="2" rx="2" />
+              <rect width="20" height="8" x="2" y="14" rx="2" />
+              <line x1="6" x2="6.01" y1="6" y2="6" />
+              <line x1="6" x2="6.01" y1="18" y2="18" />
             </svg>
           </div>
-          <h2 class="section-title">Live Servers</h2>
-        </div>
-        <div class="insight-text" id="insight-servers"></div>
-      </div>
-
-      <!-- KPIs -->
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label">Global Uptime</div>
-          <div class="kpi-value kpi-purple" id="kpi-uptime">-</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Running Servers</div>
-          <div class="kpi-value kpi-green" id="kpi-totalServers">-</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Servers Created</div>
-          <div class="kpi-value kpi-blue" id="kpi-totalServersCreated">-</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Servers Deleted</div>
-          <div class="kpi-value kpi-red" id="kpi-totalServersDeleted">-</div>
-        </div>
-      </div>
-
-      <!-- Table -->
-      <div class="chart-table-grid">
-        <div class="chart-box">
-          <h3 class="chart-title">Server Types</h3>
-          <div class="table-wrapper">
-            <table class="table-inner">
-              <thead>
-                <tr>
-                  <th>Type</th>
-                  <th>Servers</th>
-                  <th>Share</th>
-                </tr>
-              </thead>
-              <tbody id="tbl-serverType"></tbody>
-            </table>
+          <div class="section-header-text">
+            <h2 class="section-title">Live Servers</h2>
+            <div class="insight-text" id="insight-servers">Analyzing active host engines...</div>
           </div>
         </div>
+      </div>
+
+      <!-- KPIs (4 Column Grid) -->
+      <div class="kpi-grid kpi-grid-4">
+        <!-- Global Uptime -->
+        <div class="kpi-card">
+          <div class="kpi-card-head">
+            <div class="kpi-value kpi-blue" id="kpi-uptime">-</div>
+            <div class="kpi-corner-icon text-blue">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+          </div>
+          <div class="kpi-label">Global Uptime</div>
+          <div class="kpi-subtext">Lifetime server hours</div>
+        </div>
+
+        <!-- Running Servers -->
+        <div class="kpi-card">
+          <div class="kpi-card-head">
+            <div class="kpi-value kpi-green" id="kpi-totalServers">-</div>
+            <div class="kpi-corner-icon text-green">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12.55a11 11 0 0 1 14.08 0" />
+                <path d="M1.42 9a16 16 0 0 1 21.16 0" />
+                <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+                <line x1="12" x2="12.01" y1="20" y2="20" />
+              </svg>
+            </div>
+          </div>
+          <div class="kpi-label">Running Servers</div>
+          <div class="kpi-subtext">Currently online</div>
+        </div>
+
+        <!-- Servers Created -->
+        <div class="kpi-card">
+          <div class="kpi-card-head">
+            <div class="kpi-value" id="kpi-totalServersCreated">-</div>
+            <div class="kpi-corner-icon text-blue">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                <path d="m3.3 7 8.7 5 8.7-5" />
+                <path d="M12 22V12" />
+              </svg>
+            </div>
+          </div>
+          <div class="kpi-label">Servers Created</div>
+          <div class="kpi-subtext">Total servers ever</div>
+        </div>
+
+        <!-- Servers Deleted -->
+        <div class="kpi-card">
+          <div class="kpi-card-head">
+            <div class="kpi-value kpi-red" id="kpi-totalServersDeleted">-</div>
+            <div class="kpi-corner-icon text-red">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18" />
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+              </svg>
+            </div>
+          </div>
+          <div class="kpi-label">Servers Deleted</div>
+          <div class="kpi-subtext">Removed by users</div>
+        </div>
+      </div>
+
+      <!-- Server Types Table -->
+      <div class="server-types-container">
+        <h3 class="server-types-title">Server Types</h3>
+        <div id="tbl-serverType" class="server-types-wrapper"></div>
       </div>
     </section>
 
     <!-- ═══════════════════════════════════════════════════════════
-         SECTION 4 — Global Activity Map
+         SECTION 4 : Global Activity Map
          ═══════════════════════════════════════════════════════════ -->
-    <section class="section-card">
+    <section class="section-card" id="section-map">
       <div class="section-header">
-        <div class="section-title-group">
-          <div class="section-icon section-icon-blue">
+        <div class="section-title-wrap">
+          <div class="section-icon-badge section-icon-blue">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10" />
-              <line x1="2" y1="12" x2="22" y2="12" />
+              <line x1="2" x2="22" y1="12" y2="12" />
               <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
             </svg>
           </div>
-          <h2 class="section-title">Global Activity Map</h2>
+          <div class="section-header-text">
+            <h2 class="section-title">Global Activity Map</h2>
+            <div class="insight-text" id="insight-map">Live installations across the world.</div>
+          </div>
         </div>
-        <a href="heatmap.html" class="btn-refresh" style="text-decoration: none;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+
+        <a href="heatmap.html" class="btn-fullscreen" title="Open fullscreen map view">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+          </svg>
           <span>Fullscreen</span>
         </a>
       </div>
 
       <div class="map-container-box">
-        <div id="world-map" style="width: 100%; height: 350px;"></div>
+        <div id="world-map"></div>
+
+        <!-- Map Legend -->
+        <div class="map-legend-overlay">
+          <div class="legend-item">
+            <span class="legend-marker marker-live"></span>
+            <span>More installs</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-marker marker-installed"></span>
+            <span>Fewer installs</span>
+          </div>
+        </div>
       </div>
-      <div class="map-note"
-        style="margin-top: 8px; margin-bottom: 4px; font-size: 11px; color: #71717a; text-align: center;">
-        Note: Dots are randomly placed within the country, not at exact player locations. And we never fetched player's
-        exact location, it's only country.
+
+      <div class="map-note">
+        Note: Dots are randomly placed within each country for privacy, not at exact player locations. We never collect
+        exact coordinates, only country-level data.
       </div>
     </section>
 
-
-    <!-- ═══ Footer ═══════════════════════════════════════════ -->
+    <!-- ═══ FOOTER ═══════════════════════════════════════════ -->
     <footer class="app-footer">
       <div class="footer-brand">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        </svg>
-        <span>PocketMC Telemetry</span>
+        <img src="https://raw.githubusercontent.com/PocketMC/pocket-mc-website/refs/heads/master/public/logo.webp"
+          onerror="this.src='icon.svg'" alt="PocketMC logo" width="22" height="22" class="footer-logo" />
+        <span class="footer-title">PocketMC Telemetry</span>
       </div>
       <p class="footer-text">
         Anonymous telemetry data collected securely to improve performance and understand real-world application usage
         patterns.
       </p>
+
+      <div class="footer-links">
+        <a href="https://github.com/PocketMC/pocket-mc-telemetry" target="_blank" rel="noopener noreferrer"
+          class="footer-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+          </svg>
+          <span>GitHub Repository</span>
+        </a>
+        <a href="https://github.com/PocketMC" target="_blank" rel="noopener noreferrer" class="footer-link">
+          PocketMC Organization
+        </a>
+        <a href="https://pocketmc.net" target="_blank" rel="noopener noreferrer" class="footer-link">
+          Official Website
+        </a>
+      </div>
     </footer>
 
   </div> <!-- end app-wrapper -->
-
 </body>
 
 </html>

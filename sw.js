@@ -1,8 +1,8 @@
 /**
- * PocketMC Telemetry — Service Worker
+ * PocketMC Telemetry : Service Worker
  * Provides offline support and PWA installability.
  */
-const CACHE = 'pmc-telemetry-v26';
+const CACHE = 'pmc-telemetry-v32';
 
 // Assets to cache on install
 const PRECACHE = [
@@ -15,20 +15,30 @@ const PRECACHE = [
   'src/app.js',
   'src/heatmap.js',
   'src/countries.js',
+  'src/flavors/paper.svg',
+  'src/flavors/fabric.png',
+  'src/flavors/fabric.svg',
+  'src/flavors/neoforge.png',
+  'src/flavors/neoforge.svg',
+  'src/flavors/forge.png',
+  'src/flavors/spigot.svg',
+  'src/flavors/purpur.svg',
+  'src/flavors/bedrock.png',
+  'src/flavors/vanilla.png',
   'manifest.json',
   'https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.css',
   'https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.js',
   'https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/maps/world.js'
 ];
 
-// Install — pre-cache key assets
+// Install : pre-cache key assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting())
   );
 });
 
-// Activate — clean old caches
+// Activate : clean old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -57,12 +67,12 @@ function fetchWithTimeout(request, timeoutMs = 3000) {
   });
 }
 
-// Fetch — network-first (with timeout), fallback to cache
+// Fetch : network-first (with timeout), fallback to cache
 self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (event.request.method !== 'GET') return;
 
-  // For API requests — network only, no caching
+  // For API requests : network only, no caching
   if (event.request.url.includes('/api/')) {
     event.respondWith(fetch(event.request));
     return;
