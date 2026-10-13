@@ -248,40 +248,6 @@ body {
   color: var(--text-muted);
 }
 
-/* Desktop Navigation Pills */
-.nav-pills-group {
-  display: none;
-}
-
-@media (min-width: 860px) {
-  .nav-pills-group {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-  }
-}
-
-.nav-pill {
-  padding: 5px 12px;
-  border-radius: 9999px;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  text-decoration: none;
-  transition: all 0.15s ease;
-}
-
-.nav-pill:hover {
-  color: var(--text-primary);
-  background-color: var(--bg-surface-subtle);
-}
-
-.nav-pill.active {
-  background-color: var(--accent-blue-subtle);
-  color: var(--accent-blue);
-  font-weight: 600;
-}
-
 /* Actions Group wrapper */
 .topbar-actions-group {
   display: contents;

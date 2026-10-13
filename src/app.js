@@ -713,38 +713,6 @@
     }
   }
 
-  // ── Active Navigation Pill Highlight ─────────────────────────────
-  function setupScrollSpy() {
-    const navPills = document.querySelectorAll('.nav-pill');
-    const sections = ['overview', 'section-installs', 'section-map', 'section-servers']
-      .map((id) => $(id))
-      .filter(Boolean);
-
-    window.addEventListener(
-      'scroll',
-      () => {
-        let currentSectionId = 'overview';
-        const scrollY = window.scrollY + 120;
-
-        sections.forEach((section) => {
-          if (section.offsetTop <= scrollY) {
-            currentSectionId = section.id;
-          }
-        });
-
-        navPills.forEach((pill) => {
-          const href = pill.getAttribute('href').replace('#', '');
-          if (href === currentSectionId) {
-            pill.classList.add('active');
-          } else {
-            pill.classList.remove('active');
-          }
-        });
-      },
-      { passive: true }
-    );
-  }
-
   // ── Boot ─────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
     // Theme setup
@@ -761,7 +729,6 @@
       refreshBtn.addEventListener('click', triggerRefresh);
     }
 
-    setupScrollSpy();
     triggerRefresh();
     startAutoRefresh();
   });
