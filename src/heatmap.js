@@ -30,6 +30,25 @@
     "'": '&#39;'
   }[c] || c));
 
+  function getCountryIso(name) {
+    if (!name) return '';
+    const cleanName = String(name).trim();
+    if (typeof COUNTRY_MAP !== 'undefined') {
+      const entry = COUNTRY_MAP[cleanName];
+      if (entry && entry.iso) return entry.iso.toLowerCase();
+    }
+    if (/^[A-Za-z]{2}$/.test(cleanName)) {
+      return cleanName.toLowerCase();
+    }
+    return '';
+  }
+
+  function renderCountryFlag(name) {
+    const iso = getCountryIso(name);
+    if (!iso) return '';
+    return `<img class="country-flag-img" src="https://flagcdn.com/20x15/${iso}.png" srcset="https://flagcdn.com/40x30/${iso}.png 2x" width="20" height="15" alt="${escapeHtml(name)} flag" loading="lazy" onerror="this.remove()" style="display:inline-block;vertical-align:middle;border-radius:2px;" />`;
+  }
+
   function toNumber(value) {
     const num = Number(value);
     return Number.isFinite(num) ? num : 0;
@@ -251,10 +270,13 @@
         const countryName = isoToName[code] || tooltip.text() || code;
         const installs = regionData[code] || (stats.installLocationDistribution || {})[countryName] || 0;
         const activeCount = activeByIso[code] || (stats.locationDistribution || {})[countryName] || 0;
+        const flagHtml = renderCountryFlag(countryName);
         tooltip.text(
-          `<div style="font-weight:600;margin-bottom:2px;">${escapeHtml(countryName)}</div>
-           <div style="color:#94a3b8">Active Users: <span style="color:#38bdf8;font-weight:600">${fmt(activeCount)}</span></div>
-           <div style="color:#94a3b8">Total Installs: <span style="color:#22c55e;font-weight:600">${fmt(installs)}</span></div>`,
+          `<div style="display:flex;align-items:center;gap:6px;font-weight:600;margin-bottom:4px;">
+            ${flagHtml} <span>${escapeHtml(countryName)}</span>
+           </div>
+           <div style="font-size:12px;color:#94a3b8;">Active Users: <strong style="color:#38bdf8;">${fmt(activeCount)}</strong></div>
+           <div style="font-size:12px;color:#94a3b8;">Total Installs: <strong style="color:#22c55e;">${fmt(installs)}</strong></div>`,
           true
         );
       },
@@ -265,11 +287,14 @@
         const iso = marker.iso;
         const installs = (iso && regionData[iso]) || (stats.installLocationDistribution || {})[countryName] || 0;
         const activeCount = (iso && activeByIso[iso]) || (stats.locationDistribution || {})[countryName] || marker.activeCount || 0;
+        const flagHtml = renderCountryFlag(countryName);
 
         tooltip.text(
-          `<div style="font-weight:600;margin-bottom:2px;">${escapeHtml(countryName)}</div>
-           <div style="color:#94a3b8">Active Users: <span style="color:#38bdf8;font-weight:600">${fmt(activeCount)}</span></div>
-           <div style="color:#94a3b8">Total Installs: <span style="color:#22c55e;font-weight:600">${fmt(installs)}</span></div>`,
+          `<div style="display:flex;align-items:center;gap:6px;font-weight:600;margin-bottom:4px;">
+            ${flagHtml} <span>${escapeHtml(countryName)}</span>
+           </div>
+           <div style="font-size:12px;color:#94a3b8;">Active Users: <strong style="color:#38bdf8;">${fmt(activeCount)}</strong></div>
+           <div style="font-size:12px;color:#94a3b8;">Total Installs: <strong style="color:#22c55e;">${fmt(installs)}</strong></div>`,
           true
         );
       },
@@ -298,6 +323,13 @@
     if (timerId) clearInterval(timerId);
     timerId = setInterval(fetchStats, REFRESH_INTERVAL * 1000);
   }
+
+  // ── Window Resize ────────────────────────────────────────────────
+  window.addEventListener('resize', () => {
+    if (worldMapInstance && typeof worldMapInstance.updateSize === 'function') {
+      worldMapInstance.updateSize();
+    }
+  });
 
   // ── Boot ─────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
