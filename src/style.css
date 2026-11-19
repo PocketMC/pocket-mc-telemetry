@@ -143,20 +143,22 @@ body {
   display: flex;
   flex-direction: column;
   gap: 28px;
+  min-height: 480px;
+  contain: layout;
 }
 
 .page-transition {
-  animation: pageFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: pageFadeIn 0.16s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 @keyframes pageFadeIn {
   from {
-    opacity: 0;
-    transform: translateY(6px);
+    opacity: 0.9;
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -930,6 +932,13 @@ body {
   align-items: center;
   z-index: 999;
   pointer-events: none;
+  /* Hardware-accelerated compositing layer to isolate from main page re-renders on mobile */
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  will-change: transform;
+  contain: layout style;
 }
 
 .bottom-dock-cluster {
@@ -937,10 +946,18 @@ body {
   align-items: center;
   gap: 12px;
   pointer-events: none;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .bottom-dock-wrap .lg-tab-bar {
   pointer-events: auto;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   box-shadow:
     0 20px 48px -8px rgba(0, 0, 0, 0.65),
     0 4px 16px -2px rgba(0, 0, 0, 0.35);
@@ -965,6 +982,10 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   box-shadow:
     inset 0 0 0 0.5px var(--lg-edge),
     0 20px 48px -8px rgba(0, 0, 0, 0.65),

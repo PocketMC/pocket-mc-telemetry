@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from 'glisse';
 import { useTelemetry } from './hooks/useTelemetry';
@@ -49,20 +49,21 @@ export const App: React.FC = () => {
     }
   }, [navigate]);
 
-  // Determine active tab for BottomNavDock based on current route
-  const getActiveTab = (): string => {
+  // Determine active tab for BottomNavDock based on current route (memoized)
+  const activeTab = useMemo((): string => {
     const path = location.pathname.replace(/\/$/, '');
     if (path.endsWith('/clients')) return 'clients';
     if (path.endsWith('/servers')) return 'servers';
     if (path.endsWith('/map')) return 'map';
     return 'overview';
-  };
+  }, [location.pathname]);
 
-  const handleTabChange = (tab: string) => {
+  const handleTabChange = useCallback((tab: string) => {
     const targetRoute = tab === 'overview' ? '/' : `/${tab}`;
     navigate(targetRoute);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+    // Instant scroll prevents mobile viewport resizing/jitter fighting tab transitions
+    window.scrollTo(0, 0);
+  }, [navigate]);
 
   // Dedicated Fullscreen Heatmap Route
   if (location.pathname.endsWith('/heatmap')) {
@@ -94,8 +95,8 @@ export const App: React.FC = () => {
         </div>
       )}
 
-      {/* Independent Page Views Routed Dynamically */}
-      <main className="main-content page-transition" key={location.pathname}>
+      {/* Independent Page Views Routed Dynamically (Stable container prevents mobile height collapse & dock flickering) */}
+      <main className="main-content">
         <Routes>
           <Route path="/" element={<HomePage data={data} />} />
           <Route path="/overview" element={<Navigate to="/" replace />} />
@@ -155,9 +156,9 @@ export const App: React.FC = () => {
         </div>
       </footer>
 
-      {/* Floating Bottom Navigation Dock */}
+      {/* Floating Bottom Navigation Dock (Memoized) */}
       <BottomNavDock
-        activeTab={getActiveTab()}
+        activeTab={activeTab}
         onTabChange={handleTabChange}
         onRefresh={refresh}
         loading={loading}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { TabBar, Button } from 'glisse';
 import { House, Users, Server, Globe, RefreshCw } from 'lucide-react';
 
@@ -9,41 +9,42 @@ interface BottomNavDockProps {
   loading: boolean;
 }
 
-export const BottomNavDock: React.FC<BottomNavDockProps> = ({
+// Stable static navigation item definitions (prevents TabBar remounting & canvas flickering)
+const NAV_ITEMS = [
+  {
+    value: 'overview',
+    label: 'Home',
+    icon: <House size={26} strokeWidth={1.9} />,
+  },
+  {
+    value: 'clients',
+    label: 'Clients',
+    icon: <Users size={26} strokeWidth={1.9} />,
+  },
+  {
+    value: 'servers',
+    label: 'Servers',
+    icon: <Server size={26} strokeWidth={1.8} />,
+  },
+  {
+    value: 'map',
+    label: 'Map',
+    icon: <Globe size={26} strokeWidth={1.8} />,
+  },
+];
+
+export const BottomNavDock: React.FC<BottomNavDockProps> = memo(({
   activeTab,
   onTabChange,
   onRefresh,
   loading,
 }) => {
-  const navItems = [
-    {
-      value: 'overview',
-      label: 'Home',
-      icon: <House size={26} strokeWidth={1.9} />,
-    },
-    {
-      value: 'clients',
-      label: 'Clients',
-      icon: <Users size={26} strokeWidth={1.9} />,
-    },
-    {
-      value: 'servers',
-      label: 'Servers',
-      icon: <Server size={26} strokeWidth={1.8} />,
-    },
-    {
-      value: 'map',
-      label: 'Map',
-      icon: <Globe size={26} strokeWidth={1.8} />,
-    },
-  ];
-
   return (
     <nav className="bottom-dock-wrap" aria-label="Sections navigation dock">
       <div className="bottom-dock-cluster">
         <TabBar
           aria-label="Library"
-          items={navItems}
+          items={NAV_ITEMS}
           value={activeTab}
           onValueChange={onTabChange}
           style={{
@@ -63,6 +64,6 @@ export const BottomNavDock: React.FC<BottomNavDockProps> = ({
       </div>
     </nav>
   );
-};
+});
 
-
+BottomNavDock.displayName = 'BottomNavDock';
