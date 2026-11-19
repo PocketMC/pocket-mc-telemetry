@@ -22,13 +22,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#f1f5f9" id="meta-theme-color" />
+  <meta name="theme-color" content="#f4f6fa" id="meta-theme-color" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="apple-touch-icon" href="icon.svg" />
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.css"
     integrity="sha384-DkPMVIJ2hERal/WJDrT3mRGo8KOwiHVdjiyRxCFlUnMdvu52V0Y1CL1yULYSDn4h" crossorigin="anonymous" />
+  <link rel="stylesheet" href="src/glisse.css" />
   <link rel="stylesheet" href="src/style.css" />
 
   <script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.js"
@@ -37,6 +38,7 @@
   <script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/maps/world.js"
     integrity="sha384-sGlkSOVF9H+QNNQrLV9xrMIyghEgioD3M3gPd9/tV0mh9qJX75AyCl0l7+OVJ3CD" crossorigin="anonymous"
     defer></script>
+  <script src="src/liquid-aura.js" defer></script>
   <script src="src/countries.js" defer></script>
   <script src="src/app.js" defer></script>
   <script>
@@ -47,10 +49,15 @@
 </head>
 
 <body>
+  <!-- Ambient Liquid Aura Wallpaper Canvas (Apple Sequoia / Glisse fluid ribbon backdrop) -->
+  <div class="liquid-aura-bg" aria-hidden="true">
+    <canvas id="liquidAuraCanvas" class="liquid-aura-canvas"></canvas>
+  </div>
+
   <div class="app-wrapper" id="overview">
 
-    <!-- ═══ TOPBAR ═══════════════════════════════════════════ -->
-    <header class="topbar">
+    <!-- ═══ TOPBAR : Glisse Liquid Glass Command Bar ════════════ -->
+    <header class="topbar lg-glass">
       <!-- Brand Link -->
       <div class="topbar-left">
         <a href="#overview" class="brand-link" aria-label="PocketMC Telemetry home">
@@ -64,57 +71,82 @@
         </a>
       </div>
 
-      <!-- Actions Group (Live Status, Refresh, GitHub, Theme Toggle) -->
+      <!-- Glisse Section Navigation Tab Bar -->
+      <nav class="topbar-nav" aria-label="Sections navigation">
+        <div class="lg-tab-bar" id="sectionTabBar" role="tablist">
+          <a href="#section-installs" class="lg-tab active" data-tab="section-installs" role="tab" aria-selected="true">
+            <span class="lg-tab-face">Overview</span>
+          </a>
+          <a href="#section-clients" class="lg-tab" data-tab="section-clients" role="tab" aria-selected="false">
+            <span class="lg-tab-face">Clients</span>
+          </a>
+          <a href="#section-servers" class="lg-tab" data-tab="section-servers" role="tab" aria-selected="false">
+            <span class="lg-tab-face">Servers</span>
+          </a>
+          <a href="#section-map" class="lg-tab" data-tab="section-map" role="tab" aria-selected="false">
+            <span class="lg-tab-face">Global Map</span>
+          </a>
+        </div>
+      </nav>
+
+      <!-- Actions Group (Live Status, Auto-Refresh Switch, Refresh, GitHub, Theme Toggle) -->
       <div class="topbar-actions-group">
-        <!-- Live Status Pill & Refresh Button -->
-        <div class="topbar-status-group">
-          <div class="live-status-pill">
-            <span class="live-dot" aria-hidden="true"></span>
-            <span class="live-title">Live Data</span>
-            <span class="live-separator" aria-hidden="true">|</span>
-            <span class="live-time" id="statusCaption">Updated just now</span>
-          </div>
-          <button type="button" class="btn-refresh" id="refreshBtn" title="Refresh live telemetry now" aria-label="Refresh live telemetry">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="23 4 23 10 17 10" />
-              <polyline points="1 20 1 14 7 14" />
-              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-            </svg>
-            <span>Refresh</span>
+        <!-- Live Status Pill -->
+        <div class="live-status-pill">
+          <span class="live-dot" aria-hidden="true"></span>
+          <span class="live-title">Live</span>
+          <span class="live-separator" aria-hidden="true">|</span>
+          <span class="live-time" id="statusCaption">Updated just now</span>
+        </div>
+
+        <!-- Auto-Refresh Glisse Switch -->
+        <div class="auto-refresh-control" title="Toggle 30-second live auto-refresh">
+          <span class="switch-label">Live 30s</span>
+          <button type="button" class="lg-switch" id="autoRefreshSwitch" role="switch" aria-checked="true" aria-label="Toggle 30-second auto-refresh">
+            <span class="lg-switch-bed"><span class="lg-switch-track"><span class="lg-switch-fill"></span></span></span>
+            <span class="lg-switch-thumb"><span class="lg-thumb-face"></span></span>
           </button>
         </div>
+
+        <!-- Refresh Button -->
+        <button type="button" class="lg-button" id="refreshBtn" title="Refresh live telemetry now" aria-label="Refresh live telemetry">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10" />
+            <polyline points="1 20 1 14 7 14" />
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+          </svg>
+          <span>Refresh</span>
+        </button>
 
         <!-- Actions: GitHub & Theme Toggle -->
-        <div class="nav-actions">
-          <a href="https://github.com/PocketMC/pocket-mc-telemetry" target="_blank" rel="noopener noreferrer"
-            class="icon-btn" title="View on GitHub" aria-label="View PocketMC Telemetry on GitHub">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
-            </svg>
-          </a>
+        <a href="https://github.com/PocketMC/pocket-mc-telemetry" target="_blank" rel="noopener noreferrer"
+          class="lg-button icon-only" data-icon="only" title="View on GitHub" aria-label="View PocketMC Telemetry on GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+          </svg>
+        </a>
 
-          <button type="button" class="icon-btn" id="themeToggle" title="Toggle color theme" aria-label="Toggle theme">
-            <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="4" />
-              <path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" />
-              <path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" />
-            </svg>
-            <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-            </svg>
-          </button>
-        </div>
+        <button type="button" class="lg-button icon-only" data-icon="only" id="themeToggle" title="Toggle color theme" aria-label="Toggle theme">
+          <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" />
+            <path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" />
+          </svg>
+          <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+          </svg>
+        </button>
       </div>
     </header>
 
     <!-- ═══════════════════════════════════════════════════════════
          SECTION 1 : Installations & User Base
          ═══════════════════════════════════════════════════════════ -->
-    <section class="section-card" id="section-installs">
+    <section class="section-card lg-glass" id="section-installs">
       <div class="section-header">
         <div class="section-title-wrap">
           <div class="section-icon-badge section-icon-blue">
@@ -131,12 +163,30 @@
             <div class="insight-text" id="insight-installs">Synchronizing telemetry data...</div>
           </div>
         </div>
+
+        <!-- Glisse Segmented Control for Timeframe Filtering -->
+        <div class="time-filter-wrap">
+          <div class="lg-segmented" id="timeFilterControl" role="radiogroup" aria-label="Select active timeframe">
+            <button type="button" class="lg-tab active" data-period="7d" role="radio" aria-checked="true">
+              <span class="lg-tab-face">7 Days</span>
+            </button>
+            <button type="button" class="lg-tab" data-period="24h" role="radio" aria-checked="false">
+              <span class="lg-tab-face">24 Hours</span>
+            </button>
+            <button type="button" class="lg-tab" data-period="30d" role="radio" aria-checked="false">
+              <span class="lg-tab-face">30 Days</span>
+            </button>
+            <button type="button" class="lg-tab" data-period="total" role="radio" aria-checked="false">
+              <span class="lg-tab-face">All Time</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- KPIs (Responsive 2-Col Mobile -> 3-Col Tablet -> 6-Col Desktop) -->
       <div class="kpi-grid kpi-grid-6">
         <!-- Total Installs -->
-        <div class="kpi-card">
+        <div class="kpi-card lg-glass">
           <div class="kpi-icon-top text-green">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -160,8 +210,8 @@
           </div>
         </div>
 
-        <!-- Active Users (7D) -->
-        <div class="kpi-card">
+        <!-- Active Users (Dynamic Period) -->
+        <div class="kpi-card lg-glass">
           <div class="kpi-icon-top text-blue">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -173,21 +223,21 @@
           </div>
           <div class="kpi-value kpi-blue" id="kpi-activeUsers7d">-</div>
           <div class="kpi-label">
-            <span>Active Users (7D)</span>
+            <span id="kpi-activeLabel">Active Users (7D)</span>
             <span class="info-wrap">
-              <button type="button" class="info-btn" aria-label="Active in last 7 days">
+              <button type="button" class="info-btn" aria-label="Active in current window">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
                 </svg>
               </button>
-              <span class="info-tooltip" role="tooltip">Active in last 7 days</span>
+              <span class="info-tooltip" role="tooltip" id="kpi-activeTooltip">Active in last 7 days</span>
             </span>
           </div>
         </div>
 
         <!-- Inactive Users -->
-        <div class="kpi-card">
+        <div class="kpi-card lg-glass">
           <div class="kpi-icon-top text-slate">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -213,7 +263,7 @@
         </div>
 
         <!-- Countries Reached -->
-        <div class="kpi-card">
+        <div class="kpi-card lg-glass">
           <div class="kpi-icon-top text-blue">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -238,7 +288,7 @@
         </div>
 
         <!-- Unique Versions -->
-        <div class="kpi-card">
+        <div class="kpi-card lg-glass">
           <div class="kpi-icon-top text-purple">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -262,36 +312,35 @@
           </div>
         </div>
 
-        <!-- Avg per Country -->
-        <div class="kpi-card">
-          <div class="kpi-icon-top text-blue">
+        <!-- Installs / Country -->
+        <div class="kpi-card lg-glass">
+          <div class="kpi-icon-top text-green">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" x2="18" y1="20" y2="10" />
-              <line x1="12" x2="12" y1="20" y2="4" />
-              <line x1="6" x2="6" y1="20" y2="14" />
+              <path d="M3 3v18h18" />
+              <path d="m19 9-5 5-4-4-3 3" />
             </svg>
           </div>
-          <div class="kpi-value kpi-blue" id="kpi-avgInstalls">-</div>
+          <div class="kpi-value" id="kpi-avgInstalls">-</div>
           <div class="kpi-label">
-            <span>Avg per Country</span>
+            <span>Installs / Country</span>
             <span class="info-wrap">
-              <button type="button" class="info-btn" aria-label="Installs per nation">
+              <button type="button" class="info-btn" aria-label="Average installations per reached country">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
                 </svg>
               </button>
-              <span class="info-tooltip" role="tooltip">Installs per nation</span>
+              <span class="info-tooltip" role="tooltip">Average installations per reached country</span>
             </span>
           </div>
         </div>
       </div>
 
-      <!-- Breakdowns (2 Columns, Scrollable Containers) -->
+      <!-- Breakdowns (2 Columns, Scrollable Containers with Glisse Search) -->
       <div class="breakdown-grid">
         <!-- Version Breakdown -->
-        <div class="breakdown-card">
+        <div class="breakdown-card lg-glass">
           <div class="breakdown-header">
             <h3 class="breakdown-title">
               <span>Version Breakdown</span>
@@ -305,12 +354,24 @@
                 <span class="info-tooltip" role="tooltip">Installations by version</span>
               </span>
             </h3>
+            <div class="search-box-wrap">
+              <div class="lg-input search-bar">
+                <span class="lg-input-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </span>
+                <input type="search" id="searchInstallVersion" placeholder="Search versions..." aria-label="Filter versions" />
+              </div>
+            </div>
           </div>
           <div class="breakdown-list" id="tbl-installVersion"></div>
         </div>
 
         <!-- Top Countries Breakdown with Flags -->
-        <div class="breakdown-card">
+        <div class="breakdown-card lg-glass">
           <div class="breakdown-header">
             <h3 class="breakdown-title">
               <span>Top Countries</span>
@@ -324,6 +385,18 @@
                 <span class="info-tooltip" role="tooltip">Installations by country</span>
               </span>
             </h3>
+            <div class="search-box-wrap">
+              <div class="lg-input search-bar">
+                <span class="lg-input-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </span>
+                <input type="search" id="searchInstallCountry" placeholder="Search countries..." aria-label="Filter countries" />
+              </div>
+            </div>
           </div>
           <div class="breakdown-list" id="tbl-installCountry"></div>
         </div>
@@ -333,140 +406,130 @@
     <!-- ═══════════════════════════════════════════════════════════
          SECTION 2 : Real-Time Active Clients
          ═══════════════════════════════════════════════════════════ -->
-    <section class="section-card" id="section-clients">
+    <section class="section-card lg-glass" id="section-clients">
       <div class="section-header">
         <div class="section-title-wrap">
           <div class="section-icon-badge section-icon-green">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9" />
-              <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5" />
-              <circle cx="12" cy="12" r="2" />
-              <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5" />
-              <path d="M19.1 4.9C23 8.8 23 15.2 19.1 19.1" />
+              <rect width="20" height="14" x="2" y="3" rx="2" />
+              <line x1="8" x2="16" y1="21" y2="21" />
+              <line x1="12" x2="12" y1="17" y2="21" />
             </svg>
           </div>
           <div class="section-header-text">
             <h2 class="section-title">Active Clients (Real-Time)</h2>
-            <div class="insight-text" id="insight-clients">Gathering active node telemetry...</div>
+            <div class="insight-text" id="insight-clients">Tracking active PocketMC desktop sessions...</div>
           </div>
         </div>
       </div>
 
-      <!-- KPIs (4 Column Grid) -->
+      <!-- KPIs (4 Columns) -->
       <div class="kpi-grid kpi-grid-4">
         <!-- Open Clients -->
-        <div class="kpi-card">
-          <div class="kpi-card-head">
-            <div class="kpi-value kpi-blue" id="kpi-openClients">-</div>
-            <div class="kpi-corner-icon text-blue">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect width="20" height="14" x="2" y="3" rx="2" />
-                <line x1="8" x2="16" y1="21" y2="21" />
-                <line x1="12" x2="12" y1="17" y2="21" />
-              </svg>
-            </div>
+        <div class="kpi-card lg-glass">
+          <div class="kpi-icon-top text-green">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
           </div>
+          <div class="kpi-value kpi-green" id="kpi-openClients">-</div>
           <div class="kpi-label">
             <span>Open Clients</span>
             <span class="info-wrap">
-              <button type="button" class="info-btn" aria-label="Currently open apps">
+              <button type="button" class="info-btn" aria-label="Desktop apps running right now">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
                 </svg>
               </button>
-              <span class="info-tooltip" role="tooltip">Currently open apps</span>
+              <span class="info-tooltip" role="tooltip">Desktop apps running right now</span>
             </span>
           </div>
         </div>
 
-        <!-- Online Hosts -->
-        <div class="kpi-card">
-          <div class="kpi-card-head">
-            <div class="kpi-value kpi-green" id="kpi-activeUsers">-</div>
-            <div class="kpi-corner-icon text-green">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect width="20" height="8" x="2" y="2" rx="2" />
-                <rect width="20" height="8" x="2" y="14" rx="2" />
-                <line x1="6" x2="6.01" y1="6" y2="6" />
-                <line x1="6" x2="6.01" y1="18" y2="18" />
-              </svg>
-            </div>
+        <!-- Hosting Servers -->
+        <div class="kpi-card lg-glass">
+          <div class="kpi-icon-top text-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="20" height="8" x="2" y="2" rx="2" ry="2" />
+              <rect width="20" height="8" x="2" y="14" rx="2" ry="2" />
+              <line x1="6" x2="6.01" y1="6" y2="6" />
+              <line x1="6" x2="6.01" y1="18" y2="18" />
+            </svg>
           </div>
+          <div class="kpi-value kpi-blue" id="kpi-activeUsers">-</div>
           <div class="kpi-label">
-            <span>Online Hosts</span>
+            <span>Hosting Servers</span>
             <span class="info-wrap">
-              <button type="button" class="info-btn" aria-label="Active server instances">
+              <button type="button" class="info-btn" aria-label="Clients with running servers">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
                 </svg>
               </button>
-              <span class="info-tooltip" role="tooltip">Active server instances</span>
+              <span class="info-tooltip" role="tooltip">Clients with running servers</span>
             </span>
           </div>
         </div>
 
-        <!-- Idle Clients -->
-        <div class="kpi-card">
-          <div class="kpi-card-head">
-            <div class="kpi-value" id="kpi-afkUsers">-</div>
-            <div class="kpi-corner-icon text-slate">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
-            </div>
+        <!-- Idle / Managing -->
+        <div class="kpi-card lg-glass">
+          <div class="kpi-icon-top text-slate">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+              <line x1="12" x2="12" y1="2" y2="12" />
+            </svg>
           </div>
+          <div class="kpi-value" id="kpi-afkUsers">-</div>
           <div class="kpi-label">
-            <span>Idle Clients</span>
+            <span>Idle / Managing</span>
             <span class="info-wrap">
-              <button type="button" class="info-btn" aria-label="Open without servers">
+              <button type="button" class="info-btn" aria-label="Clients open without running server">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
                 </svg>
               </button>
-              <span class="info-tooltip" role="tooltip">Open without servers</span>
+              <span class="info-tooltip" role="tooltip">Clients open without running server</span>
             </span>
           </div>
         </div>
 
-        <!-- Server Density -->
-        <div class="kpi-card">
-          <div class="kpi-card-head">
-            <div class="kpi-value kpi-purple" id="kpi-serverDensity">-</div>
-            <div class="kpi-corner-icon text-purple">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
-                <path d="M22 12A10 10 0 0 0 12 2v10z" />
-              </svg>
-            </div>
+        <!-- Active Client Countries -->
+        <div class="kpi-card lg-glass">
+          <div class="kpi-icon-top text-purple">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="2" x2="22" y1="12" y2="12" />
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
           </div>
+          <div class="kpi-value" id="kpi-activeCountries">-</div>
           <div class="kpi-label">
-            <span>Server Density</span>
+            <span>Active Countries</span>
             <span class="info-wrap">
-              <button type="button" class="info-btn" aria-label="Users per server">
+              <button type="button" class="info-btn" aria-label="Countries with active sessions right now">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
                 </svg>
               </button>
-              <span class="info-tooltip" role="tooltip">Users per server</span>
+              <span class="info-tooltip" role="tooltip">Countries with active sessions right now</span>
             </span>
           </div>
         </div>
       </div>
 
-      <!-- Breakdowns (2 Columns, Scrollable Containers) -->
+      <!-- Breakdowns (2 Columns, Scrollable Containers with Glisse Search) -->
       <div class="breakdown-grid">
         <!-- Active Clients by Version -->
-        <div class="breakdown-card">
+        <div class="breakdown-card lg-glass">
           <div class="breakdown-header">
             <h3 class="breakdown-title">
               <span>Active Clients by Version</span>
@@ -480,12 +543,24 @@
                 <span class="info-tooltip" role="tooltip">Clients currently using each version</span>
               </span>
             </h3>
+            <div class="search-box-wrap">
+              <div class="lg-input search-bar">
+                <span class="lg-input-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </span>
+                <input type="search" id="searchClientVersion" placeholder="Search versions..." aria-label="Filter active client versions" />
+              </div>
+            </div>
           </div>
           <div class="breakdown-list" id="tbl-clientVersion"></div>
         </div>
 
         <!-- Active Clients by Location with Flags -->
-        <div class="breakdown-card">
+        <div class="breakdown-card lg-glass">
           <div class="breakdown-header">
             <h3 class="breakdown-title">
               <span>Active Clients by Location</span>
@@ -499,6 +574,18 @@
                 <span class="info-tooltip" role="tooltip">Top countries with active clients</span>
               </span>
             </h3>
+            <div class="search-box-wrap">
+              <div class="lg-input search-bar">
+                <span class="lg-input-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </span>
+                <input type="search" id="searchClientLocation" placeholder="Search locations..." aria-label="Filter active client locations" />
+              </div>
+            </div>
           </div>
           <div class="breakdown-list" id="tbl-clientLocation"></div>
         </div>
@@ -508,94 +595,112 @@
     <!-- ═══════════════════════════════════════════════════════════
          SECTION 3 : Live Servers
          ═══════════════════════════════════════════════════════════ -->
-    <section class="section-card" id="section-servers">
+    <section class="section-card lg-glass" id="section-servers">
       <div class="section-header">
         <div class="section-title-wrap">
           <div class="section-icon-badge section-icon-purple">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect width="20" height="8" x="2" y="2" rx="2" />
-              <rect width="20" height="8" x="2" y="14" rx="2" />
+              <rect width="20" height="8" x="2" y="2" rx="2" ry="2" />
+              <rect width="20" height="8" x="2" y="14" rx="2" ry="2" />
               <line x1="6" x2="6.01" y1="6" y2="6" />
               <line x1="6" x2="6.01" y1="18" y2="18" />
             </svg>
           </div>
           <div class="section-header-text">
             <h2 class="section-title">Live Servers</h2>
-            <div class="insight-text" id="insight-servers">Analyzing active host engines...</div>
+            <div class="insight-text" id="insight-servers">Real-time Minecraft instance analytics...</div>
           </div>
         </div>
       </div>
 
-      <!-- KPIs (4 Column Grid) -->
-      <div class="kpi-grid kpi-grid-4">
-        <!-- Global Uptime -->
-        <div class="kpi-card">
-          <div class="kpi-card-head">
-            <div class="kpi-value kpi-blue" id="kpi-uptime">-</div>
-            <div class="kpi-corner-icon text-blue">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
-            </div>
+      <!-- KPIs (5 Columns) -->
+      <div class="kpi-grid kpi-grid-6">
+        <!-- Total Running -->
+        <div class="kpi-card lg-glass">
+          <div class="kpi-icon-top text-purple">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <polygon points="10 8 16 12 10 16 10 8" />
+            </svg>
           </div>
+          <div class="kpi-value kpi-purple" id="kpi-totalServers">-</div>
           <div class="kpi-label">
-            <span>Global Uptime</span>
+            <span>Running Servers</span>
             <span class="info-wrap">
-              <button type="button" class="info-btn" aria-label="Lifetime server hours">
+              <button type="button" class="info-btn" aria-label="Instances active right now">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
                 </svg>
               </button>
-              <span class="info-tooltip" role="tooltip">Lifetime server hours</span>
+              <span class="info-tooltip" role="tooltip">Instances active right now</span>
             </span>
           </div>
         </div>
 
-        <!-- Running Servers -->
-        <div class="kpi-card">
-          <div class="kpi-card-head">
-            <div class="kpi-value kpi-green" id="kpi-totalServers">-</div>
-            <div class="kpi-corner-icon text-green">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 12.55a11 11 0 0 1 14.08 0" />
-                <path d="M1.42 9a16 16 0 0 1 21.16 0" />
-                <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
-                <line x1="12" x2="12.01" y1="20" y2="20" />
-              </svg>
-            </div>
+        <!-- Global Uptime -->
+        <div class="kpi-card lg-glass">
+          <div class="kpi-icon-top text-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 14 14" />
+            </svg>
           </div>
+          <div class="kpi-value" id="kpi-uptime">-</div>
           <div class="kpi-label">
-            <span>Running Servers</span>
+            <span>Global Uptime</span>
             <span class="info-wrap">
-              <button type="button" class="info-btn" aria-label="Currently online">
+              <button type="button" class="info-btn" aria-label="Cumulative hours hosted">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
                 </svg>
               </button>
-              <span class="info-tooltip" role="tooltip">Currently online</span>
+              <span class="info-tooltip" role="tooltip">Cumulative hours hosted</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Density -->
+        <div class="kpi-card lg-glass">
+          <div class="kpi-icon-top text-green">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </div>
+          <div class="kpi-value" id="kpi-serverDensity">-</div>
+          <div class="kpi-label">
+            <span>Users / Server</span>
+            <span class="info-wrap">
+              <button type="button" class="info-btn" aria-label="Active users ratio">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                </svg>
+              </button>
+              <span class="info-tooltip" role="tooltip">Active users ratio</span>
             </span>
           </div>
         </div>
 
         <!-- Servers Created -->
-        <div class="kpi-card">
-          <div class="kpi-card-head">
-            <div class="kpi-value" id="kpi-totalServersCreated">-</div>
-            <div class="kpi-corner-icon text-blue">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-                <path d="m3.3 7 8.7 5 8.7-5" />
-                <path d="M12 22V12" />
-              </svg>
-            </div>
+        <div class="kpi-card lg-glass">
+          <div class="kpi-icon-top text-green">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" x2="12" y1="8" y2="16" />
+              <line x1="8" x2="16" y1="12" y2="12" />
+            </svg>
           </div>
+          <div class="kpi-value kpi-green" id="kpi-totalServersCreated">-</div>
           <div class="kpi-label">
             <span>Servers Created</span>
             <span class="info-wrap">
@@ -611,18 +716,16 @@
         </div>
 
         <!-- Servers Deleted -->
-        <div class="kpi-card">
-          <div class="kpi-card-head">
-            <div class="kpi-value kpi-red" id="kpi-totalServersDeleted">-</div>
-            <div class="kpi-corner-icon text-red">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 6h18" />
-                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-              </svg>
-            </div>
+        <div class="kpi-card lg-glass">
+          <div class="kpi-icon-top text-red">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18" />
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+            </svg>
           </div>
+          <div class="kpi-value kpi-red" id="kpi-totalServersDeleted">-</div>
           <div class="kpi-label">
             <span>Servers Deleted</span>
             <span class="info-wrap">
@@ -640,7 +743,7 @@
 
       <!-- Server Types Table -->
       <div class="server-types-container">
-        <h3 class="server-types-title">Server Types</h3>
+        <h3 class="server-types-title" style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">Server Types</h3>
         <div id="tbl-serverType" class="server-types-wrapper"></div>
       </div>
     </section>
@@ -648,7 +751,7 @@
     <!-- ═══════════════════════════════════════════════════════════
          SECTION 4 : Global Activity Map
          ═══════════════════════════════════════════════════════════ -->
-    <section class="section-card" id="section-map">
+    <section class="section-card lg-glass" id="section-map">
       <div class="section-header">
         <div class="section-title-wrap">
           <div class="section-icon-badge section-icon-blue">
@@ -665,12 +768,12 @@
           </div>
         </div>
 
-        <a href="heatmap.html" class="btn-fullscreen" title="Open fullscreen map view">
+        <a href="heatmap.html" class="lg-button" data-variant="filled" title="Open fullscreen map view">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
           </svg>
-          <span>Fullscreen</span>
+          <span>Fullscreen Heatmap</span>
         </a>
       </div>
 
@@ -691,7 +794,7 @@
       </div>
 
       <div class="map-note">
-        Note: Dots represent country-level locations for privacy. Exact player coordinates are never collected.
+        Note: Markers represent country-level telemetry coordinates for privacy. Exact coordinates are never collected.
       </div>
     </section>
 

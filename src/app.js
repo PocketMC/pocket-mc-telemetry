@@ -1,16 +1,13 @@
 /**
  * PocketMC Telemetry Dashboard
- * Live anonymous usage analytics
- * Supports Light & Dark (Black/Grey) themes, Country Flags, Real Server Flavor Logos, and Interactive Map
+ * Live anonymous usage analytics with Glisse Liquid Glass Design System
+ * Supports Light & Dark themes, Real Server Flavor Logos, Country Flags, and Interactive Global Map
  */
 (function () {
   'use strict';
 
   const TELEMETRY_PROXIES = [
-    "https://pocket-mc-proxy.onrender.com/api/telemetry/stats",
-    "https://pocket-mc-proxy-3fqm.onrender.com/api/telemetry/stats",
-    "https://pocket-mc-proxy-20d5.onrender.com/api/telemetry/stats",
-    "https://pocket-mc-proxy-n2qx.onrender.com/api/telemetry/stats",
+    "https://pocket-mc-proxy.onrender.com/api/telemetry/stats"
   ];
   const DISCORD_BOT_KEEP_ALIVE_URL = "https://pocketmc-welcome-bot-1e5d.onrender.com/health";
   const REFRESH_INTERVAL = 30;
@@ -41,6 +38,22 @@
   let lastSuccess = null;
   let timerId = null;
   let lastStats = null;
+  let currentTimePeriod = '7d'; // '7d', '24h', '30d', 'total'
+  let autoRefreshEnabled = localStorage.getItem('pmc-autorefresh') !== 'false';
+
+  const breakdownData = {
+    installVersion: [],
+    installCountry: [],
+    clientVersion: [],
+    clientLocation: [],
+  };
+
+  const searchQueries = {
+    installVersion: '',
+    installCountry: '',
+    clientVersion: '',
+    clientLocation: '',
+  };
 
   // ── Helpers ──────────────────────────────────────────────────────
   const $ = (id) => document.getElementById(id);
@@ -129,7 +142,7 @@
 
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, (c) =>
-      ({ '&': '&', '<': '<', '>': '>', '"': '"', "'": '&#39;' }[c])
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])
     );
   }
 
@@ -148,34 +161,40 @@
     return null;
   }
 
-  function renderCountryFlag(name) {
-    const iso = getCountryIso(name);
+  function renderCountryFlag(countryName) {
+    const iso = getCountryIso(countryName);
     if (!iso) {
-      return '<span class="country-flag-icon" aria-hidden="true">🌐</span>';
+      return `<span class="flag-icon" style="background:#64748b;display:inline-block;"></span>`;
     }
-    return `<img class="country-flag-img" src="https://flagcdn.com/20x15/${iso}.png" srcset="https://flagcdn.com/40x30/${iso}.png 2x" width="20" height="15" alt="${escapeHtml(name)} flag" loading="lazy" onerror="this.outerHTML='🌐'" />`;
+    return `<img class="flag-icon" src="https://flagcdn.com/20x15/${iso}.png" srcset="https://flagcdn.com/40x30/${iso}.png 2x" alt="${escapeHtml(countryName)} flag" width="18" height="13" loading="lazy" />`;
   }
 
-  // ── Render Breakdown List (Progress Bar Rows with Scrollable Container) ──
-  function renderBreakdownList(containerId, entries, isCountry = false) {
+  // ── Render Breakdown List with Live Search ────────────────────────
+  function renderBreakdownList(containerId, dataKey, isCountry = false) {
     const container = $(containerId);
     if (!container) return;
 
+    const rawEntries = breakdownData[dataKey] || [];
+    const query = (searchQueries[dataKey] || '').trim().toLowerCase();
+    const entries = query
+      ? rawEntries.filter(([k]) => k.toLowerCase().includes(query))
+      : rawEntries;
+
     if (!entries.length) {
-      container.innerHTML = `<div class="empty-breakdown-row">No telemetry data recorded</div>`;
+      container.innerHTML = `<div class="breakdown-row" style="color:var(--text-secondary);font-size:12px;padding:12px;">${query ? 'No matching results found' : 'No telemetry data recorded'}</div>`;
       return;
     }
 
-    const total = entries.reduce((s, [, v]) => s + v, 0);
-    const maxVal = entries[0][1] || 1;
+    const total = rawEntries.reduce((s, [, v]) => s + v, 0);
+    const maxVal = rawEntries[0] ? rawEntries[0][1] : 1;
 
     container.innerHTML = entries
       .map(([k, v]) => {
         const sharePct = total ? ((v / total) * 100).toFixed(1) : '0.0';
         const barFillPct = Math.min(100, Math.max(4, (v / maxVal) * 100)).toFixed(1);
         const labelHtml = isCountry
-          ? `<div class="breakdown-label-group">${renderCountryFlag(k)}<span class="breakdown-label-text" title="${escapeHtml(k)}">${escapeHtml(k)}</span></div>`
-          : `<div class="breakdown-label-group"><span class="breakdown-label-text" title="${escapeHtml(k)}">${escapeHtml(k)}</span></div>`;
+          ? `<div class="breakdown-label">${renderCountryFlag(k)}<span title="${escapeHtml(k)}">${escapeHtml(k)}</span></div>`
+          : `<div class="breakdown-label"><span title="${escapeHtml(k)}">${escapeHtml(k)}</span></div>`;
 
         return `
           <div class="breakdown-row">
@@ -183,8 +202,8 @@
             <div class="breakdown-track" aria-hidden="true">
               <div class="breakdown-fill" style="width: ${barFillPct}%;"></div>
             </div>
-            <div class="breakdown-value num-data">${fmt(v)}</div>
-            <div class="breakdown-share num-data">${sharePct}%</div>
+            <div class="breakdown-value">${fmt(v)}</div>
+            <div class="badge-glass" style="font-size:10.5px;color:var(--text-secondary);">${sharePct}%</div>
           </div>
         `;
       })
@@ -216,10 +235,10 @@
     }
 
     if (src) {
-      return `<img class="server-flavor-img" src="${src}" alt="${escapeHtml(alt)} logo" width="20" height="20" loading="lazy" />`;
+      return `<img class="server-logo" src="${src}" alt="${escapeHtml(alt)} logo" width="24" height="24" loading="lazy" />`;
     }
 
-    return `<svg class="server-flavor-img" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>`;
+    return `<svg class="server-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>`;
   }
 
   function renderServerTypes(containerId, entries) {
@@ -227,41 +246,33 @@
     if (!container) return;
 
     if (!entries.length) {
-      container.innerHTML = `<div class="empty-breakdown-row">No server type telemetry recorded</div>`;
+      container.innerHTML = `<div class="server-type-row" style="color:var(--text-secondary);font-size:12px;">No server type telemetry recorded</div>`;
       return;
     }
 
     const total = entries.reduce((s, [, v]) => s + v, 0);
     const maxVal = entries[0][1] || 1;
 
-    container.innerHTML = `
-      <div class="server-types-table-header" aria-hidden="true">
-        <div class="col-type">TYPE</div>
-        <div class="col-servers">SERVERS</div>
-        <div class="col-share">SHARE</div>
-      </div>
-      <div class="server-types-table-body">
-        ${entries.map(([type, count]) => {
-          const sharePct = total ? ((count / total) * 100).toFixed(1) : '0.0';
-          const barFillPct = Math.min(100, Math.max(4, (count / maxVal) * 100)).toFixed(1);
-          return `
-            <div class="server-type-row">
-              <div class="col-type">
-                <span class="server-type-icon-box">${getServerTypeLogoHtml(type)}</span>
-                <span class="server-type-name">${escapeHtml(type)}</span>
-              </div>
-              <div class="col-servers num-data">${fmt(count)}</div>
-              <div class="col-share">
-                <span class="share-pct num-data">${sharePct}%</span>
-                <div class="mini-bar-track" aria-hidden="true">
-                  <div class="mini-bar-fill" style="width: ${barFillPct}%;"></div>
-                </div>
-              </div>
+    container.innerHTML = entries.map(([type, count]) => {
+      const sharePct = total ? ((count / total) * 100).toFixed(1) : '0.0';
+      const barFillPct = Math.min(100, Math.max(6, (count / maxVal) * 100)).toFixed(1);
+
+      return `
+        <div class="server-type-row">
+          <div class="server-type-brand">
+            ${getServerTypeLogoHtml(type)}
+            <span class="server-type-name">${escapeHtml(type)}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;flex:1;max-width:260px;margin-left:auto;">
+            <div class="breakdown-track" style="flex:1;" aria-hidden="true">
+              <div class="breakdown-fill" style="width: ${barFillPct}%; background-color: var(--accent-purple);"></div>
             </div>
-          `;
-        }).join('')}
-      </div>
-    `;
+            <div class="server-type-count">${fmt(count)}</div>
+            <div class="badge-glass" style="color:var(--accent-purple);font-size:11px;">${sharePct}%</div>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   // ── Auto-Insights ────────────────────────────────────────────────
@@ -275,22 +286,31 @@
     const topVer = clientVersion.length ? clientVersion[0] : null;
 
     if (insightServers && topServer) {
-      insightServers.innerHTML = `<span class="spotlight-highlight">${escapeHtml(topServer[0])}</span> is dominating as the top server type.`;
+      insightServers.innerHTML = `<strong style="color:var(--accent-purple);">${escapeHtml(topServer[0])}</strong> leads as the most popular server engine.`;
     }
+
     if (insightInstalls) {
       const totalInstalls = Number(stats.totalInstalls) || 0;
       const open = Number(stats.openClients) || 0;
       const hasActive7d = stats.activeUsers7d !== undefined && stats.activeUsers7d !== null;
       const active7d = hasActive7d ? Math.max(Number(stats.activeUsers7d), open) : open;
-      if (totalInstalls > 0 && active7d > 0) {
-        insightInstalls.innerHTML = `<span class="spotlight-highlight">${pct(active7d, totalInstalls)}</span> (${fmt(active7d)}) of registered users have been active in the last 7 days.`;
+
+      if (currentTimePeriod === '24h') {
+        const a24 = Number(stats.activeUsers24h) || open;
+        insightInstalls.innerHTML = `<strong style="color:var(--accent-blue);">${pct(a24, totalInstalls)}</strong> (${fmt(a24)}) active in the last 24 hours.`;
+      } else if (currentTimePeriod === '30d') {
+        const a30 = Number(stats.activeUsers30d) || active7d;
+        insightInstalls.innerHTML = `<strong style="color:var(--accent-blue);">${pct(a30, totalInstalls)}</strong> (${fmt(a30)}) active in the last 30 days.`;
+      } else if (totalInstalls > 0 && active7d > 0) {
+        insightInstalls.innerHTML = `<strong style="color:var(--accent-blue);">${pct(active7d, totalInstalls)}</strong> (${fmt(active7d)}) active in the last 7 days.`;
       } else if (topLoc) {
-        insightInstalls.innerHTML = `<span class="spotlight-highlight">${escapeHtml(topLoc[0])}</span> leads the world in installations.`;
+        insightInstalls.innerHTML = `<strong style="color:var(--accent-blue);">${escapeHtml(topLoc[0])}</strong> leads globally in installations.`;
       }
     }
+
     if (insightClients && topVer) {
       const totalClients = clientVersion.reduce((s, [, v]) => s + v, 0);
-      insightClients.innerHTML = `<span class="spotlight-highlight">v${escapeHtml(topVer[0])}</span> makes up ${pct(topVer[1], totalClients)} of all live servers.`;
+      insightClients.innerHTML = `<strong style="color:var(--accent-green);">v${escapeHtml(topVer[0])}</strong> represents ${pct(topVer[1], totalClients)} of all live servers.`;
     }
 
     const densityEl = $('kpi-serverDensity');
@@ -308,32 +328,26 @@
     if (!mapBox) return;
     mapBox.classList.remove('skeleton');
 
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (typeof jsVectorMap === 'undefined') {
+      mapBox.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-secondary);font-size:13px;">Map loading...</div>';
+      return;
+    }
 
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     const regionData = {};
     const activeByIso = {};
     const isoToName = {};
 
-    // Build reverse ISO lookup table
-    if (typeof COUNTRY_MAP !== 'undefined') {
-      for (const [country, info] of Object.entries(COUNTRY_MAP)) {
-        if (info && info.iso && !isoToName[info.iso]) {
-          isoToName[info.iso] = country;
-        }
-      }
-    }
-
-    // Aggregate install count by ISO code
     for (const [country, count] of Object.entries(stats.installLocationDistribution || {})) {
       if (typeof COUNTRY_MAP !== 'undefined') {
         const match = COUNTRY_MAP[country];
         if (match && match.iso) {
+          isoToName[match.iso] = country;
           regionData[match.iso] = (regionData[match.iso] || 0) + (Number(count) || 0);
         }
       }
     }
 
-    // Aggregate active users by ISO code
     for (const [country, count] of Object.entries(stats.locationDistribution || {})) {
       if (typeof COUNTRY_MAP !== 'undefined') {
         const match = COUNTRY_MAP[country];
@@ -346,7 +360,7 @@
     const markers = [];
     const plottedIsos = new Set();
 
-    // 1. Live Active Markers (Blue/Cyan) : Countries with real-time active users
+    // 1. Live Active Markers (Cyan/Blue)
     for (const [country, count] of Object.entries(stats.locationDistribution || {})) {
       if (typeof COUNTRY_MAP !== 'undefined') {
         const match = COUNTRY_MAP[country];
@@ -361,13 +375,13 @@
             isLive: true,
             style: {
               initial: {
-                fill: isDark ? '#38bdf8' : '#0284c7',
+                fill: isDark ? '#38bdf8' : '#0088ff',
                 stroke: '#ffffff',
                 strokeWidth: 1.5,
                 r: 4.5
               },
               hover: {
-                fill: isDark ? '#7dd3fc' : '#0369a1',
+                fill: isDark ? '#7dd3fc' : '#0077e6',
                 stroke: '#ffffff',
                 strokeWidth: 2,
                 r: 6
@@ -378,7 +392,7 @@
       }
     }
 
-    // 2. Registered Install Markers (Emerald/Green) : Countries with installs but currently offline
+    // 2. Registered Install Markers (Emerald/Green)
     for (const [country, count] of Object.entries(stats.installLocationDistribution || {})) {
       if (typeof COUNTRY_MAP !== 'undefined') {
         const match = COUNTRY_MAP[country];
@@ -391,14 +405,14 @@
             isInstalledOnly: true,
             style: {
               initial: {
-                fill: isDark ? '#22c55e' : '#16a34a',
+                fill: isDark ? '#30d158' : '#34c759',
                 stroke: isDark ? '#141414' : '#ffffff',
                 strokeWidth: 1,
                 r: 3.5
               },
               hover: {
                 fill: isDark ? '#4ade80' : '#15803d',
-                stroke: isDark ? '#ffffff' : '#ffffff',
+                stroke: '#ffffff',
                 strokeWidth: 1.5,
                 r: 5
               }
@@ -408,14 +422,12 @@
       }
     }
 
-    // If an instance exists and theme hasn't forced a rebuild, update markers dynamically
     if (worldMapInstance) {
       worldMapInstance.removeMarkers();
       worldMapInstance.addMarkers(markers);
       return;
     }
 
-    // Rebuild jsVectorMap instance
     mapBox.innerHTML = '';
 
     worldMapInstance = new jsVectorMap({
@@ -429,13 +441,13 @@
 
       regionStyle: {
         initial: {
-          fill: isDark ? '#18181b' : '#f1f5f9',
-          stroke: isDark ? '#27272a' : '#cbd5e1',
+          fill: isDark ? '#1a1d26' : '#e2e8f0',
+          stroke: isDark ? '#262a38' : '#cbd5e1',
           strokeWidth: 0.5,
           fillOpacity: 1
         },
         hover: {
-          fill: isDark ? '#27272a' : '#e2e8f0',
+          fill: isDark ? '#292e3d' : '#cbd5e1',
           cursor: 'pointer'
         }
       },
@@ -443,36 +455,16 @@
       markers: markers,
       markerStyle: {
         initial: {
-          fill: isDark ? '#38bdf8' : '#0284c7',
+          fill: isDark ? '#38bdf8' : '#0088ff',
           stroke: '#ffffff',
           strokeWidth: 1.5,
           r: 4
         },
         hover: {
-          fill: isDark ? '#7dd3fc' : '#0369a1',
-          r: 5.5,
-          cursor: 'pointer'
+          stroke: '#ffffff',
+          strokeWidth: 2,
+          r: 6
         }
-      },
-
-      onRegionTooltipShow(event, tooltip, code) {
-        const countryName = isoToName[code] || tooltip.text() || code;
-        const installs = regionData[code] || (stats.installLocationDistribution || {})[countryName] || 0;
-        const activeCount = activeByIso[code] || (stats.locationDistribution || {})[countryName] || 0;
-        const flagHtml = renderCountryFlag(countryName);
-
-        tooltip.text(
-          `<div style="display:flex;align-items:center;gap:6px;font-weight:600;margin-bottom:4px;">
-            ${flagHtml} <span>${escapeHtml(countryName)}</span>
-           </div>
-           <div style="font-size:12px;color:var(--text-muted);">
-             Active Users: <strong style="color:var(--accent-blue);">${fmt(activeCount)}</strong>
-           </div>
-           <div style="font-size:12px;color:var(--text-muted);">
-             Total Installs: <strong style="color:var(--accent-green);">${fmt(installs)}</strong>
-           </div>`,
-          true
-        );
       },
 
       onMarkerTooltipShow(event, tooltip, index) {
@@ -485,85 +477,189 @@
         const flagHtml = renderCountryFlag(countryName);
 
         tooltip.text(
-          `<div style="display:flex;align-items:center;gap:6px;font-weight:600;margin-bottom:4px;">
+          `<div style="display:flex;align-items:center;gap:7px;font-weight:600;margin-bottom:4px;">
             ${flagHtml} <span>${escapeHtml(countryName)}</span>
            </div>
-           <div style="font-size:12px;color:var(--text-muted);">
+           <div style="font-size:12px;color:var(--text-secondary);">
              Active Users: <strong style="color:var(--accent-blue);">${fmt(activeCount)}</strong>
            </div>
-           <div style="font-size:12px;color:var(--text-muted);">
+           <div style="font-size:12px;color:var(--text-secondary);">
              Total Installs: <strong style="color:var(--accent-green);">${fmt(installs)}</strong>
            </div>`,
           true
         );
       },
-
-      onRegionClick(event, code) {
-        const countryName = isoToName[code] || code;
-        const installs = regionData[code] || (stats.installLocationDistribution || {})[countryName] || 0;
-        const activeCount = activeByIso[code] || (stats.locationDistribution || {})[countryName] || 0;
-        const detail = activeCount > 0 
-          ? `${fmt(activeCount)} Active : ${fmt(installs)} Installs`
-          : `${fmt(installs)} Total Installs`;
-        showToast(countryName, detail, 'var(--accent-green)');
-      },
-
-      onMarkerClick(event, index) {
-        const marker = markers[index];
-        if (!marker) return;
-        const countryName = marker.name;
-        const iso = marker.iso;
-        const installs = (iso && regionData[iso]) || (stats.installLocationDistribution || {})[countryName] || 0;
-        const activeCount = (iso && activeByIso[iso]) || (stats.locationDistribution || {})[countryName] || marker.activeCount || 0;
-        if (activeCount > 0) {
-          showToast(countryName, `${fmt(activeCount)} Active Players`, 'var(--accent-blue)');
-        } else {
-          showToast(countryName, `${fmt(installs)} Total Installs`, 'var(--accent-green)');
-        }
-      }
     });
   }
 
-  // ── Custom Toast for Mobile Interactions ────────────────────────
-  function showToast(title, message, color) {
-    let toast = document.getElementById('map-toast');
-    if (!toast) {
-      toast = document.createElement('div');
-      toast.id = 'map-toast';
-      toast.style.cssText =
-        'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-surface);color:var(--text-primary);padding:10px 20px;border-radius:10px;z-index:9999;box-shadow:var(--shadow-elevated);border:1px solid var(--border-card);text-align:center;font-size:13px;pointer-events:none;opacity:0;transition:opacity 0.2s ease, transform 0.2s ease;';
-      document.body.appendChild(toast);
+  // ── Dynamic Timeframe Metric Switching ────────────────────────────
+  function updateTimeframeKPI() {
+    if (!lastStats) return;
+
+    const totalInstalls = Number(lastStats.totalInstalls) || 0;
+    const open = Number(lastStats.openClients) || 0;
+    const hasActive7d = lastStats.activeUsers7d !== undefined && lastStats.activeUsers7d !== null;
+    const active7d = hasActive7d ? Math.max(Number(lastStats.activeUsers7d), open) : open;
+
+    const valEl = $('kpi-activeUsers7d');
+    const labelEl = $('kpi-activeLabel');
+    const tooltipEl = $('kpi-activeTooltip');
+
+    let count = active7d;
+    let label = 'Active Users (7D)';
+    let tooltip = 'Active in last 7 days';
+
+    if (currentTimePeriod === '24h') {
+      count = Number(lastStats.activeUsers24h) || open;
+      label = 'Active Users (24H)';
+      tooltip = 'Active in last 24 hours';
+    } else if (currentTimePeriod === '30d') {
+      count = Number(lastStats.activeUsers30d) || active7d;
+      label = 'Active Users (30D)';
+      tooltip = 'Active in last 30 days';
+    } else if (currentTimePeriod === 'total') {
+      count = totalInstalls;
+      label = 'Lifetime Installs';
+      tooltip = 'Cumulative lifetime registered installations';
     }
 
-    toast.style.opacity = '0';
-    toast.style.transform = 'translate(-50%, 10px)';
-    void toast.offsetWidth;
+    if (valEl) valEl.textContent = fmt(count);
+    if (labelEl) labelEl.textContent = label;
+    if (tooltipEl) tooltipEl.textContent = tooltip;
 
-    const flagHtml = renderCountryFlag(title);
-    toast.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-weight:700;margin-bottom:2px;color:${color};font-size:14px;">
-        ${flagHtml} <span>${escapeHtml(title)}</span>
-      </div>
-      <div>${message}</div>
-    `;
-    toast.style.opacity = '1';
-    toast.style.transform = 'translate(-50%, 0)';
+    renderInsights(
+      lastStats,
+      breakdownData.clientVersion,
+      sortedEntries(lastStats.serverTypeDistribution),
+      breakdownData.installCountry
+    );
+  }
 
-    if (toast.timeout) clearTimeout(toast.timeout);
-    toast.timeout = setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translate(-50%, 10px)';
-    }, 2500);
+  function setupTimeFilterSegmentedControl() {
+    const segmented = $('timeFilterControl');
+    if (!segmented) return;
+
+    segmented.addEventListener('click', (e) => {
+      const tab = e.target.closest('.lg-tab');
+      if (!tab) return;
+
+      const period = tab.dataset.period;
+      if (!period || period === currentTimePeriod) return;
+
+      segmented.querySelectorAll('.lg-tab').forEach((t) => {
+        t.classList.remove('active');
+        t.setAttribute('aria-checked', 'false');
+      });
+
+      tab.classList.add('active');
+      tab.setAttribute('aria-checked', 'true');
+      currentTimePeriod = period;
+
+      updateTimeframeKPI();
+    });
+  }
+
+  // ── Auto-Refresh Glisse Switch ────────────────────────────────────
+  function updateAutoRefreshSwitchUI() {
+    const sw = $('autoRefreshSwitch');
+    if (!sw) return;
+    sw.setAttribute('aria-checked', String(autoRefreshEnabled));
+  }
+
+  function toggleAutoRefresh() {
+    autoRefreshEnabled = !autoRefreshEnabled;
+    localStorage.setItem('pmc-autorefresh', String(autoRefreshEnabled));
+    updateAutoRefreshSwitchUI();
+
+    if (autoRefreshEnabled) {
+      startAutoRefresh();
+      updateStatusCaption();
+    } else {
+      if (timerId) clearInterval(timerId);
+      timerId = null;
+      const caption = $('statusCaption');
+      if (caption) caption.textContent = 'Auto-refresh paused';
+    }
+  }
+
+  function setupAutoRefreshSwitch() {
+    const sw = $('autoRefreshSwitch');
+    if (sw) {
+      updateAutoRefreshSwitchUI();
+      sw.addEventListener('click', toggleAutoRefresh);
+    }
+  }
+
+  // ── Real-Time Breakdown Search Setup ─────────────────────────────
+  function setupSearchInputs() {
+    const configs = [
+      { inputId: 'searchInstallVersion', dataKey: 'installVersion', containerId: 'tbl-installVersion', isCountry: false },
+      { inputId: 'searchInstallCountry', dataKey: 'installCountry', containerId: 'tbl-installCountry', isCountry: true },
+      { inputId: 'searchClientVersion', dataKey: 'clientVersion', containerId: 'tbl-clientVersion', isCountry: false },
+      { inputId: 'searchClientLocation', dataKey: 'clientLocation', containerId: 'tbl-clientLocation', isCountry: true },
+    ];
+
+    configs.forEach(({ inputId, dataKey, containerId, isCountry }) => {
+      const input = $(inputId);
+      if (!input) return;
+
+      input.addEventListener('input', (e) => {
+        searchQueries[dataKey] = e.target.value;
+        renderBreakdownList(containerId, dataKey, isCountry);
+      });
+    });
+  }
+
+  // ── Tab Bar Navigation & Scroll-Spy ──────────────────────────────
+  function setupTabBarNavigation() {
+    const tabBar = $('sectionTabBar');
+    if (!tabBar) return;
+
+    // Smooth scroll on tab click
+    tabBar.addEventListener('click', (e) => {
+      const tab = e.target.closest('.lg-tab');
+      if (!tab) return;
+      e.preventDefault();
+
+      const targetId = tab.dataset.tab;
+      const targetEl = $(targetId);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    // Scroll-Spy to highlight current section
+    const sections = ['section-installs', 'section-clients', 'section-servers', 'section-map']
+      .map((id) => $(id))
+      .filter(Boolean);
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          tabBar.querySelectorAll('.lg-tab').forEach((tab) => {
+            const isActive = tab.dataset.tab === id;
+            tab.classList.toggle('active', isActive);
+            tab.setAttribute('aria-selected', String(isActive));
+          });
+        }
+      });
+    }, { rootMargin: '-20% 0px -60% 0px' });
+
+    sections.forEach((sec) => observer.observe(sec));
   }
 
   // ── Main Render Routine ──────────────────────────────────────────
   function render(stats) {
     lastStats = stats;
 
-    // ── SECTION 1: INSTALLS & USER BASE ──────────────────────────
-    const installVersion = sortedEntries(stats.installVersionDistribution);
-    const installCountry = sortedEntries(stats.installLocationDistribution);
+    // Store breakdown entries for searchable rendering
+    breakdownData.installVersion = sortedEntries(stats.installVersionDistribution);
+    breakdownData.installCountry = sortedEntries(stats.installLocationDistribution);
+    breakdownData.clientVersion = sortedEntries(stats.versionDistribution);
+    breakdownData.clientLocation = sortedEntries(stats.locationDistribution);
 
+    // SECTION 1: INSTALLS & USER BASE
     const totalInstalls = Number(stats.totalInstalls) || 0;
     const open = Number(stats.openClients) || 0;
     const hasActive7d = stats.activeUsers7d !== undefined && stats.activeUsers7d !== null;
@@ -571,90 +667,65 @@
     const inactive7d = hasActive7d && stats.inactiveUsers7d !== undefined
       ? Number(stats.inactiveUsers7d)
       : Math.max(0, totalInstalls - active7d);
-    const countriesReached = installCountry.length;
+    const countriesReached = breakdownData.installCountry.length;
     const avgInstalls = countriesReached > 0 ? (totalInstalls / countriesReached).toFixed(1) : '0.0';
 
     $('kpi-totalInstalls').textContent = fmt(totalInstalls);
-    $('kpi-activeUsers7d').textContent = fmt(active7d);
     $('kpi-inactiveUsers7d').textContent = fmt(inactive7d);
-    $('kpi-installVersions').textContent = fmt(installVersion.length);
+    $('kpi-installVersions').textContent = fmt(breakdownData.installVersion.length);
     $('kpi-installCountries').textContent = fmt(countriesReached);
     $('kpi-avgInstalls').textContent = avgInstalls;
 
-    renderBreakdownList('tbl-installVersion', installVersion, false);
-    renderBreakdownList('tbl-installCountry', installCountry, true);
+    updateTimeframeKPI();
 
-    // ── SECTION 2: CLIENTS ───────────────────────────────────────
-    const active = Number(stats.activeUsers) || 0;
-    const afk = Math.max(0, open - active);
+    renderBreakdownList('tbl-installVersion', 'installVersion', false);
+    renderBreakdownList('tbl-installCountry', 'installCountry', true);
+
+    // SECTION 2: CLIENTS
+    const activeClients = Number(stats.activeUsers) || 0;
+    const afkClients = Math.max(0, open - activeClients);
+    const activeCountries = breakdownData.clientLocation.length;
 
     $('kpi-openClients').textContent = fmt(open);
-    $('kpi-activeUsers').textContent = fmt(active);
-    $('kpi-afkUsers').textContent = fmt(afk);
+    $('kpi-activeUsers').textContent = fmt(activeClients);
+    $('kpi-afkUsers').textContent = fmt(afkClients);
+    $('kpi-activeCountries').textContent = fmt(activeCountries);
 
-    const clientVersion = sortedEntries(stats.versionDistribution);
-    const clientLocation = sortedEntries(stats.locationDistribution);
+    renderBreakdownList('tbl-clientVersion', 'clientVersion', false);
+    renderBreakdownList('tbl-clientLocation', 'clientLocation', true);
 
-    renderBreakdownList('tbl-clientVersion', clientVersion, false);
-    renderBreakdownList('tbl-clientLocation', clientLocation, true);
+    // SECTION 3: SERVERS
+    const totalServers = Number(stats.totalRunningServers) || 0;
+    const totalUptime = Number(stats.globalUptimeHours) || 0;
+    const serversCreated = Number(stats.totalServersCreated) || 0;
+    const serversDeleted = Number(stats.totalServersDeleted) || 0;
+    const serverTypes = sortedEntries(stats.serverTypeDistribution);
 
-    // ── SECTION 3: SERVERS ───────────────────────────────────────
-    $('kpi-totalServers').textContent = fmt(stats.totalRunningServers);
-    $('kpi-totalServersCreated').textContent = fmt(stats.totalServersCreated);
-    $('kpi-totalServersDeleted').textContent = fmt(stats.totalServersDeleted);
-    $('kpi-uptime').textContent = fmt(Math.round(stats.globalUptimeHours)) + ' Hrs';
+    $('kpi-totalServers').textContent = fmt(totalServers);
+    $('kpi-uptime').textContent = totalUptime > 0 ? `${fmt(totalUptime)}h` : '-';
+    $('kpi-totalServersCreated').textContent = fmt(serversCreated);
+    $('kpi-totalServersDeleted').textContent = fmt(serversDeleted);
 
-    const serverType = sortedEntries(stats.serverTypeDistribution);
-    renderServerTypes('tbl-serverType', serverType);
+    renderServerTypes('tbl-serverType', serverTypes);
 
-    // ── INSIGHTS & MAP ───────────────────────────────────────────
-    renderInsights(stats, clientVersion, serverType, installCountry);
-
-    const mapInsight = $('insight-map');
-    if (mapInsight) {
-      mapInsight.textContent = `Installations from ${countriesReached} countries around the world.`;
-    }
-
+    // SECTION 4: MAP & INSIGHTS
     initMap(stats);
+    renderInsights(stats, breakdownData.clientVersion, serverTypes, breakdownData.installCountry);
   }
 
-  // ── Skeleton Loader ──────────────────────────────────────────────
+  // ── Skeletons ────────────────────────────────────────────────────
   function showSkeletons() {
-    if (lastSuccess) return;
+    if (lastStats) return;
 
-    const kpis = [
-      'kpi-totalInstalls',
-      'kpi-activeUsers7d',
-      'kpi-inactiveUsers7d',
-      'kpi-installVersions',
-      'kpi-installCountries',
-      'kpi-avgInstalls',
-      'kpi-openClients',
-      'kpi-activeUsers',
-      'kpi-afkUsers',
-      'kpi-serverDensity',
-      'kpi-totalServers',
-      'kpi-totalServersCreated',
-      'kpi-totalServersDeleted',
-      'kpi-uptime',
-    ];
+    ['kpi-totalInstalls', 'kpi-activeUsers7d', 'kpi-inactiveUsers7d', 'kpi-installCountries', 'kpi-installVersions', 'kpi-avgInstalls',
+     'kpi-openClients', 'kpi-activeUsers', 'kpi-afkUsers', 'kpi-activeCountries',
+     'kpi-totalServers', 'kpi-uptime', 'kpi-serverDensity', 'kpi-totalServersCreated', 'kpi-totalServersDeleted']
+      .forEach((id) => {
+        const el = $(id);
+        if (el) el.innerHTML = '<span class="skeleton" style="display:inline-block;width:55px;height:24px;"></span>';
+      });
 
-    kpis.forEach((id) => {
-      const el = $(id);
-      if (el) {
-        el.innerHTML = '<span class="skeleton" style="display:inline-block;width:60%;height:1.15em;"></span>';
-      }
-    });
-
-    const lists = [
-      'tbl-installVersion',
-      'tbl-installCountry',
-      'tbl-clientVersion',
-      'tbl-clientLocation',
-      'tbl-serverType',
-    ];
-
-    lists.forEach((id) => {
+    ['tbl-installVersion', 'tbl-installCountry', 'tbl-clientVersion', 'tbl-clientLocation', 'tbl-serverType'].forEach((id) => {
       const el = $(id);
       if (el) {
         el.innerHTML = Array.from({ length: 4 }, () => `
@@ -668,9 +739,7 @@
     });
 
     const mapBox = $('world-map');
-    if (mapBox) {
-      mapBox.classList.add('skeleton');
-    }
+    if (mapBox) mapBox.classList.add('skeleton');
   }
 
   // ── Fetch Loop ───────────────────────────────────────────────────
@@ -705,7 +774,9 @@
   function updateStatusCaption() {
     const caption = $('statusCaption');
     if (!caption) return;
-    if (lastSuccess) {
+    if (!autoRefreshEnabled) {
+      caption.textContent = 'Auto-refresh paused';
+    } else if (lastSuccess) {
       caption.textContent = `Updated ${lastSuccess.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
     } else {
       caption.textContent = 'Updated just now';
@@ -713,12 +784,13 @@
   }
 
   function triggerRefresh() {
-    startAutoRefresh();
+    if (autoRefreshEnabled) startAutoRefresh();
     fetchStats();
   }
 
   function startAutoRefresh() {
     if (timerId) clearInterval(timerId);
+    if (!autoRefreshEnabled) return;
     timerId = setInterval(fetchStats, REFRESH_INTERVAL * 1000);
   }
 
@@ -726,7 +798,7 @@
   function updateThemeMeta(theme) {
     const meta = $('meta-theme-color');
     if (meta) {
-      meta.setAttribute('content', theme === 'dark' ? '#0a0a0a' : '#f1f5f9');
+      meta.setAttribute('content', theme === 'dark' ? '#070709' : '#f4f6fa');
     }
   }
 
@@ -738,7 +810,7 @@
     localStorage.setItem('pmc-theme', nextTheme);
     updateThemeMeta(nextTheme);
 
-    // Re-render map to apply new SVG theme palette
+    // Re-render map with new theme palette
     if (worldMapInstance && lastStats) {
       worldMapInstance.destroy();
       worldMapInstance = null;
@@ -769,22 +841,21 @@
 
   // ── Boot ─────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
-    // Theme setup
     const initialTheme = document.documentElement.getAttribute('data-theme') || 'light';
     updateThemeMeta(initialTheme);
 
     const themeBtn = $('themeToggle');
-    if (themeBtn) {
-      themeBtn.addEventListener('click', toggleTheme);
-    }
+    if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
 
     const refreshBtn = $('refreshBtn');
-    if (refreshBtn) {
-      refreshBtn.addEventListener('click', triggerRefresh);
-    }
+    if (refreshBtn) refreshBtn.addEventListener('click', triggerRefresh);
 
+    setupAutoRefreshSwitch();
+    setupTimeFilterSegmentedControl();
+    setupSearchInputs();
+    setupTabBarNavigation();
     setupInfoTooltips();
+
     triggerRefresh();
-    startAutoRefresh();
   });
 })();
