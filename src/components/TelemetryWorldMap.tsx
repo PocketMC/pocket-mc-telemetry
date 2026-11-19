@@ -103,7 +103,7 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
           style: {
             initial: {
               fill: isDark ? '#38bdf8' : '#0088ff',
-              stroke: '#ffffff',
+              stroke: isDark ? '#0a0a0c' : '#ffffff',
               strokeWidth: 1.5,
               r: 4.5,
             },
@@ -131,7 +131,7 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
           style: {
             initial: {
               fill: isDark ? '#30d158' : '#34c759',
-              stroke: isDark ? '#141414' : '#ffffff',
+              stroke: isDark ? '#0a0a0c' : '#ffffff',
               strokeWidth: 1,
               r: 3.5,
             },
@@ -172,13 +172,13 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
 
         regionStyle: {
           initial: {
-            fill: isDark ? '#1a1d26' : '#e2e8f0',
-            stroke: isDark ? '#262a38' : '#cbd5e1',
+            fill: isDark ? '#121216' : '#dbe2ef',
+            stroke: isDark ? '#1f1f26' : '#cbd5e1',
             strokeWidth: 0.5,
             fillOpacity: 1,
           },
           hover: {
-            fill: isDark ? '#292e3d' : '#cbd5e1',
+            fill: isDark ? '#1c1c24' : '#c4d1e6',
             cursor: 'pointer',
           },
         },
@@ -187,7 +187,7 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
         markerStyle: {
           initial: {
             fill: isDark ? '#38bdf8' : '#0088ff',
-            stroke: '#ffffff',
+            stroke: isDark ? '#0a0a0c' : '#ffffff',
             strokeWidth: 1.5,
             r: 4,
           },

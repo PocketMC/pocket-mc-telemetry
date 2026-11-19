@@ -20,7 +20,21 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.style.colorScheme = theme;
     localStorage.setItem('pmc-theme', theme);
+
+    const themeHex = theme === 'dark' ? '#000000' : '#f4f6fa';
+    document.documentElement.style.backgroundColor = themeHex;
+
+    const metaThemeColor = document.getElementById('meta-theme-color');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', themeHex);
+    }
+
+    const appleMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+    if (appleMeta) {
+      appleMeta.setAttribute('content', theme === 'dark' ? 'black' : 'default');
+    }
   }, [theme]);
 
   const toggleTheme = () => {

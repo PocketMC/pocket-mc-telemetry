@@ -99,7 +99,7 @@ export const BreakdownCard: React.FC<BreakdownCardProps> = ({
                         loading="lazy"
                       />
                     ) : (
-                      <span className="flag-icon" style={{ background: '#64748b', display: 'inline-block' }} />
+                      <span className="flag-icon" style={{ background: 'var(--text-muted)', display: 'inline-block' }} />
                     )
                   )}
                   <span title={name}>{name}</span>

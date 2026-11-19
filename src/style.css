@@ -8,49 +8,63 @@
 /* ── Light Theme Mappings ──────────────────────────────────── */
 :root,
 [data-theme="light"] {
+  color-scheme: light;
   --bg-page: #f4f6fa;
-  --bg-surface: var(--lg-surface);
-  --bg-surface-subtle: rgb(240 242 248 / 0.7);
-  --bg-surface-elevated: rgb(255 255 255 / 0.85);
-  --border-card: var(--lg-surface-edge);
+  --bg-surface: #ffffff;
+  --bg-surface-subtle: #f8f9fc;
+  --bg-surface-elevated: #ffffff;
+  --border-card: rgba(0, 0, 0, 0.08);
   --border-subtle: rgba(0, 0, 0, 0.06);
   --border-input: rgba(0, 0, 0, 0.12);
 
-  --text-primary: var(--lg-foreground);
-  --text-secondary: var(--lg-muted);
-  --text-muted: rgb(110 115 130 / 0.85);
-  --text-subtle: rgb(140 145 160 / 0.75);
+  /* Glisse component tokens override for light theme */
+  --lg-foreground: rgba(0, 0, 0, 0.88);
+  --lg-muted: rgba(60, 60, 67, 0.65);
+  --lg-glass: rgba(248, 249, 252, 0.85);
+  --lg-glass-active: rgba(236, 238, 244, 0.95);
+  --lg-surface: #ffffff;
+  --lg-surface-edge: rgba(0, 0, 0, 0.08);
+  --lg-edge: rgba(0, 0, 0, 0.08);
+  --lg-shadow: rgba(25, 25, 35, 0.08);
+  --lg-drop: rgba(0, 0, 0, 0.04);
+  --lg-rail: rgba(0, 0, 0, 0.08);
+
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --text-subtle: #cbd5e1;
 
   --accent-blue: #0088ff;
   --accent-blue-subtle: rgba(0, 136, 255, 0.10);
-  --accent-green: #34c759;
-  --accent-green-subtle: rgba(52, 199, 89, 0.10);
-  --accent-purple: #af52de;
-  --accent-purple-subtle: rgba(175, 82, 222, 0.10);
-  --accent-red: #ff383c;
-  --accent-red-subtle: rgba(255, 56, 60, 0.10);
+  --accent-green: #22c55e;
+  --accent-green-subtle: rgba(34, 197, 94, 0.10);
+  --accent-purple: #a855f7;
+  --accent-purple-subtle: rgba(168, 85, 247, 0.10);
+  --accent-red: #ef4444;
+  --accent-red-subtle: rgba(239, 68, 68, 0.10);
 
-  --bar-track: var(--lg-rail);
-  --bar-fill: var(--lg-fill);
+  --bar-track: rgba(0, 0, 0, 0.06);
+  --bar-fill: var(--accent-blue);
 
-  --map-bg: rgba(240, 243, 250, 0.4);
+  --map-bg: rgba(240, 243, 250, 0.5);
   --map-land: #dbe2ef;
   --map-land-hover: #c4d1e6;
   --map-stroke: #cbd5e1;
 
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow-card: 0 12px 36px 0 var(--lg-shadow);
-  --shadow-hover: 0 16px 44px 0 rgba(25, 25, 35, 0.16);
+  --shadow-card: 0 12px 32px rgba(25, 25, 35, 0.06);
+  --shadow-hover: 0 16px 40px rgba(25, 25, 35, 0.10);
 
-  --lg-rim-shine-high: 0.38;
+  --lg-rim-shine-high: 0.22;
+  --lg-rim-shine: 0.12;
 
   --scrollbar-thumb: rgba(0, 0, 0, 0.15);
-  --tooltip-bg: rgb(255 255 255 / 0.92);
-  --tooltip-text: #1a1a1e;
+  --tooltip-bg: #ffffff;
+  --tooltip-text: #0f172a;
 
-  /* Floating Navigation (Light) with localized backdrop blur */
-  --nav-solid-bg: rgba(255, 255, 255, 0.75);
-  --nav-solid-border: rgba(0, 0, 0, 0.08);
+  /* Floating Navigation & Header (Light) with localized backdrop blur */
+  --nav-solid-bg: rgba(255, 255, 255, 0.85);
+  --nav-solid-border: rgba(0, 0, 0, 0.09);
   --nav-tab-color: #64748b;
   --nav-tab-hover-bg: rgba(0, 0, 0, 0.05);
   --nav-tab-hover-color: #0f172a;
@@ -59,57 +73,71 @@
   --nav-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
-/* ── Dark Theme Mappings ───────────────────────────────────── */
+/* ── True OLED Dark Theme Mappings ─────────────────────────── */
 [data-theme="dark"] {
-  --bg-page: #070709;
-  --bg-surface: var(--lg-surface);
-  --bg-surface-subtle: rgb(20 20 24 / 0.7);
-  --bg-surface-elevated: rgb(35 35 42 / 0.85);
-  --border-card: var(--lg-surface-edge);
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-input: rgba(255, 255, 255, 0.14);
+  color-scheme: dark;
+  --bg-page: #000000;
+  --bg-surface: #0a0a0c;
+  --bg-surface-subtle: #111114;
+  --bg-surface-elevated: #16161a;
+  --border-card: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-input: rgba(255, 255, 255, 0.10);
 
-  --text-primary: var(--lg-foreground);
-  --text-secondary: var(--lg-muted);
-  --text-muted: rgb(160 165 180 / 0.75);
-  --text-subtle: rgb(110 115 130 / 0.65);
+  /* Glisse component tokens override for True OLED Dark */
+  --lg-foreground: #ffffff;
+  --lg-muted: #a1a1aa;
+  --lg-glass: #111114;
+  --lg-glass-active: #18181c;
+  --lg-surface: #0a0a0c;
+  --lg-surface-edge: rgba(255, 255, 255, 0.08);
+  --lg-edge: rgba(255, 255, 255, 0.07);
+  --lg-shadow: rgba(0, 0, 0, 0.70);
+  --lg-drop: transparent;
+  --lg-rail: rgba(255, 255, 255, 0.07);
+
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-subtle: #52525b;
 
   --accent-blue: #0091ff;
-  --accent-blue-subtle: rgba(0, 145, 255, 0.15);
+  --accent-blue-subtle: rgba(0, 145, 255, 0.14);
   --accent-green: #30d158;
-  --accent-green-subtle: rgba(48, 209, 88, 0.15);
+  --accent-green-subtle: rgba(48, 209, 88, 0.14);
   --accent-purple: #bf5af2;
-  --accent-purple-subtle: rgba(191, 90, 242, 0.15);
+  --accent-purple-subtle: rgba(191, 90, 242, 0.14);
   --accent-red: #ff453a;
-  --accent-red-subtle: rgba(255, 69, 58, 0.15);
+  --accent-red-subtle: rgba(255, 69, 58, 0.14);
 
-  --bar-track: var(--lg-rail);
-  --bar-fill: var(--lg-fill);
+  --bar-track: rgba(255, 255, 255, 0.07);
+  --bar-fill: var(--accent-blue);
 
-  --map-bg: rgba(15, 15, 20, 0.4);
-  --map-land: #1f222e;
-  --map-land-hover: #2b3042;
-  --map-stroke: #2e3447;
+  --map-bg: #000000;
+  --map-land: #121216;
+  --map-land-hover: #1c1c24;
+  --map-stroke: #1f1f26;
 
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-  --shadow-card: 0 16px 44px 0 var(--lg-shadow);
-  --shadow-hover: 0 20px 52px 0 rgba(0, 0, 0, 0.55);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 16px 40px rgba(0, 0, 0, 0.75);
+  --shadow-hover: 0 20px 48px rgba(0, 0, 0, 0.90);
 
-  --lg-rim-shine-high: 0.24;
+  --lg-rim-shine-high: 0.04;
+  --lg-rim-shine: 0.03;
 
-  --scrollbar-thumb: rgba(255, 255, 255, 0.18);
-  --tooltip-bg: rgb(24 24 28 / 0.94);
-  --tooltip-text: #f4f6fa;
+  --scrollbar-thumb: rgba(255, 255, 255, 0.16);
+  --tooltip-bg: #141418;
+  --tooltip-text: #ffffff;
 
-  /* Floating Navigation (Dark) with localized backdrop blur */
-  --nav-solid-bg: rgba(18, 19, 24, 0.74);
+  /* Floating Navigation & Header (OLED Dark) with localized backdrop blur */
+  --nav-solid-bg: rgba(10, 10, 12, 0.85);
   --nav-solid-border: rgba(255, 255, 255, 0.10);
-  --nav-tab-color: #9297a5;
+  --nav-tab-color: #94949e;
   --nav-tab-hover-bg: rgba(255, 255, 255, 0.06);
-  --nav-tab-hover-color: #e2e4ea;
+  --nav-tab-hover-color: #f0f0f4;
   --nav-tab-active-bg: rgba(255, 255, 255, 0.12);
   --nav-tab-active-color: #ffffff;
-  --nav-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+  --nav-shadow: 0 8px 32px rgba(0, 0, 0, 0.75);
 }
 
 /* ── Reset & Global Rules ──────────────────────────────────── */
@@ -144,6 +172,13 @@ body {
 .section-card,
 .kpi-card,
 .breakdown-card,
+.server-type-row,
+.solid-segmented-bar,
+.top-brand-btn,
+.top-action-btn,
+.lg-button,
+.lg-input,
+.map-container-box,
 .table-card {
   transition: background-color 0.25s ease, border-color 0.25s ease, color 0.2s ease, box-shadow 0.25s ease;
 }
@@ -584,6 +619,7 @@ body {
 .text-green { color: var(--accent-green); }
 .text-purple { color: var(--accent-purple); }
 .text-red { color: var(--accent-red); }
+.text-slate { color: var(--text-secondary); }
 
 .kpi-body {
   display: flex;
@@ -673,21 +709,37 @@ body {
   width: 100%;
 }
 
-.lg-input.search-bar {
-  width: 100%;
-  max-width: none;
-  height: 32px;
-  padding: 0 12px;
-  border-radius: 12px;
+.lg-input {
   background-color: var(--lg-glass);
   border: 1px solid var(--lg-edge);
-  font-size: 12px;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, var(--lg-rim-shine));
+  color: var(--text-primary);
+  transition: background-color 0.2s var(--lg-ease), border-color 0.2s ease, box-shadow 0.2s var(--lg-ease);
 }
 
-.lg-input.search-bar:focus-within {
+.lg-input:focus-within {
   background-color: var(--lg-glass-active);
   border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px var(--accent-blue-subtle);
+}
+
+.lg-input input {
+  color: var(--text-primary) !important;
+}
+
+.lg-input input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.lg-input-icon {
+  color: var(--text-muted) !important;
+}
+
+.lg-input-clear {
+  color: var(--text-muted) !important;
+}
+
+.lg-input-clear:hover {
+  color: var(--text-primary) !important;
 }
 
 .breakdown-list {
@@ -832,7 +884,7 @@ body {
   border-radius: 18px;
   overflow: hidden;
   background-color: var(--map-bg);
-  border: 1px solid var(--lg-edge);
+  border: 1px solid var(--border-card);
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, var(--lg-rim-shine));
 }
 
@@ -850,14 +902,58 @@ body {
   gap: 12px;
   padding: 6px 14px;
   border-radius: 999px;
-  background-color: var(--lg-glass);
+  background-color: var(--nav-solid-bg);
   -webkit-backdrop-filter: blur(20px) saturate(1.8);
   backdrop-filter: blur(20px) saturate(1.8);
-  border: 1px solid var(--lg-edge);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, var(--lg-rim-shine)), 0 4px 12px var(--lg-shadow);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
   font-size: 11.5px;
   font-weight: 500;
   color: var(--text-secondary);
+}
+
+.jvm-tooltip {
+  background-color: var(--tooltip-bg) !important;
+  color: var(--tooltip-text) !important;
+  border: 1px solid var(--border-card) !important;
+  border-radius: 10px !important;
+  padding: 8px 12px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+  font-family: inherit !important;
+  font-size: 12px !important;
+}
+
+/* Fullscreen Heatmap Styles */
+#heatmap-container {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-page);
+  transition: background-color 0.25s ease;
+}
+
+.overlay-ui {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 1010;
+}
+
+/* Global Error Banner */
+.error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  background-color: var(--accent-red-subtle);
+  border: 1px solid var(--accent-red);
+  color: var(--text-primary);
+  font-size: 13px;
+  margin-bottom: 20px;
 }
 
 .legend-item {
@@ -917,13 +1013,14 @@ body {
   border-radius: 10px;
   background-color: var(--tooltip-bg);
   color: var(--tooltip-text);
+  border: 1px solid var(--border-card);
   font-size: 11.5px;
   font-weight: 500;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
   visibility: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), inset 0 0.5px 0.5px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   transition: opacity 0.15s ease, transform 0.15s ease;
   z-index: 120;
 }

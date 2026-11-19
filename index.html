@@ -8,6 +8,9 @@
   <meta name="description"
     content="Live anonymous telemetry for PocketMC: installations, active clients, and server analytics." />
 
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#000000" id="meta-theme-color" />
+
   <!-- Immediate URL clean-up & GitHub Pages SPA redirect restore -->
   <script>
     (function () {
@@ -28,13 +31,20 @@
     })();
   </script>
 
-  <!-- Pre-render theme initialization to prevent Flash of Unstyled Theme -->
+  <!-- Pre-render theme initialization to prevent Flash of Unstyled Theme (FOUT) -->
   <script>
     (function () {
-      const savedTheme = localStorage.getItem('pmc-theme');
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const theme = savedTheme || (prefersDark ? 'dark' : 'light');
-      document.documentElement.setAttribute('data-theme', theme);
+      try {
+        var savedTheme = localStorage.getItem('pmc-theme');
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = (savedTheme === 'light' || savedTheme === 'dark') ? savedTheme : (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.style.colorScheme = theme;
+        var themeHex = theme === 'dark' ? '#000000' : '#f4f6fa';
+        document.documentElement.style.backgroundColor = themeHex;
+        var meta = document.getElementById('meta-theme-color');
+        if (meta) meta.setAttribute('content', themeHex);
+      } catch (e) {}
     })();
   </script>
 
@@ -49,7 +59,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="PocketMC" />
   <meta name="application-name" content="PocketMC Telemetry" />
-  <meta name="theme-color" content="#070709" id="meta-theme-color" />
 
   <!-- Touch and Standard App Icons -->
   <link rel="icon" type="image/svg+xml" href="./icon.svg" />
