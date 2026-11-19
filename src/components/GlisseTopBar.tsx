@@ -1,29 +1,19 @@
 import React from 'react';
-import { Switch, Button } from 'glisse';
-import { RefreshCw, Sun, Moon } from 'lucide-react';
+import { Button } from 'glisse';
+import { Sun, Moon } from 'lucide-react';
 
 interface GlisseTopBarProps {
-  autoRefresh: boolean;
-  onToggleAutoRefresh: (val: boolean) => void;
-  onRefresh: () => void;
-  loading: boolean;
-  lastUpdated: Date | null;
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
 }
 
 export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
-  autoRefresh,
-  onToggleAutoRefresh,
-  onRefresh,
-  loading,
-  lastUpdated,
   theme,
   onToggleTheme,
 }) => {
   return (
     <header className="topbar lg-glass">
-      {/* Brand & Live Status */}
+      {/* Brand */}
       <div className="topbar-left">
         <a href="#section-installs" className="brand-link" aria-label="PocketMC Telemetry Home">
           <img
@@ -41,45 +31,10 @@ export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
             <span className="brand-sub">Telemetry</span>
           </div>
         </a>
-
-        {/* Live Status Badge */}
-        <div className="live-status-pill">
-          <span className="live-dot" aria-hidden="true" />
-          <span className="live-title">Live</span>
-          <span className="live-separator" aria-hidden="true">|</span>
-          <span className="live-time">
-            {!autoRefresh
-              ? 'Paused'
-              : lastUpdated
-              ? `Updated ${lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`
-              : 'Syncing...'}
-          </span>
-        </div>
       </div>
 
       {/* Topbar Actions */}
       <div className="topbar-actions-group">
-        {/* Real Glisse Switch for 30s Auto-Refresh */}
-        <div className="auto-refresh-control" title="Toggle 30-second live auto-refresh">
-          <span className="switch-label">Live 30s</span>
-          <Switch
-            checked={autoRefresh}
-            onCheckedChange={onToggleAutoRefresh}
-            aria-label="Toggle 30-second live auto-refresh"
-          />
-        </div>
-
-        {/* Real Glisse Button for Refresh */}
-        <Button
-          variant="glass"
-          onClick={onRefresh}
-          disabled={loading}
-          aria-label="Refresh telemetry now"
-          icon={<RefreshCw size={13} className={loading ? 'btn-spin' : ''} />}
-        >
-          Refresh
-        </Button>
-
         {/* Real Glisse Button for GitHub */}
         <a
           href="https://github.com/PocketMC/pocket-mc-telemetry"
@@ -90,6 +45,7 @@ export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
           <Button
             variant="glass"
             aria-label="View on GitHub"
+            title="View on GitHub"
             icon={
               <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
                 <path
@@ -107,6 +63,7 @@ export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
           variant="glass"
           onClick={onToggleTheme}
           aria-label="Toggle light and dark mode"
+          title="Toggle light and dark mode"
           icon={theme === 'dark' ? <Moon size={15} /> : <Sun size={15} />}
         />
       </div>

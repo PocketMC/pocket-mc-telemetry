@@ -963,6 +963,13 @@ body {
   pointer-events: none;
 }
 
+.bottom-dock-cluster {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+}
+
 .bottom-dock-wrap .lg-tab-bar {
   pointer-events: auto;
   box-shadow:
@@ -976,5 +983,39 @@ body {
   box-shadow:
     0 26px 56px -8px rgba(0, 0, 0, 0.75),
     0 6px 20px -2px rgba(0, 0, 0, 0.45);
+}
+
+.bottom-dock-wrap .dock-refresh-btn.lg-button,
+.bottom-dock-wrap .dock-refresh-btn[data-icon="only"] {
+  pointer-events: auto;
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 20px 48px -8px rgba(0, 0, 0, 0.65),
+    0 4px 16px -2px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s var(--lg-ease), box-shadow 0.2s var(--lg-ease);
+  color: var(--lg-foreground);
+  flex-shrink: 0;
+}
+
+.bottom-dock-wrap .dock-refresh-btn.lg-button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 26px 56px -8px rgba(0, 0, 0, 0.75),
+    0 6px 20px -2px rgba(0, 0, 0, 0.45);
+}
+
+.bottom-dock-wrap .dock-refresh-btn.lg-button:active {
+  transform: translateY(0);
+}
+
+.bottom-dock-wrap .dock-refresh-btn.lg-button > svg {
+  width: 22px;
+  height: 22px;
 }
 

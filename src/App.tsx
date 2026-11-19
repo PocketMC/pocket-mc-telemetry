@@ -162,11 +162,6 @@ export const App: React.FC = () => {
       <div className="app-wrapper">
         {/* Authentic Glisse Floating Command Bar */}
         <GlisseTopBar
-          autoRefresh={autoRefresh}
-          onToggleAutoRefresh={setAutoRefresh}
-          onRefresh={refresh}
-          loading={loading}
-          lastUpdated={lastUpdated}
           theme={theme}
           onToggleTheme={toggleTheme}
         />
@@ -442,8 +437,13 @@ export const App: React.FC = () => {
           </div>
         </footer>
 
-        {/* Floating Bottom Navigation Dock with Authentic Glisse TabBar */}
-        <BottomNavDock activeTab={activeTab} onTabChange={handleTabChange} />
+        {/* Floating Bottom Navigation Dock with Authentic Glisse TabBar & Refresh Button */}
+        <BottomNavDock
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          onRefresh={refresh}
+          loading={loading}
+        />
       </div>
     </>
   );
