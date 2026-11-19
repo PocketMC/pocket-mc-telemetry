@@ -170,7 +170,8 @@ body {
    HEADER : Floating Glass Buttons (Top bar container removed)
    ═══════════════════════════════════════════════════════════════ */
 .top-header-row {
-  position: relative;
+  position: sticky;
+  top: 16px;
   z-index: 100;
   display: flex;
   align-items: center;
@@ -181,6 +182,11 @@ body {
   background: transparent;
   border: none;
   box-shadow: none;
+  pointer-events: none;
+}
+
+.top-header-row > * {
+  pointer-events: auto;
 }
 
 .brand-button.lg-button {
@@ -191,7 +197,7 @@ body {
   border: 0;
   box-shadow:
     inset 0 0 0 0.5px var(--lg-edge),
-    0 2px 8px var(--lg-drop);
+    0 4px 16px var(--lg-drop);
 }
 
 .brand-logo-img {
