@@ -48,14 +48,14 @@
   --tooltip-bg: rgb(255 255 255 / 0.92);
   --tooltip-text: #1a1a1e;
 
-  /* Floating Navigation (Light) with subtle restrained backdrop blur */
-  --nav-solid-bg: rgba(255, 255, 255, 0.85);
+  /* Floating Navigation (Light) with localized backdrop blur */
+  --nav-solid-bg: rgba(255, 255, 255, 0.75);
   --nav-solid-border: rgba(0, 0, 0, 0.08);
   --nav-tab-color: #64748b;
-  --nav-tab-hover-bg: rgba(0, 0, 0, 0.04);
-  --nav-tab-hover-color: #1e293b;
-  --nav-tab-active-bg: #e5e8f0;
-  --nav-tab-active-color: #0088ff;
+  --nav-tab-hover-bg: rgba(0, 0, 0, 0.05);
+  --nav-tab-hover-color: #0f172a;
+  --nav-tab-active-bg: rgba(0, 0, 0, 0.08);
+  --nav-tab-active-color: #0f172a;
   --nav-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
@@ -101,15 +101,15 @@
   --tooltip-bg: rgb(24 24 28 / 0.94);
   --tooltip-text: #f4f6fa;
 
-  /* Floating Navigation (Dark) with subtle restrained backdrop blur */
-  --nav-solid-bg: rgba(20, 21, 25, 0.82);
-  --nav-solid-border: rgba(255, 255, 255, 0.09);
-  --nav-tab-color: #8f94a6;
-  --nav-tab-hover-bg: rgba(255, 255, 255, 0.05);
-  --nav-tab-hover-color: #d1d5e0;
-  --nav-tab-active-bg: #272a33;
-  --nav-tab-active-color: #38bdf8;
-  --nav-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  /* Floating Navigation (Dark) with localized backdrop blur */
+  --nav-solid-bg: rgba(18, 19, 24, 0.74);
+  --nav-solid-border: rgba(255, 255, 255, 0.10);
+  --nav-tab-color: #9297a5;
+  --nav-tab-hover-bg: rgba(255, 255, 255, 0.06);
+  --nav-tab-hover-color: #e2e4ea;
+  --nav-tab-active-bg: rgba(255, 255, 255, 0.12);
+  --nav-tab-active-color: #ffffff;
+  --nav-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
 }
 
 /* ── Reset & Global Rules ──────────────────────────────────── */
@@ -962,7 +962,7 @@ body {
   pointer-events: none;
 }
 
-/* Floating Segmented Bar (Subtle localized backdrop blur) */
+/* Floating Segmented Bar (Localized backdrop blur) */
 .solid-segmented-bar {
   pointer-events: auto;
   display: flex;
@@ -973,8 +973,8 @@ body {
   padding: 5px;
   border-radius: 30px;
   background-color: var(--nav-solid-bg);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   border: 1px solid var(--nav-solid-border);
   box-shadow: var(--nav-shadow);
   user-select: none;
@@ -1027,7 +1027,7 @@ body {
   letter-spacing: -0.01em;
 }
 
-/* Matching Floating Circular Refresh Button (Subtle localized backdrop blur) */
+/* Matching Floating Circular Refresh Button (Localized backdrop blur) */
 .solid-dock-refresh-btn {
   pointer-events: auto;
   width: 60px;
@@ -1036,8 +1036,8 @@ body {
   border-radius: 30px;
   border: 1px solid var(--nav-solid-border);
   background-color: var(--nav-solid-bg);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   box-shadow: var(--nav-shadow);
   color: var(--nav-tab-color);
   display: flex;
