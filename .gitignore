@@ -20,3 +20,8 @@ Thumbs.db
 node_modules/
 npm-debug.log
 yarn-error.log
+
+# Vite build output
+dist/
+dist-ssr/
+*.local
