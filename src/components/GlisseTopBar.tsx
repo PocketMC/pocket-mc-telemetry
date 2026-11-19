@@ -5,17 +5,27 @@ import { Sun, Moon } from 'lucide-react';
 interface GlisseTopBarProps {
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
+  onNavigateHome?: () => void;
 }
 
 export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
   theme,
   onToggleTheme,
+  onNavigateHome,
 }) => {
   return (
     <header className="topbar lg-glass">
       {/* Brand */}
       <div className="topbar-left">
-        <a href="#section-installs" className="brand-link" aria-label="PocketMC Telemetry Home">
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            onNavigateHome?.();
+          }}
+          className="brand-link"
+          aria-label="PocketMC Telemetry Home"
+        >
           <img
             className="logo-mark"
             src="https://raw.githubusercontent.com/PocketMC/pocket-mc-website/refs/heads/master/public/logo.webp"
