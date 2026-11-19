@@ -167,71 +167,58 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   TOPBAR : Glisse Floating Glass Command Bar
+   HEADER : Floating Glass Buttons (Top bar container removed)
    ═══════════════════════════════════════════════════════════════ */
-.topbar {
-  position: sticky;
-  top: 14px;
+.top-header-row {
+  position: relative;
   z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 8px 16px;
+  width: 100%;
   margin-bottom: 28px;
-  border-radius: 999px;
-  background-color: var(--lg-surface);
-  -webkit-backdrop-filter: blur(16px) saturate(1.8);
-  backdrop-filter: blur(16px) saturate(1.8);
-  border: 1px solid var(--lg-surface-edge);
-  box-shadow:
-    inset 0 1px 1.5px 0 rgba(255, 255, 255, var(--lg-rim-shine-high)),
-    0 16px 40px -8px var(--lg-shadow);
-  transition: background-color 0.25s var(--lg-ease), border-color 0.25s var(--lg-ease);
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.brand-link {
-  display: flex;
-  align-items: center;
+.brand-button.lg-button {
+  height: 44px;
+  padding: 0 16px 0 8px;
   gap: 10px;
-  text-decoration: none;
-  color: inherit;
-  padding: 4px 8px 4px 4px;
   border-radius: 999px;
-  transition: opacity 0.15s ease;
+  border: 0;
+  box-shadow:
+    inset 0 0 0 0.5px var(--lg-edge),
+    0 2px 8px var(--lg-drop);
 }
 
-.brand-link:hover {
-  opacity: 0.88;
-}
-
-.logo-mark {
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.18));
+.brand-logo-img {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: block;
+  flex-shrink: 0;
 }
 
 .brand-text {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
   line-height: 1.15;
 }
 
 .brand-name {
-  font-size: 15px;
+  font-size: 13.5px;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
 }
 
 .brand-sub {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 500;
   color: var(--text-secondary);
 }
@@ -243,90 +230,28 @@ body {
   gap: 10px;
 }
 
-.live-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background-color: var(--lg-glass);
-  border: 1px solid var(--lg-edge);
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, var(--lg-rim-shine));
-}
-
-.live-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background-color: var(--accent-green);
-  box-shadow: 0 0 10px var(--accent-green);
-  animation: pulse-dot 2.4s infinite;
-}
-
-@keyframes pulse-dot {
-  0% { transform: scale(0.95); opacity: 0.8; }
-  50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 4px var(--accent-green)); }
-  100% { transform: scale(0.95); opacity: 0.8; }
-}
-
-.live-title {
-  color: var(--text-primary);
-  font-weight: 600;
-}
-
-.live-separator {
-  color: var(--border-subtle);
-  font-size: 10px;
-}
-
-.live-time {
-  font-variant-numeric: tabular-nums;
-  font-size: 11px;
-}
-
-/* ── Auto-Refresh Control with Glisse Switch ────────────────── */
-.auto-refresh-control {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background-color: var(--lg-glass);
-  border: 1px solid var(--lg-edge);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, var(--lg-rim-shine));
-}
-
-.switch-label {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  user-select: none;
-}
-
-/* ── Glisse Buttons & Icon Buttons ─────────────────────────── */
+/* ── Glisse Buttons & Icon Buttons (0.5px Hairline Edge Matching Dockbar) ─── */
 .lg-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  height: 34px;
-  padding: 0 14px;
-  border: 1px solid var(--lg-edge);
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border: 0;
   border-radius: 999px;
   background-color: var(--lg-glass);
   color: var(--text-primary);
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
   touch-action: manipulation;
   user-select: none;
+  /* Authentic Glisse hairline 0.5px glass edge - exactly matches dockbar */
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, var(--lg-rim-shine)),
-    0 2px 8px var(--lg-drop);
+    inset 0 0 0 0.5px var(--lg-edge),
+    0 1px 3px var(--lg-drop);
   transition: transform 0.16s var(--lg-ease), background-color 0.16s var(--lg-ease), box-shadow 0.16s var(--lg-ease);
 }
 
@@ -334,7 +259,7 @@ body {
   background-color: var(--lg-glass-active);
   transform: translateY(-1px);
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, calc(var(--lg-rim-shine) * 1.4)),
+    inset 0 0 0 0.5px var(--lg-edge),
     0 4px 12px var(--lg-shadow);
 }
 
@@ -344,15 +269,15 @@ body {
 
 .lg-button[data-icon="only"],
 .lg-button.icon-only {
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   border-radius: 50%;
 }
 
 .lg-button[data-variant="filled"] {
   background-color: var(--lg-fill);
-  border-color: transparent;
+  border: 0;
   color: #ffffff;
   box-shadow: 0 4px 14px rgba(0, 145, 255, 0.35);
 }
@@ -977,11 +902,13 @@ body {
   width: 60px;
   height: 60px;
   border-radius: 30px;
+  border: 0;
   padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   box-shadow:
+    inset 0 0 0 0.5px var(--lg-edge),
     0 20px 48px -8px rgba(0, 0, 0, 0.65),
     0 4px 16px -2px rgba(0, 0, 0, 0.35);
   transition: transform 0.2s var(--lg-ease), box-shadow 0.2s var(--lg-ease);
@@ -992,6 +919,7 @@ body {
 .bottom-dock-wrap .dock-refresh-btn.lg-button:hover {
   transform: translateY(-2px);
   box-shadow:
+    inset 0 0 0 0.5px var(--lg-edge),
     0 26px 56px -8px rgba(0, 0, 0, 0.75),
     0 6px 20px -2px rgba(0, 0, 0, 0.45);
 }

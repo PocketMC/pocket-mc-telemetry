@@ -14,38 +14,34 @@ export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
   onNavigateHome,
 }) => {
   return (
-    <header className="topbar lg-glass">
-      {/* Brand */}
-      <div className="topbar-left">
-        <a
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            onNavigateHome?.();
-          }}
-          className="brand-link"
-          aria-label="PocketMC Telemetry Home"
-        >
+    <header className="top-header-row">
+      {/* Brand Glass Button Component */}
+      <Button
+        variant="glass"
+        className="brand-button"
+        onClick={onNavigateHome}
+        aria-label="PocketMC Telemetry Home"
+        icon={
           <img
-            className="logo-mark"
+            className="brand-logo-img"
             src="https://raw.githubusercontent.com/PocketMC/pocket-mc-website/refs/heads/master/public/logo.webp"
             onError={(e) => {
               (e.target as HTMLImageElement).src = 'icon.svg';
             }}
             alt="PocketMC logo"
-            width={32}
-            height={32}
+            width={28}
+            height={28}
           />
-          <div className="brand-text">
-            <span className="brand-name">PocketMC</span>
-            <span className="brand-sub">Telemetry</span>
-          </div>
-        </a>
-      </div>
+        }
+      >
+        <div className="brand-text">
+          <span className="brand-name">PocketMC</span>
+          <span className="brand-sub">Telemetry</span>
+        </div>
+      </Button>
 
-      {/* Topbar Actions */}
+      {/* Topbar Actions Group with Real Glisse Buttons */}
       <div className="topbar-actions-group">
-        {/* Real Glisse Button for GitHub */}
         <a
           href="https://github.com/PocketMC/pocket-mc-telemetry"
           target="_blank"
@@ -57,7 +53,7 @@ export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
             aria-label="View on GitHub"
             title="View on GitHub"
             icon={
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path
                   fillRule="evenodd"
                   clipRule="evenodd"
@@ -68,13 +64,12 @@ export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
           />
         </a>
 
-        {/* Real Glisse Button for Theme Switch */}
         <Button
           variant="glass"
           onClick={onToggleTheme}
           aria-label="Toggle light and dark mode"
           title="Toggle light and dark mode"
-          icon={theme === 'dark' ? <Moon size={15} /> : <Sun size={15} />}
+          icon={theme === 'dark' ? <Moon size={16} /> : <Sun size={16} />}
         />
       </div>
     </header>
