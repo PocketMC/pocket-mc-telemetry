@@ -90,9 +90,9 @@ export function aggregateTelemetry(
 
   // Merge live distributions
   for (const field of LIVE_DISTRIBUTION_FIELDS) {
-    aggregated[field] = {};
+    (aggregated as any)[field] = {};
     for (const r of responses) {
-      addDistribution(aggregated[field]!, r[field] as DistributionMap);
+      addDistribution((aggregated as any)[field], r[field] as DistributionMap);
     }
   }
 
