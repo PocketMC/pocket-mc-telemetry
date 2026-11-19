@@ -42,6 +42,7 @@
         document.documentElement.style.colorScheme = theme;
         var themeHex = theme === 'dark' ? '#000000' : '#f4f6fa';
         document.documentElement.style.backgroundColor = themeHex;
+        if (document.body) document.body.style.backgroundColor = themeHex;
         var meta = document.getElementById('meta-theme-color');
         if (meta) meta.setAttribute('content', themeHex);
       } catch (e) {}
@@ -75,7 +76,7 @@
     integrity="sha384-sGlkSOVF9H+QNNQrLV9xrMIyghEgioD3M3gPd9/tV0mh9qJX75AyCl0l7+OVJ3CD" crossorigin="anonymous"></script>
 </head>
 
-<body style="background-color: #070709; margin: 0;">
+<body style="margin: 0;">
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

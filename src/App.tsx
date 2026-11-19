@@ -25,6 +25,9 @@ export const App: React.FC = () => {
 
     const themeHex = theme === 'dark' ? '#000000' : '#f4f6fa';
     document.documentElement.style.backgroundColor = themeHex;
+    if (document.body) {
+      document.body.style.backgroundColor = themeHex;
+    }
 
     const metaThemeColor = document.getElementById('meta-theme-color');
     if (metaThemeColor) {
