@@ -1215,19 +1215,28 @@ body {
   cursor: pointer;
   font-family: inherit;
   flex-shrink: 0;
-  transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  transition: transform 0.1s ease, opacity 0.15s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
 .dock-integrated-refresh-btn:hover:not(:disabled) {
-  background-color: var(--nav-tab-hover-bg);
-  color: var(--nav-tab-hover-color);
+  /* Keep visually neutral at all times - no grey hover background or highlight */
+  background: transparent;
+  color: var(--nav-tab-color);
 }
 
 .dock-integrated-refresh-btn:active:not(:disabled) {
-  transform: scale(0.96);
-  background-color: var(--nav-tab-active-bg);
-  color: var(--nav-tab-active-color);
+  /* Subtle tactile press without background or highlight */
+  transform: scale(0.95);
+  background: transparent;
+  color: var(--nav-tab-color);
+}
+
+.dock-integrated-refresh-btn:focus,
+.dock-integrated-refresh-btn:focus-visible {
+  outline: none;
+  background: transparent;
+  color: var(--nav-tab-color);
 }
 
 .dock-integrated-refresh-btn:disabled {
@@ -1279,7 +1288,7 @@ body {
   }
 
   .solid-segmented-bar {
-    padding: 4px;
+    padding: 3px;
   }
 
   .dock-nav-items {
@@ -1287,23 +1296,33 @@ body {
   }
 
   .dock-divider {
-    height: 22px;
+    height: 20px;
     margin: 0 2px;
   }
 
   .segmented-tab-btn,
   .dock-integrated-refresh-btn {
-    min-width: 52px;
-    padding: 0 6px;
+    min-width: 46px;
+    padding: 0 4px;
   }
 
   .segmented-tab-btn .tab-label,
   .dock-integrated-refresh-btn .tab-label {
     font-size: 10px;
+    white-space: nowrap;
   }
 
   .dock-active-indicator {
     border-radius: 23px;
+  }
+
+  .dock-integrated-refresh-btn:hover:not(:disabled),
+  .dock-integrated-refresh-btn:active:not(:disabled),
+  .dock-integrated-refresh-btn:focus,
+  .dock-integrated-refresh-btn:focus-visible {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: var(--nav-tab-color) !important;
   }
 }
 
