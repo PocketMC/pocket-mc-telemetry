@@ -138,7 +138,14 @@ body {
   overflow-x: hidden;
   background-color: var(--bg-page);
   color: var(--text-primary);
-  transition: background-color 0.3s ease;
+  transition: background-color 0.25s ease, color 0.2s ease;
+}
+
+.section-card,
+.kpi-card,
+.breakdown-card,
+.table-card {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.2s ease, box-shadow 0.25s ease;
 }
 
 #root {
@@ -218,30 +225,37 @@ body {
   pointer-events: auto;
 }
 
-/* Brand Button: 60px height matching the dockbar */
-.brand-button.lg-button {
+/* ── Brand Button: Matches Dock Bar styling, 60px height ─── */
+.top-brand-btn {
   height: 60px;
   padding: 0 22px 0 14px;
   gap: 13px;
   border-radius: 30px;
-  border: 0;
-  box-shadow:
-    inset 0 0 0 0.5px var(--lg-edge),
-    0 20px 48px -8px rgba(0, 0, 0, 0.65),
-    0 4px 16px -2px rgba(0, 0, 0, 0.35);
-  transition: transform 0.2s var(--lg-ease), box-shadow 0.2s var(--lg-ease);
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--nav-solid-bg);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--nav-solid-border);
+  box-shadow: var(--nav-shadow);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: inherit;
+  outline: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
 }
 
-.brand-button.lg-button:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    inset 0 0 0 0.5px var(--lg-edge),
-    0 26px 56px -8px rgba(0, 0, 0, 0.75),
-    0 6px 20px -2px rgba(0, 0, 0, 0.45);
+.top-brand-btn:hover {
+  background-color: var(--nav-tab-hover-bg);
+  transform: translateY(-1px);
 }
 
-.brand-button.lg-button:active {
-  transform: translateY(0);
+.top-brand-btn:active {
+  transform: scale(0.98);
+  background-color: var(--nav-tab-active-bg);
 }
 
 .brand-logo-img {
@@ -281,40 +295,60 @@ body {
   gap: 12px;
 }
 
-.topbar-actions-group .lg-button,
-.topbar-actions-group .lg-button[data-icon="only"] {
+.top-action-btn {
   width: 60px;
   height: 60px;
   border-radius: 30px;
-  border: 0;
-  padding: 0;
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow:
-    inset 0 0 0 0.5px var(--lg-edge),
-    0 20px 48px -8px rgba(0, 0, 0, 0.65),
-    0 4px 16px -2px rgba(0, 0, 0, 0.35);
-  transition: transform 0.2s var(--lg-ease), box-shadow 0.2s var(--lg-ease);
-  color: var(--lg-foreground);
+  background-color: var(--nav-solid-bg);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--nav-solid-border);
+  box-shadow: var(--nav-shadow);
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0;
   flex-shrink: 0;
+  text-decoration: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.2s ease;
 }
 
-.topbar-actions-group .lg-button:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    inset 0 0 0 0.5px var(--lg-edge),
-    0 26px 56px -8px rgba(0, 0, 0, 0.75),
-    0 6px 20px -2px rgba(0, 0, 0, 0.45);
+.top-action-btn:hover {
+  background-color: var(--nav-tab-hover-bg);
+  color: var(--nav-tab-hover-color);
+  transform: translateY(-1px);
 }
 
-.topbar-actions-group .lg-button:active {
-  transform: translateY(0);
+.top-action-btn:active {
+  transform: scale(0.95);
+  background-color: var(--nav-tab-active-bg);
 }
 
-.topbar-actions-group .lg-button > svg {
+/* Theme Toggle Animated Icon */
+.theme-toggle-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 22px;
   height: 22px;
+  animation: themeIconSpin 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes themeIconSpin {
+  from {
+    opacity: 0.2;
+    transform: rotate(-45deg) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
 }
 
 /* ── Glisse Buttons & Icon Buttons (0.5px Hairline Edge Matching Dockbar) ─── */
