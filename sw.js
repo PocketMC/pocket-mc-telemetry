@@ -1,31 +1,25 @@
 /**
  * PocketMC Telemetry : Service Worker
- * Provides offline support and PWA installability.
+ * Provides offline support and fast asset caching.
  */
-const CACHE = 'pmc-telemetry-v36';
+const CACHE = 'pmc-telemetry-v40';
 
-// Assets to cache on install
+// Core assets to pre-cache
 const PRECACHE = [
   '/',
   'index.html',
-  'heatmap.html',
   'icon.svg',
-  'src/style.css',
-  'src/heatmap.css',
-  'src/app.js',
-  'src/heatmap.js',
-  'src/countries.js',
-  'src/flavors/paper.svg',
-  'src/flavors/fabric.png',
-  'src/flavors/fabric.svg',
-  'src/flavors/neoforge.png',
-  'src/flavors/neoforge.svg',
-  'src/flavors/forge.png',
-  'src/flavors/spigot.svg',
-  'src/flavors/purpur.svg',
-  'src/flavors/bedrock.png',
-  'src/flavors/vanilla.png',
   'manifest.json',
+  'flavors/paper.svg',
+  'flavors/fabric.png',
+  'flavors/fabric.svg',
+  'flavors/neoforge.png',
+  'flavors/neoforge.svg',
+  'flavors/forge.png',
+  'flavors/spigot.svg',
+  'flavors/purpur.svg',
+  'flavors/bedrock.png',
+  'flavors/vanilla.png',
   'https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.css',
   'https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.js',
   'https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/maps/world.js'
