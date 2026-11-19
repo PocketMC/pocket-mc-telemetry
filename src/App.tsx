@@ -18,13 +18,11 @@ import { LiquidAura } from './components/LiquidAura';
 import { GlisseTopBar } from './components/GlisseTopBar';
 import { SectionCard } from './components/SectionCard';
 import { KpiCard } from './components/KpiCard';
-import { TimeframeControl } from './components/TimeframeControl';
 import { BreakdownCard } from './components/BreakdownCard';
 import { ServerFleetTable } from './components/ServerFleetTable';
 import { TelemetryWorldMap } from './components/TelemetryWorldMap';
 import { FullscreenHeatmap } from './components/FullscreenHeatmap';
 import { BottomNavDock } from './components/BottomNavDock';
-import type { TimeframePeriod } from './types/telemetry';
 
 export const App: React.FC = () => {
   // ── Theme State ──────────────────────────────────────────────────
@@ -127,45 +125,12 @@ export const App: React.FC = () => {
   const { data, loading, error, lastUpdated, autoRefresh, setAutoRefresh, refresh } =
     useTelemetry(30);
 
-  // ── Section 1 Timeframe State ────────────────────────────────────
-  const [timeframe, setTimeframe] = useState<TimeframePeriod>('7d');
-
-  // Dynamic calculations for Timeframe KPI
-  const { activeUsersCount, activeUsersLabel, activeUsersTooltip } = useMemo(() => {
-    const totalInstalls = Number(data?.totalInstalls) || 0;
+  // ── 7-Day Active Users (accounting for open clients fallback) ──────
+  const activeUsers7d = useMemo(() => {
     const open = Number(data?.openClients) || 0;
     const raw7d = data?.activeUsers7d !== undefined ? Number(data.activeUsers7d) : open;
-    const active7d = Math.max(raw7d, open);
-
-    if (timeframe === '24h') {
-      const active24h = data?.activeUsers24h !== undefined ? Number(data.activeUsers24h) : open;
-      return {
-        activeUsersCount: active24h,
-        activeUsersLabel: 'Active Users (24H)',
-        activeUsersTooltip: 'Active in last 24 hours',
-      };
-    }
-    if (timeframe === '30d') {
-      const active30d = data?.activeUsers30d !== undefined ? Number(data.activeUsers30d) : active7d;
-      return {
-        activeUsersCount: active30d,
-        activeUsersLabel: 'Active Users (30D)',
-        activeUsersTooltip: 'Active in last 30 days',
-      };
-    }
-    if (timeframe === 'total') {
-      return {
-        activeUsersCount: totalInstalls,
-        activeUsersLabel: 'Lifetime Installs',
-        activeUsersTooltip: 'Cumulative registered installations',
-      };
-    }
-    return {
-      activeUsersCount: active7d,
-      activeUsersLabel: 'Active Users (7D)',
-      activeUsersTooltip: 'Active in last 7 days',
-    };
-  }, [data, timeframe]);
+    return Math.max(raw7d, open);
+  }, [data]);
 
   // Format Helper
   const fmt = (n?: number | null) => (n == null ? '-' : n.toLocaleString());
@@ -228,14 +193,13 @@ export const App: React.FC = () => {
             insight={
               <span>
                 Over <strong>{fmt(data?.totalInstalls)}</strong> registered installs with{' '}
-                <strong>{fmt(activeUsersCount)}</strong> active in {timeframe.toUpperCase()} (
+                <strong>{fmt(activeUsers7d)}</strong> active in 7D (
                 {data?.totalInstalls
-                  ? ((activeUsersCount / (data.totalInstalls || 1)) * 100).toFixed(1)
+                  ? ((activeUsers7d / (data.totalInstalls || 1)) * 100).toFixed(1)
                   : '0'}
                 %)
               </span>
             }
-            action={<TimeframeControl period={timeframe} onChange={setTimeframe} />}
           >
             {/* KPI Cards Grid */}
             <div className="kpi-grid">
@@ -247,11 +211,11 @@ export const App: React.FC = () => {
                 tooltip="Lifetime installations"
               />
               <KpiCard
-                value={fmt(activeUsersCount)}
-                label={activeUsersLabel}
+                value={fmt(activeUsers7d)}
+                label="Active Users (7D)"
                 colorClass="text-blue"
                 icon={<Users size={18} />}
-                tooltip={activeUsersTooltip}
+                tooltip="Active in last 7 days"
               />
               <KpiCard
                 value={fmt(data?.inactiveUsers7d)}
