@@ -3,10 +3,32 @@ import { TelemetryStats, TelemetryState } from '../types/telemetry';
 import { fetchAggregatedStats, DISCORD_BOT_KEEP_ALIVE_URL } from '../services/telemetryApi';
 
 export function useTelemetry(refreshIntervalSec = 30): TelemetryState {
-  const [data, setData] = useState<TelemetryStats | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  // Initialize with persisted cache for instantaneous zero-latency cold start
+  const [data, setData] = useState<TelemetryStats | null>(() => {
+    try {
+      const cached = localStorage.getItem('pmc-cached-telemetry');
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const [loading, setLoading] = useState<boolean>(() => {
+    // If we have cached data, don't show full-screen blocking loading on cold start
+    return !localStorage.getItem('pmc-cached-telemetry');
+  });
+
   const [error, setError] = useState<Error | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(() => {
+    try {
+      const cachedDate = localStorage.getItem('pmc-last-updated');
+      return cachedDate ? new Date(cachedDate) : null;
+    } catch {
+      return null;
+    }
+  });
+
   const [autoRefresh, setAutoRefreshState] = useState<boolean>(() => {
     return localStorage.getItem('pmc-autorefresh') !== 'false';
   });
@@ -26,7 +48,16 @@ export function useTelemetry(refreshIntervalSec = 30): TelemetryState {
       ]);
       setData(stats);
       setError(null);
-      setLastUpdated(new Date());
+      const now = new Date();
+      setLastUpdated(now);
+
+      // Persist to localStorage for instant offline/cold launch
+      try {
+        localStorage.setItem('pmc-cached-telemetry', JSON.stringify(stats));
+        localStorage.setItem('pmc-last-updated', now.toISOString());
+      } catch (e) {
+        console.warn('[useTelemetry] Failed to cache stats in localStorage:', e);
+      }
     } catch (err) {
       console.error('[useTelemetry] Error fetching stats:', err);
       setError(err instanceof Error ? err : new Error(String(err)));

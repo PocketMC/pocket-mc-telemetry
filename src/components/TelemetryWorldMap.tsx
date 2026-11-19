@@ -38,9 +38,26 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
+  const [mapLibReady, setMapLibReady] = React.useState<boolean>(
+    () => typeof window !== 'undefined' && Boolean((window as any).jsVectorMap)
+  );
+
+  // Poll for deferred jsVectorMap script if not immediately loaded
+  useEffect(() => {
+    if (mapLibReady) return;
+
+    const interval = setInterval(() => {
+      if ((window as any).jsVectorMap) {
+        setMapLibReady(true);
+        clearInterval(interval);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [mapLibReady]);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !mapLibReady) return;
 
     const jsVectorMap = (window as any).jsVectorMap;
     if (!jsVectorMap) {

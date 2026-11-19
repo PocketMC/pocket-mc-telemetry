@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { App } from './App';
+import { registerServiceWorker } from './registerServiceWorker';
 import './style.css';
 
 const rootElement = document.getElementById('root');
@@ -14,3 +15,6 @@ if (rootElement) {
     </React.StrictMode>
   );
 }
+
+// Register Progressive Web App Service Worker
+registerServiceWorker();
