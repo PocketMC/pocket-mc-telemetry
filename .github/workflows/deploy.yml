@@ -37,6 +37,8 @@ jobs:
 
       - name: Build React Vite Application
         run: npm run build
+        env:
+          BASE_PATH: '/pocket-mc-telemetry/'
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

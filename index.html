@@ -8,6 +8,26 @@
   <meta name="description"
     content="Live anonymous telemetry for PocketMC: installations, active clients, and server analytics." />
 
+  <!-- Immediate URL clean-up & GitHub Pages SPA redirect restore -->
+  <script>
+    (function () {
+      // 1. Strip index.html from URL path immediately
+      if (window.location.pathname.endsWith('/index.html')) {
+        var cleanPath = window.location.pathname.replace(/\/index\.html$/, '') || '/';
+        window.history.replaceState(null, '', cleanPath + window.location.search + window.location.hash);
+      }
+
+      // 2. Handle GitHub Pages SPA redirection (if loaded from 404.html redirect)
+      var search = window.location.search;
+      if (search.startsWith('?/')) {
+        var cleanRoute = search.slice(2).split('&')[0];
+        var remainingQuery = search.indexOf('&') !== -1 ? '?' + search.slice(search.indexOf('&') + 1) : '';
+        var targetUrl = window.location.pathname.replace(/\/$/, '') + '/' + cleanRoute + remainingQuery + window.location.hash;
+        window.history.replaceState(null, '', targetUrl);
+      }
+    })();
+  </script>
+
   <!-- Pre-render theme initialization to prevent Flash of Unstyled Theme -->
   <script>
     (function () {

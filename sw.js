@@ -2,7 +2,7 @@
  * PocketMC Telemetry : Service Worker
  * Provides offline support and fast asset caching.
  */
-const CACHE = 'pmc-telemetry-v40';
+const CACHE = 'pmc-telemetry-v41';
 
 // Core assets to pre-cache
 const PRECACHE = [

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>PocketMC Telemetry</title>
+  <script>
+    // GitHub Pages SPA router redirect: redirect 404s to index.html with route preserved in query
+    (function () {
+      var l = window.location;
+      var path = l.pathname;
+      var isSubdir = path.indexOf('/pocket-mc-telemetry') === 0;
+      var route = isSubdir ? path.slice('/pocket-mc-telemetry'.length) : path;
+      var targetUrl = (isSubdir ? '/pocket-mc-telemetry' : '') + '/?' +
+        (route.length > 1 ? '/' + encodeURIComponent(route.replace(/^\//, '')) : '') +
+        (l.search ? '&' + l.search.slice(1) : '') +
+        l.hash;
+      l.replace(targetUrl);
+    })();
+  </script>
+</head>
+<body>
+</body>
+</html>
