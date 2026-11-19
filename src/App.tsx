@@ -23,6 +23,7 @@ import { BreakdownCard } from './components/BreakdownCard';
 import { ServerFleetTable } from './components/ServerFleetTable';
 import { TelemetryWorldMap } from './components/TelemetryWorldMap';
 import { FullscreenHeatmap } from './components/FullscreenHeatmap';
+import { BottomNavDock } from './components/BottomNavDock';
 import type { TimeframePeriod } from './types/telemetry';
 
 export const App: React.FC = () => {
@@ -59,7 +60,7 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
-  // ── Section Navigation ───────────────────────────────────────────
+  // ── Section Navigation & Scroll Spy ─────────────────────────────
   const [activeTab, setActiveTab] = useState('overview');
 
   const handleTabChange = (tab: string) => {
@@ -75,9 +76,40 @@ export const App: React.FC = () => {
 
     const element = document.getElementById(targetId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      const topOffset = element.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: topOffset, behavior: 'smooth' });
     }
   };
+
+  useEffect(() => {
+    if (view !== 'dashboard') return;
+
+    const sectionMap: Record<string, string> = {
+      'section-installs': 'overview',
+      'section-clients': 'clients',
+      'section-servers': 'servers',
+      'section-map': 'map',
+    };
+
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const sections = Object.keys(sectionMap).map((id) => document.getElementById(id));
+      
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const sec = sections[i];
+        if (sec && scrollY >= sec.offsetTop - 200) {
+          const tab = sectionMap[sec.id];
+          if (tab) {
+            setActiveTab(tab);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [view]);
 
   // ── Telemetry Hook ───────────────────────────────────────────────
   const { data, loading, error, lastUpdated, autoRefresh, setAutoRefresh, refresh } =
@@ -153,8 +185,6 @@ export const App: React.FC = () => {
       <div className="app-wrapper">
         {/* Authentic Glisse Floating Command Bar */}
         <GlisseTopBar
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
           autoRefresh={autoRefresh}
           onToggleAutoRefresh={setAutoRefresh}
           onRefresh={refresh}
@@ -435,6 +465,9 @@ export const App: React.FC = () => {
             </a>
           </div>
         </footer>
+
+        {/* Floating Bottom Navigation Dock with Authentic Glisse TabBar */}
+        <BottomNavDock activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
     </>
   );

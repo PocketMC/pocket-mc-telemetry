@@ -1,10 +1,8 @@
 import React from 'react';
-import { TabBar, Switch, Button } from 'glisse';
+import { Switch, Button } from 'glisse';
 import { RefreshCw, Sun, Moon } from 'lucide-react';
 
 interface GlisseTopBarProps {
-  activeTab: string;
-  onTabChange: (tab: string) => void;
   autoRefresh: boolean;
   onToggleAutoRefresh: (val: boolean) => void;
   onRefresh: () => void;
@@ -15,8 +13,6 @@ interface GlisseTopBarProps {
 }
 
 export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
-  activeTab,
-  onTabChange,
   autoRefresh,
   onToggleAutoRefresh,
   onRefresh,
@@ -25,18 +21,11 @@ export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
   theme,
   onToggleTheme,
 }) => {
-  const navItems = [
-    { value: 'overview', label: 'Overview' },
-    { value: 'clients', label: 'Clients' },
-    { value: 'servers', label: 'Servers' },
-    { value: 'map', label: 'Global Map' },
-  ];
-
   return (
     <header className="topbar lg-glass">
-      {/* Brand mark */}
+      {/* Brand & Live Status */}
       <div className="topbar-left">
-        <a href="#overview" className="brand-link" aria-label="PocketMC Telemetry Home">
+        <a href="#section-installs" className="brand-link" aria-label="PocketMC Telemetry Home">
           <img
             className="logo-mark"
             src="https://raw.githubusercontent.com/PocketMC/pocket-mc-website/refs/heads/master/public/logo.webp"
@@ -52,21 +41,8 @@ export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
             <span className="brand-sub">Telemetry</span>
           </div>
         </a>
-      </div>
 
-      {/* Real Glisse TabBar for Sections */}
-      <nav className="topbar-nav" aria-label="Sections navigation">
-        <TabBar
-          items={navItems}
-          value={activeTab}
-          onValueChange={onTabChange}
-          aria-label="Dashboard sections"
-        />
-      </nav>
-
-      {/* Topbar Actions */}
-      <div className="topbar-actions-group">
-        {/* Live Status Pill */}
+        {/* Live Status Badge */}
         <div className="live-status-pill">
           <span className="live-dot" aria-hidden="true" />
           <span className="live-title">Live</span>
@@ -79,7 +55,10 @@ export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
               : 'Syncing...'}
           </span>
         </div>
+      </div>
 
+      {/* Topbar Actions */}
+      <div className="topbar-actions-group">
         {/* Real Glisse Switch for 30s Auto-Refresh */}
         <div className="auto-refresh-control" title="Toggle 30-second live auto-refresh">
           <span className="switch-label">Live 30s</span>

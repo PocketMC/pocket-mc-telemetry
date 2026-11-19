@@ -37,19 +37,19 @@ export const LiquidAura: React.FC<LiquidAuraProps> = ({ theme = 'dark' }) => {
       const isDark = theme === 'dark' || document.documentElement.getAttribute('data-theme') === 'dark';
       if (isDark) {
         return [
-          { r: 37,  g: 99,  b: 235, a: 0.40, radius: 0.55 }, // Sapphire
-          { r: 147, g: 51,  b: 234, a: 0.36, radius: 0.50 }, // Electric Violet
-          { r: 6,   g: 182, b: 212, a: 0.34, radius: 0.48 }, // Radiant Cyan
-          { r: 236, g: 72,  b: 153, a: 0.30, radius: 0.42 }, // Rose
-          { r: 16,  g: 185, b: 129, a: 0.28, radius: 0.40 }, // Neon Emerald
+          { r: 37,  g: 99,  b: 235, a: 0.48, radius: 0.58 }, // Sapphire
+          { r: 147, g: 51,  b: 234, a: 0.44, radius: 0.52 }, // Electric Violet
+          { r: 6,   g: 182, b: 212, a: 0.42, radius: 0.50 }, // Radiant Cyan
+          { r: 236, g: 72,  b: 153, a: 0.36, radius: 0.44 }, // Rose
+          { r: 16,  g: 185, b: 129, a: 0.34, radius: 0.42 }, // Neon Emerald
         ];
       } else {
         return [
-          { r: 59,  g: 130, b: 246, a: 0.28, radius: 0.55 }, // Sky Blue
-          { r: 168, g: 85,  b: 247, a: 0.25, radius: 0.50 }, // Lavender
-          { r: 16,  g: 185, b: 129, a: 0.24, radius: 0.46 }, // Mint
-          { r: 244, g: 114, b: 182, a: 0.22, radius: 0.42 }, // Pastel Blush
-          { r: 14,  g: 165, b: 233, a: 0.26, radius: 0.45 }, // Aqua
+          { r: 59,  g: 130, b: 246, a: 0.36, radius: 0.58 }, // Sky Blue
+          { r: 168, g: 85,  b: 247, a: 0.32, radius: 0.52 }, // Lavender
+          { r: 16,  g: 185, b: 129, a: 0.30, radius: 0.48 }, // Mint
+          { r: 244, g: 114, b: 182, a: 0.28, radius: 0.44 }, // Pastel Blush
+          { r: 14,  g: 165, b: 233, a: 0.32, radius: 0.46 }, // Aqua
         ];
       }
     };
