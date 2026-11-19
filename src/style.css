@@ -1298,32 +1298,32 @@ body {
   }
 
   .solid-segmented-bar {
-    padding: 3px;
+    padding: 4px;
   }
 
   .dock-nav-items {
-    gap: 2px;
+    gap: 3px;
   }
 
   .dock-divider {
-    height: 20px;
-    margin: 0 2px;
+    height: 22px;
+    margin: 0 3px;
   }
 
   .segmented-tab-btn,
   .dock-integrated-refresh-btn {
-    min-width: 46px;
-    padding: 0 4px;
+    min-width: 58px;
+    padding: 0 8px;
   }
 
   .segmented-tab-btn .tab-label,
   .dock-integrated-refresh-btn .tab-label {
-    font-size: 10px;
+    font-size: 10.5px;
     white-space: nowrap;
   }
 
   .dock-active-indicator {
-    border-radius: 23px;
+    border-radius: 24px;
   }
 
   .dock-integrated-refresh-btn:hover:not(:disabled),
