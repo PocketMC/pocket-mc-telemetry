@@ -15,7 +15,7 @@ export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
 }) => {
   return (
     <header className="top-header-row">
-      {/* Brand Glass Button Component */}
+      {/* Brand Glass Button Component (60px height matching dockbar) */}
       <Button
         variant="glass"
         className="brand-button"
@@ -29,8 +29,8 @@ export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
               (e.target as HTMLImageElement).src = 'icon.svg';
             }}
             alt="PocketMC logo"
-            width={28}
-            height={28}
+            width={36}
+            height={36}
           />
         }
       >
@@ -40,7 +40,7 @@ export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
         </div>
       </Button>
 
-      {/* Topbar Actions Group with Real Glisse Buttons */}
+      {/* Topbar Actions Group with 60x60 circular Glisse Buttons (matching refresh button) */}
       <div className="topbar-actions-group">
         <a
           href="https://github.com/PocketMC/pocket-mc-telemetry"
@@ -53,7 +53,7 @@ export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
             aria-label="View on GitHub"
             title="View on GitHub"
             icon={
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                 <path
                   fillRule="evenodd"
                   clipRule="evenodd"
@@ -69,7 +69,7 @@ export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
           onClick={onToggleTheme}
           aria-label="Toggle light and dark mode"
           title="Toggle light and dark mode"
-          icon={theme === 'dark' ? <Moon size={16} /> : <Sun size={16} />}
+          icon={theme === 'dark' ? <Moon size={22} strokeWidth={1.9} /> : <Sun size={22} strokeWidth={1.9} />}
         />
       </div>
     </header>

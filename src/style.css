@@ -167,7 +167,7 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   HEADER : Floating Glass Buttons (Top bar container removed)
+   HEADER : Floating Glass Buttons (Matching Dock Bar & Refresh Size: 60px)
    ═══════════════════════════════════════════════════════════════ */
 .top-header-row {
   position: sticky;
@@ -189,21 +189,36 @@ body {
   pointer-events: auto;
 }
 
+/* Brand Button: 60px height matching the dockbar */
 .brand-button.lg-button {
-  height: 44px;
-  padding: 0 16px 0 8px;
-  gap: 10px;
-  border-radius: 999px;
+  height: 60px;
+  padding: 0 22px 0 14px;
+  gap: 13px;
+  border-radius: 30px;
   border: 0;
   box-shadow:
     inset 0 0 0 0.5px var(--lg-edge),
-    0 4px 16px var(--lg-drop);
+    0 20px 48px -8px rgba(0, 0, 0, 0.65),
+    0 4px 16px -2px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s var(--lg-ease), box-shadow 0.2s var(--lg-ease);
+}
+
+.brand-button.lg-button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 0 0 0.5px var(--lg-edge),
+    0 26px 56px -8px rgba(0, 0, 0, 0.75),
+    0 6px 20px -2px rgba(0, 0, 0, 0.45);
+}
+
+.brand-button.lg-button:active {
+  transform: translateY(0);
 }
 
 .brand-logo-img {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   display: block;
   flex-shrink: 0;
 }
@@ -214,26 +229,63 @@ body {
   align-items: flex-start;
   text-align: left;
   line-height: 1.15;
+  gap: 1px;
 }
 
 .brand-name {
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   color: var(--text-primary);
 }
 
 .brand-sub {
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 500;
   color: var(--text-secondary);
 }
 
-/* ── Topbar Actions Group ──────────────────────────────────── */
+/* ── Topbar Actions Group (60px matching dock refresh button) ──── */
 .topbar-actions-group {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+}
+
+.topbar-actions-group .lg-button,
+.topbar-actions-group .lg-button[data-icon="only"] {
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  border: 0;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset 0 0 0 0.5px var(--lg-edge),
+    0 20px 48px -8px rgba(0, 0, 0, 0.65),
+    0 4px 16px -2px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s var(--lg-ease), box-shadow 0.2s var(--lg-ease);
+  color: var(--lg-foreground);
+  flex-shrink: 0;
+}
+
+.topbar-actions-group .lg-button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 0 0 0.5px var(--lg-edge),
+    0 26px 56px -8px rgba(0, 0, 0, 0.75),
+    0 6px 20px -2px rgba(0, 0, 0, 0.45);
+}
+
+.topbar-actions-group .lg-button:active {
+  transform: translateY(0);
+}
+
+.topbar-actions-group .lg-button > svg {
+  width: 22px;
+  height: 22px;
 }
 
 /* ── Glisse Buttons & Icon Buttons (0.5px Hairline Edge Matching Dockbar) ─── */
