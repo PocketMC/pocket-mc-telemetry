@@ -108,7 +108,6 @@ export const LiquidAura: React.FC<LiquidAuraProps> = ({ theme = 'dark' }) => {
   return (
     <div
       className="liquid-aura-bg"
-      data-glisse-backdrop="true"
       aria-hidden="true"
     >
       <canvas ref={canvasRef} className="liquid-aura-canvas" />

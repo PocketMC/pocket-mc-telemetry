@@ -1,5 +1,4 @@
 import React from 'react';
-import { Glass } from 'glisse';
 import { HelpCircle } from 'lucide-react';
 
 interface KpiCardProps {
@@ -23,7 +22,7 @@ export const KpiCard: React.FC<KpiCardProps> = ({
   badge,
 }) => {
   return (
-    <Glass className="kpi-card">
+    <div className="kpi-card lg-glass">
       <div className={`kpi-icon-top ${colorClass}`}>
         {icon}
         {badge && (
@@ -56,6 +55,6 @@ export const KpiCard: React.FC<KpiCardProps> = ({
           )}
         </div>
       </div>
-    </Glass>
+    </div>
   );
 };

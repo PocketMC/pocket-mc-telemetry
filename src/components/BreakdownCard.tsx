@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Glass, SearchField } from 'glisse';
+import { SearchField } from 'glisse';
 import { HelpCircle } from 'lucide-react';
 import { getFlagUrl } from '../utils/countryFlags';
 import { DistributionMap } from '../types/telemetry';
@@ -42,7 +42,7 @@ export const BreakdownCard: React.FC<BreakdownCardProps> = ({
   }, [sortedEntries, query]);
 
   return (
-    <Glass className="breakdown-card">
+    <div className="breakdown-card lg-glass">
       <div className="breakdown-header">
         <h3 className="breakdown-title">
           <span>{title}</span>
@@ -127,6 +127,6 @@ export const BreakdownCard: React.FC<BreakdownCardProps> = ({
           })
         )}
       </div>
-    </Glass>
+    </div>
   );
 };

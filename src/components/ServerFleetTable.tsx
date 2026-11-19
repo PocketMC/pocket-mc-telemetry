@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { Glass } from 'glisse';
 import { Server } from 'lucide-react';
 import { DistributionMap } from '../types/telemetry';
 
@@ -35,9 +34,9 @@ export const ServerFleetTable: React.FC<ServerFleetTableProps> = ({ data }) => {
 
   if (!sortedEntries.length) {
     return (
-      <Glass className="server-types-container" style={{ padding: '16px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+      <div className="server-types-container lg-glass" style={{ padding: '16px', textAlign: 'center', color: 'var(--text-secondary)' }}>
         No server engine telemetry recorded
-      </Glass>
+      </div>
     );
   }
 
@@ -49,7 +48,7 @@ export const ServerFleetTable: React.FC<ServerFleetTableProps> = ({ data }) => {
         const logoSrc = getServerTypeLogo(type);
 
         return (
-          <Glass key={type} className="server-type-row">
+          <div key={type} className="server-type-row lg-glass">
             <div className="server-type-brand">
               {logoSrc ? (
                 <img
@@ -78,7 +77,7 @@ export const ServerFleetTable: React.FC<ServerFleetTableProps> = ({ data }) => {
                 {sharePct}%
               </div>
             </div>
-          </Glass>
+          </div>
         );
       })}
     </div>

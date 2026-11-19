@@ -1,5 +1,5 @@
 import React from 'react';
-import { TabBar, Switch, Button, Glass } from 'glisse';
+import { TabBar, Switch, Button } from 'glisse';
 import { RefreshCw, Sun, Moon } from 'lucide-react';
 
 interface GlisseTopBarProps {
@@ -33,7 +33,7 @@ export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
   ];
 
   return (
-    <Glass className="topbar">
+    <header className="topbar lg-glass">
       {/* Brand mark */}
       <div className="topbar-left">
         <a href="#overview" className="brand-link" aria-label="PocketMC Telemetry Home">
@@ -131,6 +131,6 @@ export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
           icon={theme === 'dark' ? <Moon size={15} /> : <Sun size={15} />}
         />
       </div>
-    </Glass>
+    </header>
   );
 };

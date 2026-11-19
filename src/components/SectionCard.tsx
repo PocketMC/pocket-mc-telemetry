@@ -1,5 +1,4 @@
 import React from 'react';
-import { Glass } from 'glisse';
 
 interface SectionCardProps {
   id: string;
@@ -21,7 +20,7 @@ export const SectionCard: React.FC<SectionCardProps> = ({
   children,
 }) => {
   return (
-    <Glass className="section-card" id={id}>
+    <section className="section-card lg-glass" id={id}>
       <div className="section-header">
         <div className="section-title-wrap">
           <div className={`section-icon-badge section-icon-${iconColor}`}>
@@ -37,6 +36,6 @@ export const SectionCard: React.FC<SectionCardProps> = ({
       </div>
 
       {children}
-    </Glass>
+    </section>
   );
 };

@@ -123,16 +123,20 @@ body {
   pointer-events: none;
   background-color: var(--bg-page);
   transition: background-color 0.4s ease;
+  contain: strict;
+  transform: translate3d(0, 0, 0);
 }
 
 .liquid-aura-canvas {
   position: absolute;
-  inset: -15%;
-  width: 130%;
-  height: 130%;
-  filter: blur(85px) saturate(1.5);
-  opacity: 0.9;
+  inset: -10%;
+  width: 120%;
+  height: 120%;
+  filter: blur(60px) saturate(1.4);
+  opacity: 0.85;
   pointer-events: none;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
 }
 
 /* ── Layout Container ──────────────────────────────────────── */
