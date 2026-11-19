@@ -116,31 +116,9 @@ body {
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
-}
-
-/* ── Liquid Aura Wallpaper (Backdrop) ──────────────────────── */
-.liquid-aura-bg {
-  position: fixed;
-  inset: 0;
-  z-index: -10;
-  overflow: hidden;
-  pointer-events: none;
   background-color: var(--bg-page);
-  transition: background-color 0.4s ease;
-  contain: strict;
-  transform: translate3d(0, 0, 0);
-}
-
-.liquid-aura-canvas {
-  position: absolute;
-  inset: -12%;
-  width: 124%;
-  height: 124%;
-  filter: blur(75px) saturate(1.6);
-  opacity: 0.95;
-  pointer-events: none;
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease;
 }
 
 /* ── Layout Container ──────────────────────────────────────── */

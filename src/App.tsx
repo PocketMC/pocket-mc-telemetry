@@ -14,7 +14,6 @@ import {
   Maximize2,
 } from 'lucide-react';
 import { useTelemetry } from './hooks/useTelemetry';
-import { LiquidAura } from './components/LiquidAura';
 import { GlisseTopBar } from './components/GlisseTopBar';
 import { SectionCard } from './components/SectionCard';
 import { KpiCard } from './components/KpiCard';
@@ -140,26 +139,19 @@ export const App: React.FC = () => {
 
   if (view === 'heatmap') {
     return (
-      <>
-        <LiquidAura theme={theme} />
-        <FullscreenHeatmap
-          stats={data}
-          theme={theme}
-          onBack={() => {
-            setView('dashboard');
-            window.location.hash = '';
-          }}
-        />
-      </>
+      <FullscreenHeatmap
+        stats={data}
+        theme={theme}
+        onBack={() => {
+          setView('dashboard');
+          window.location.hash = '';
+        }}
+      />
     );
   }
 
   return (
-    <>
-      {/* Background Dynamic Wallpaper Canvas */}
-      <LiquidAura theme={theme} />
-
-      <div className="app-wrapper">
+    <div className="app-wrapper">
         {/* Authentic Glisse Floating Command Bar */}
         <GlisseTopBar
           theme={theme}
@@ -445,6 +437,5 @@ export const App: React.FC = () => {
           loading={loading}
         />
       </div>
-    </>
   );
 };
