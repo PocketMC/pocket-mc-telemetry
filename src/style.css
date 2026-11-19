@@ -329,6 +329,13 @@ body {
   background-color: var(--nav-tab-active-bg);
 }
 
+.top-github-icon {
+  width: 25px;
+  height: 25px;
+  display: block;
+  flex-shrink: 0;
+}
+
 /* Theme Toggle Animated Icon */
 .theme-toggle-icon-wrap {
   display: inline-flex;
@@ -1148,6 +1155,32 @@ body {
 
 /* Mobile responsive adjustments */
 @media (max-width: 640px) {
+  /* Scaled top utility buttons for mobile & dock visual consistency */
+  .topbar-actions-group {
+    gap: 8px;
+  }
+
+  .top-action-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 23px;
+  }
+
+  .top-github-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .theme-toggle-icon-wrap {
+    width: 20px;
+    height: 20px;
+  }
+
+  .theme-toggle-icon-wrap svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
   .solid-segmented-bar {
     padding: 4px;
   }

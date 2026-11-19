@@ -47,10 +47,9 @@ export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
           aria-label="View on GitHub"
           title="View on GitHub"
         >
-          {/* Well-proportioned 25x25 GitHub Icon */}
+          {/* Well-proportioned GitHub Icon */}
           <svg
-            width="25"
-            height="25"
+            className="top-github-icon"
             viewBox="0 0 24 24"
             fill="currentColor"
             aria-hidden="true"
