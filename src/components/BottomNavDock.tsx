@@ -1,6 +1,6 @@
 import React from 'react';
 import { TabBar } from 'glisse';
-import { LayoutDashboard, Users, Server, Globe } from 'lucide-react';
+import { House, Users, Server, Globe } from 'lucide-react';
 
 interface BottomNavDockProps {
   activeTab: string;
@@ -14,34 +14,40 @@ export const BottomNavDock: React.FC<BottomNavDockProps> = ({
   const navItems = [
     {
       value: 'overview',
-      label: 'Overview',
-      icon: <LayoutDashboard size={20} strokeWidth={2.2} />,
+      label: 'Home',
+      icon: <House size={26} strokeWidth={1.9} />,
     },
     {
       value: 'clients',
       label: 'Clients',
-      icon: <Users size={20} strokeWidth={2.2} />,
+      icon: <Users size={26} strokeWidth={1.9} />,
     },
     {
       value: 'servers',
       label: 'Servers',
-      icon: <Server size={20} strokeWidth={2.2} />,
+      icon: <Server size={26} strokeWidth={1.8} />,
     },
     {
       value: 'map',
-      label: 'Global Map',
-      icon: <Globe size={20} strokeWidth={2.2} />,
+      label: 'Map',
+      icon: <Globe size={26} strokeWidth={1.8} />,
     },
   ];
 
   return (
     <nav className="bottom-dock-wrap" aria-label="Sections navigation dock">
       <TabBar
+        aria-label="Library"
         items={navItems}
         value={activeTab}
         onValueChange={onTabChange}
-        aria-label="Dashboard sections"
+        style={{
+          '--lg-lens-grow-x': '32px',
+          '--lg-lens-grow-y': '21px',
+        } as React.CSSProperties}
       />
     </nav>
   );
 };
+
+

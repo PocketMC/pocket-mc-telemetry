@@ -226,62 +226,6 @@ body {
   color: var(--text-secondary);
 }
 
-/* ── Glisse Section Navigation Tab Bar ─────────────────────── */
-.topbar-nav {
-  display: flex;
-  align-items: center;
-}
-
-.lg-tab-bar {
-  --lg-tab-height: 34px;
-  --lg-tab-inset: 3px;
-  background-color: var(--lg-glass);
-  -webkit-backdrop-filter: blur(20px) saturate(1.7);
-  backdrop-filter: blur(20px) saturate(1.7);
-  border: 1px solid var(--lg-edge);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, var(--lg-rim-shine));
-}
-
-.lg-tab-bar .lg-tab {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  padding: 0 14px;
-  border: 0;
-  border-radius: 999px;
-  background: none;
-  color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 500;
-  text-decoration: none;
-  cursor: pointer;
-  transition: color 0.18s ease, opacity 0.18s ease;
-  user-select: none;
-}
-
-.lg-tab-bar .lg-tab:hover {
-  color: var(--text-primary);
-}
-
-.lg-tab-bar .lg-tab.active {
-  color: var(--lg-segment-label);
-  background-color: var(--lg-segment-thumb);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14), inset 0 0 0 0.5px rgba(255, 255, 255, 0.2);
-}
-
-[data-theme="dark"] .lg-tab-bar .lg-tab.active {
-  color: #ffffff;
-  background-color: var(--lg-segment-thumb);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35), inset 0 0.5px 0.5px rgba(255, 255, 255, 0.25);
-}
-
-@media (max-width: 900px) {
-  .topbar-nav {
-    display: none;
-  }
-}
-
 /* ── Topbar Actions Group ──────────────────────────────────── */
 .topbar-actions-group {
   display: flex;
@@ -1053,10 +997,11 @@ body {
 
 /* ═══════════════════════════════════════════════════════════════
    FLOATING BOTTOM NAVIGATION DOCK : Pure Glisse Liquid Glass
+   Matched 1:1 with Kelvin Zhang's Official Glisse Demo
    ═══════════════════════════════════════════════════════════════ */
 .bottom-dock-wrap {
   position: fixed;
-  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
   left: 0;
   right: 0;
   display: flex;
@@ -1068,57 +1013,16 @@ body {
 
 .bottom-dock-wrap .lg-tab-bar {
   pointer-events: auto;
-  --lg-tab-width: 92px;
-  --lg-tab-height: 56px;
-  --lg-tab-inset: 4px;
-  --lg-thumb-inset: 2px;
-  --lg-lens-grow-x: 20px;
-  --lg-lens-grow-y: 12px;
-  background-color: var(--lg-surface);
-  -webkit-backdrop-filter: blur(44px) saturate(2.2);
-  backdrop-filter: blur(44px) saturate(2.2);
-  border: 1px solid var(--lg-surface-edge);
   box-shadow:
-    inset 0 1.5px 1.5px rgba(255, 255, 255, var(--lg-rim-shine-high)),
-    inset 0 -0.5px 1px rgba(0, 0, 0, 0.1),
-    0 24px 50px -12px var(--lg-shadow),
-    0 4px 16px -4px var(--lg-shadow);
-  transition: transform 0.25s var(--lg-ease), box-shadow 0.25s var(--lg-ease);
+    0 20px 48px -8px rgba(0, 0, 0, 0.65),
+    0 4px 16px -2px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s var(--lg-ease), box-shadow 0.2s var(--lg-ease);
 }
 
 .bottom-dock-wrap .lg-tab-bar:hover {
   transform: translateY(-2px);
   box-shadow:
-    inset 0 1.5px 2px rgba(255, 255, 255, var(--lg-rim-shine-high)),
-    0 28px 58px -10px var(--lg-shadow);
+    0 26px 56px -8px rgba(0, 0, 0, 0.75),
+    0 6px 20px -2px rgba(0, 0, 0, 0.45);
 }
 
-.bottom-dock-wrap .lg-tab-bar :is(.lg-tab, .lg-tab-copy) {
-  flex-direction: column;
-  gap: 3px;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-}
-
-.bottom-dock-wrap .lg-tab-bar .lg-tab-icon > svg {
-  width: 20px;
-  height: 20px;
-}
-
-@media (max-width: 640px) {
-  .bottom-dock-wrap .lg-tab-bar {
-    --lg-tab-width: 76px;
-    --lg-tab-height: 52px;
-    --lg-tab-inset: 3px;
-  }
-  .bottom-dock-wrap .lg-tab-bar :is(.lg-tab, .lg-tab-copy) {
-    font-size: 10px;
-    gap: 2px;
-  }
-  .bottom-dock-wrap .lg-tab-bar .lg-tab-icon > svg {
-    width: 18px;
-    height: 18px;
-  }
-}
