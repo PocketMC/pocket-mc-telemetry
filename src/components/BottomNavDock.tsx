@@ -15,35 +15,33 @@ export const BottomNavDock: React.FC<BottomNavDockProps> = ({
     {
       value: 'overview',
       label: 'Overview',
-      icon: <LayoutDashboard size={15} style={{ verticalAlign: 'middle' }} />,
+      icon: <LayoutDashboard size={20} strokeWidth={2.2} />,
     },
     {
       value: 'clients',
       label: 'Clients',
-      icon: <Users size={15} style={{ verticalAlign: 'middle' }} />,
+      icon: <Users size={20} strokeWidth={2.2} />,
     },
     {
       value: 'servers',
       label: 'Servers',
-      icon: <Server size={15} style={{ verticalAlign: 'middle' }} />,
+      icon: <Server size={20} strokeWidth={2.2} />,
     },
     {
       value: 'map',
       label: 'Global Map',
-      icon: <Globe size={15} style={{ verticalAlign: 'middle' }} />,
+      icon: <Globe size={20} strokeWidth={2.2} />,
     },
   ];
 
   return (
-    <nav className="bottom-nav-dock-wrap" aria-label="Bottom section navigation dock">
-      <div className="bottom-nav-dock lg-glass">
-        <TabBar
-          items={navItems}
-          value={activeTab}
-          onValueChange={onTabChange}
-          aria-label="Dashboard sections"
-        />
-      </div>
+    <nav className="bottom-dock-wrap" aria-label="Sections navigation dock">
+      <TabBar
+        items={navItems}
+        value={activeTab}
+        onValueChange={onTabChange}
+        aria-label="Dashboard sections"
+      />
     </nav>
   );
 };

@@ -60,11 +60,15 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
-  // ── Section Navigation & Scroll Spy ─────────────────────────────
+  // ── Section Navigation & Smooth Scroll Spy ──────────────────────
   const [activeTab, setActiveTab] = useState('overview');
+  const isNavigatingRef = React.useRef(false);
+  const scrollTimeoutRef = React.useRef<number | null>(null);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
+    isNavigatingRef.current = true;
+
     const targetId =
       tab === 'overview'
         ? 'section-installs'
@@ -76,9 +80,14 @@ export const App: React.FC = () => {
 
     const element = document.getElementById(targetId);
     if (element) {
-      const topOffset = element.getBoundingClientRect().top + window.scrollY - 80;
+      const topOffset = element.getBoundingClientRect().top + window.scrollY - 70;
       window.scrollTo({ top: topOffset, behavior: 'smooth' });
     }
+
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    scrollTimeoutRef.current = window.setTimeout(() => {
+      isNavigatingRef.current = false;
+    }, 800);
   };
 
   useEffect(() => {
@@ -92,12 +101,15 @@ export const App: React.FC = () => {
     };
 
     const handleScroll = () => {
+      // If user clicked a tab, ignore intermediate scroll events so indicator doesn't jitter
+      if (isNavigatingRef.current) return;
+
       const scrollY = window.scrollY;
       const sections = Object.keys(sectionMap).map((id) => document.getElementById(id));
       
       for (let i = sections.length - 1; i >= 0; i--) {
         const sec = sections[i];
-        if (sec && scrollY >= sec.offsetTop - 200) {
+        if (sec && scrollY >= sec.offsetTop - 220) {
           const tab = sectionMap[sec.id];
           if (tab) {
             setActiveTab(tab);
