@@ -168,17 +168,24 @@ body {
 }
 
 .page-transition {
-  animation: pageFadeIn 0.16s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  flex: 1;
+  animation: pageFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+  will-change: opacity, transform;
 }
 
 @keyframes pageFadeIn {
   from {
-    opacity: 0.9;
+    opacity: 0;
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -955,19 +962,11 @@ body {
   contain: layout style;
 }
 
-.bottom-dock-cluster {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  pointer-events: none;
-}
-
-/* Floating Segmented Bar (Localized backdrop blur) */
+/* Floating Segmented Bar (Unified dock container with localized backdrop blur) */
 .solid-segmented-bar {
   pointer-events: auto;
   display: flex;
   align-items: center;
-  gap: 4px;
   height: 60px;
   box-sizing: border-box;
   padding: 5px;
@@ -980,8 +979,41 @@ body {
   user-select: none;
 }
 
+.dock-nav-items {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Smooth sliding active indicator pill */
+.dock-active-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 25px;
+  background-color: var(--nav-tab-active-bg);
+  pointer-events: none;
+  z-index: 1;
+  transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1),
+              width 0.22s cubic-bezier(0.2, 0.9, 0.3, 1),
+              opacity 0.15s ease;
+  will-change: transform, width;
+}
+
+/* Subtle hairline vertical divider */
+.dock-divider {
+  width: 1px;
+  height: 24px;
+  background-color: var(--nav-solid-border);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
 /* Segment Tab Buttons */
 .segmented-tab-btn {
+  position: relative;
+  z-index: 2;
   height: 50px;
   min-width: 68px;
   padding: 0 14px;
@@ -997,17 +1029,15 @@ body {
   color: var(--nav-tab-color);
   cursor: pointer;
   font-family: inherit;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: color 0.18s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
 .segmented-tab-btn:hover:not(.active) {
-  background-color: var(--nav-tab-hover-bg);
   color: var(--nav-tab-hover-color);
 }
 
 .segmented-tab-btn.active {
-  background-color: var(--nav-tab-active-bg);
   color: var(--nav-tab-active-color);
   font-weight: 600;
 }
@@ -1027,67 +1057,98 @@ body {
   letter-spacing: -0.01em;
 }
 
-/* Matching Floating Circular Refresh Button (Localized backdrop blur) */
-.solid-dock-refresh-btn {
+/* Visually Integrated Refresh Button (extension of the dock container) */
+.dock-integrated-refresh-btn {
   pointer-events: auto;
-  width: 60px;
-  height: 60px;
+  height: 50px;
+  min-width: 68px;
+  padding: 0 14px;
   box-sizing: border-box;
-  border-radius: 30px;
-  border: 1px solid var(--nav-solid-border);
-  background-color: var(--nav-solid-bg);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-  box-shadow: var(--nav-shadow);
+  border-radius: 25px;
+  border: none;
+  outline: none;
+  background: transparent;
   color: var(--nav-tab-color);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 2px;
   cursor: pointer;
-  padding: 0;
+  font-family: inherit;
   flex-shrink: 0;
   transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
-.solid-dock-refresh-btn:hover:not(:disabled) {
+.dock-integrated-refresh-btn:hover:not(:disabled) {
   background-color: var(--nav-tab-hover-bg);
   color: var(--nav-tab-hover-color);
 }
 
-.solid-dock-refresh-btn:active:not(:disabled) {
+.dock-integrated-refresh-btn:active:not(:disabled) {
   transform: scale(0.96);
   background-color: var(--nav-tab-active-bg);
+  color: var(--nav-tab-active-color);
 }
 
-.solid-dock-refresh-btn:disabled {
+.dock-integrated-refresh-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.solid-dock-refresh-btn svg {
-  width: 22px;
-  height: 22px;
+.dock-integrated-refresh-btn .tab-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  transition: color 0.15s ease;
+}
+
+.dock-integrated-refresh-btn .tab-label {
+  font-size: 11px;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
 }
 
 /* Mobile responsive adjustments */
 @media (max-width: 640px) {
-  .bottom-dock-cluster {
-    gap: 8px;
-  }
-
   .solid-segmented-bar {
     padding: 4px;
+  }
+
+  .dock-nav-items {
     gap: 2px;
   }
 
-  .segmented-tab-btn {
-    min-width: 58px;
-    padding: 0 10px;
+  .dock-divider {
+    height: 22px;
+    margin: 0 2px;
   }
 
-  .segmented-tab-btn .tab-label {
-    font-size: 10.5px;
+  .segmented-tab-btn,
+  .dock-integrated-refresh-btn {
+    min-width: 52px;
+    padding: 0 6px;
+  }
+
+  .segmented-tab-btn .tab-label,
+  .dock-integrated-refresh-btn .tab-label {
+    font-size: 10px;
+  }
+
+  .dock-active-indicator {
+    border-radius: 23px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock-active-indicator {
+    transition: none !important;
+  }
+  .page-transition {
+    animation: none !important;
   }
 }
 

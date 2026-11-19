@@ -95,17 +95,19 @@ export const App: React.FC = () => {
         </div>
       )}
 
-      {/* Independent Page Views Routed Dynamically (Stable container prevents mobile height collapse & dock flickering) */}
+      {/* Independent Page Views Routed Dynamically with Smooth Content Transitions */}
       <main className="main-content">
-        <Routes>
-          <Route path="/" element={<HomePage data={data} />} />
-          <Route path="/overview" element={<Navigate to="/" replace />} />
-          <Route path="/home" element={<Navigate to="/" replace />} />
-          <Route path="/clients" element={<ClientsPage data={data} />} />
-          <Route path="/servers" element={<ServersPage data={data} />} />
-          <Route path="/map" element={<MapPage stats={data} theme={theme} />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <div key={location.pathname} className="page-transition">
+          <Routes location={location}>
+            <Route path="/" element={<HomePage data={data} />} />
+            <Route path="/overview" element={<Navigate to="/" replace />} />
+            <Route path="/home" element={<Navigate to="/" replace />} />
+            <Route path="/clients" element={<ClientsPage data={data} />} />
+            <Route path="/servers" element={<ServersPage data={data} />} />
+            <Route path="/map" element={<MapPage stats={data} theme={theme} />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
       </main>
 
       {/* Footer */}
