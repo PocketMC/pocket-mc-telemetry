@@ -46,11 +46,11 @@
   --tooltip-bg: #ffffff;
   --tooltip-text: #0f172a;
 
-  /* Floating Navigation & Header (Light) with localized backdrop blur */
-  --nav-solid-bg: rgba(255, 255, 255, 0.92);
-  --nav-solid-border: rgba(0, 0, 0, 0.10);
-  --nav-solid-hover-bg: #f4f6fa;
-  --nav-solid-active-bg: #e9ecf2;
+  /* Floating Navigation & Header (Light Theme) with rich frosted glass backdrop blur */
+  --nav-solid-bg: rgba(255, 255, 255, 0.68);
+  --nav-solid-border: rgba(0, 0, 0, 0.08);
+  --nav-solid-hover-bg: rgba(255, 255, 255, 0.82);
+  --nav-solid-active-bg: rgba(240, 242, 248, 0.88);
   --nav-tab-color: #64748b;
   --nav-tab-hover-bg: rgba(0, 0, 0, 0.05);
   --nav-tab-hover-color: #0f172a;
@@ -121,17 +121,17 @@
   --tooltip-bg: #141418;
   --tooltip-text: #ffffff;
 
-  /* Floating Navigation & Header (OLED Dark) with localized backdrop blur */
-  --nav-solid-bg: rgba(10, 10, 12, 0.85);
-  --nav-solid-border: rgba(255, 255, 255, 0.10);
-  --nav-solid-hover-bg: rgba(24, 24, 28, 0.95);
-  --nav-solid-active-bg: rgba(30, 30, 36, 0.95);
+  /* Floating Navigation & Header (OLED Dark) with rich frosted glass backdrop blur */
+  --nav-solid-bg: rgba(12, 12, 16, 0.65);
+  --nav-solid-border: rgba(255, 255, 255, 0.12);
+  --nav-solid-hover-bg: rgba(24, 24, 30, 0.78);
+  --nav-solid-active-bg: rgba(32, 32, 40, 0.85);
   --nav-tab-color: #94949e;
   --nav-tab-hover-bg: rgba(255, 255, 255, 0.06);
   --nav-tab-hover-color: #f0f0f4;
   --nav-tab-active-bg: rgba(255, 255, 255, 0.12);
   --nav-tab-active-color: #ffffff;
-  --nav-shadow: 0 8px 32px rgba(0, 0, 0, 0.75);
+  --nav-shadow: 0 12px 36px rgba(0, 0, 0, 0.75), 0 4px 12px rgba(0, 0, 0, 0.40);
 
   /* Viewport Edge Scroll Fade (True OLED Dark Theme) - Compact & Restrained */
   --fade-scrim-top: linear-gradient(
@@ -362,8 +362,8 @@ body {
   display: inline-flex;
   align-items: center;
   background-color: var(--nav-solid-bg);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  backdrop-filter: blur(28px) saturate(190%);
   border: 1px solid var(--nav-solid-border);
   box-shadow: var(--nav-shadow);
   color: var(--text-primary);
@@ -372,16 +372,18 @@ body {
   outline: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  transform: translateZ(0);
+  contain: layout style;
   transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
 }
 
 .top-brand-btn:hover {
   background-color: var(--nav-solid-hover-bg);
-  transform: translateY(-1px);
+  transform: translateY(-1px) translateZ(0);
 }
 
 .top-brand-btn:active {
-  transform: scale(0.98);
+  transform: scale(0.98) translateZ(0);
   background-color: var(--nav-solid-active-bg);
 }
 
@@ -431,8 +433,8 @@ body {
   align-items: center;
   justify-content: center;
   background-color: var(--nav-solid-bg);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  backdrop-filter: blur(28px) saturate(190%);
   border: 1px solid var(--nav-solid-border);
   box-shadow: var(--nav-shadow);
   color: var(--text-primary);
@@ -442,17 +444,19 @@ body {
   text-decoration: none;
   outline: none;
   -webkit-tap-highlight-color: transparent;
+  transform: translateZ(0);
+  contain: layout style;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.2s ease;
 }
 
 .top-action-btn:hover {
   background-color: var(--nav-solid-hover-bg);
   color: var(--text-primary);
-  transform: translateY(-1px);
+  transform: translateY(-1px) translateZ(0);
 }
 
 .top-action-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.95) translateZ(0);
   background-color: var(--nav-solid-active-bg);
   color: var(--text-primary);
 }
@@ -921,13 +925,14 @@ body {
   padding: 16px;
   border-radius: 18px;
   background-color: var(--nav-solid-bg);
-  -webkit-backdrop-filter: blur(24px) saturate(1.8);
-  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  backdrop-filter: blur(28px) saturate(190%);
   border: 1px solid var(--nav-solid-border);
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35), 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
   animation: topInfoPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   pointer-events: auto;
+  transform: translateZ(0);
 }
 
 @keyframes topInfoPopIn {
@@ -976,8 +981,8 @@ body {
   z-index: 99999 !important;
   pointer-events: none !important;
   background-color: var(--nav-solid-bg) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(1.8) !important;
-  backdrop-filter: blur(24px) saturate(1.8) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+  backdrop-filter: blur(28px) saturate(190%) !important;
   color: var(--text-primary) !important;
   border: 1px solid var(--nav-solid-border) !important;
   border-radius: 12px !important;
@@ -988,6 +993,7 @@ body {
   line-height: 1.4 !important;
   transition: none !important;
   animation: none !important;
+  transform: translateZ(0);
 }
 
 /* Map marker dots are strictly visual indicators: non-clickable, non-hoverable */
@@ -1210,11 +1216,13 @@ body {
   padding: 5px;
   border-radius: 30px;
   background-color: var(--nav-solid-bg);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  backdrop-filter: blur(28px) saturate(190%);
   border: 1px solid var(--nav-solid-border);
   box-shadow: var(--nav-shadow);
   user-select: none;
+  transform: translateZ(0);
+  contain: layout style;
 }
 
 .dock-nav-items {
@@ -1432,6 +1440,18 @@ body {
   }
   .page-transition {
     animation: none !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .top-brand-btn,
+  .top-action-btn,
+  .solid-segmented-bar,
+  .top-info-popover,
+  .jvm-tooltip {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-color: var(--bg-surface) !important;
   }
 }
 
