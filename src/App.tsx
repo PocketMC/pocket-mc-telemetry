@@ -85,6 +85,11 @@ export const App: React.FC = () => {
 
   const isMapPage = location.pathname.replace(/\/$/, '').endsWith('/map');
 
+  // Clean up any stray map tooltips when navigating between pages
+  useEffect(() => {
+    document.querySelectorAll('.jvm-tooltip').forEach((el) => el.remove());
+  }, [location.pathname]);
+
   // Lock body scroll on fullscreen map page
   useEffect(() => {
     if (isMapPage) {

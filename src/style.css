@@ -167,6 +167,44 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+html,
+body,
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none;
+}
+
+button,
+a,
+.top-action-btn,
+.top-brand-btn,
+.segmented-tab-btn,
+.btn-surface {
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+}
+
+button:focus,
+button:focus-visible,
+a:focus,
+a:focus-visible,
+.top-action-btn:focus,
+.top-action-btn:focus-visible,
+.top-brand-btn:focus,
+.top-brand-btn:focus-visible,
+.segmented-tab-btn:focus,
+.segmented-tab-btn:focus-visible,
+.btn-surface:focus,
+.btn-surface:focus-visible {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
 html {
@@ -420,8 +458,7 @@ body {
 }
 
 .top-action-btn:focus-visible {
-  outline: 2px solid var(--accent-blue);
-  outline-offset: 2px;
+  outline: none !important;
 }
 
 .top-github-icon {
@@ -935,14 +972,20 @@ body {
 }
 
 .jvm-tooltip {
-  background-color: var(--tooltip-bg) !important;
-  color: var(--tooltip-text) !important;
-  border: 1px solid var(--border-card) !important;
-  border-radius: 10px !important;
-  padding: 8px 12px !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+  position: absolute !important;
+  z-index: 99999 !important;
+  pointer-events: none !important;
+  background-color: var(--nav-solid-bg) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.8) !important;
+  backdrop-filter: blur(24px) saturate(1.8) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--nav-solid-border) !important;
+  border-radius: 12px !important;
+  padding: 10px 14px !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.2) !important;
   font-family: inherit !important;
   font-size: 12px !important;
+  line-height: 1.4 !important;
 }
 
 /* Fullscreen Map Styles & Overlays */
@@ -1057,8 +1100,18 @@ body {
   border-radius: 50%;
 }
 
-.marker-live { background-color: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
-.marker-installed { background-color: var(--accent-blue); box-shadow: 0 0 8px var(--accent-blue); }
+.marker-open-clients,
+.marker-live {
+  background-color: var(--accent-green);
+  box-shadow: 0 0 6px var(--accent-green);
+}
+
+.marker-installs,
+.marker-installed {
+  background-color: var(--text-primary);
+  border: 1px solid var(--border-card);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+}
 
 .map-note {
   margin-top: 10px;

@@ -91,12 +91,12 @@ export const TopBar: React.FC<TopBarProps> = ({
                 </p>
                 <div className="top-info-legend">
                   <div className="legend-item">
-                    <span className="legend-marker marker-live" />
-                    <span>Active Now</span>
+                    <span className="legend-marker marker-open-clients" />
+                    <span>Open Clients</span>
                   </div>
                   <div className="legend-item">
-                    <span className="legend-marker marker-installed" />
-                    <span>Registered Installs</span>
+                    <span className="legend-marker marker-installs" />
+                    <span>Total Installs</span>
                   </div>
                 </div>
               </div>

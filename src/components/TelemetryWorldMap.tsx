@@ -83,48 +83,59 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
 
     const isDark = theme === 'dark';
 
-    // Calculate aggregated lookups
+    // Build reverse ISO to canonical Country Name lookup
+    const ISO_TO_COUNTRY: Record<string, string> = {};
+    for (const [name, meta] of Object.entries(COUNTRY_MAP)) {
+      if (meta?.iso && !ISO_TO_COUNTRY[meta.iso.toUpperCase()]) {
+        ISO_TO_COUNTRY[meta.iso.toUpperCase()] = name;
+      }
+    }
+
+    // Calculate aggregated lookups normalized by uppercase ISO
     const regionData: Record<string, number> = {};
     const activeByIso: Record<string, number> = {};
 
     for (const [country, count] of Object.entries(stats?.installLocationDistribution || {})) {
       const match = COUNTRY_MAP[country];
       if (match?.iso) {
-        regionData[match.iso] = (regionData[match.iso] || 0) + (Number(count) || 0);
+        const iso = match.iso.toUpperCase();
+        regionData[iso] = (regionData[iso] || 0) + (Number(count) || 0);
       }
     }
 
     for (const [country, count] of Object.entries(stats?.locationDistribution || {})) {
       const match = COUNTRY_MAP[country];
       if (match?.iso) {
-        activeByIso[match.iso] = (activeByIso[match.iso] || 0) + (Number(count) || 0);
+        const iso = match.iso.toUpperCase();
+        activeByIso[iso] = (activeByIso[iso] || 0) + (Number(count) || 0);
       }
     }
 
     const markers: MapMarker[] = [];
     const plottedIsos = new Set<string>();
 
-    // 1. Live Active Markers (Cyan / Sky)
+    // 1. Open Clients Markers (Green dots)
     for (const [country, count] of Object.entries(stats?.locationDistribution || {})) {
       const match = COUNTRY_MAP[country];
-      if (match?.iso && match.coords && !plottedIsos.has(match.iso)) {
-        plottedIsos.add(match.iso);
-        const totalActive = activeByIso[match.iso] || Number(count) || 0;
+      if (match?.iso && match.coords && !plottedIsos.has(match.iso.toUpperCase())) {
+        const iso = match.iso.toUpperCase();
+        plottedIsos.add(iso);
+        const totalActive = activeByIso[iso] || Number(count) || 0;
         markers.push({
           name: country,
-          iso: match.iso,
+          iso,
           coords: match.coords,
           activeCount: totalActive,
           isLive: true,
           style: {
             initial: {
-              fill: isDark ? '#38bdf8' : '#0088ff',
-              stroke: isDark ? '#0a0a0c' : '#ffffff',
+              fill: isDark ? '#22c55e' : '#16a34a',
+              stroke: isDark ? '#052e16' : '#ffffff',
               strokeWidth: 1.5,
               r: 4.5,
             },
             hover: {
-              fill: isDark ? '#7dd3fc' : '#0077e6',
+              fill: isDark ? '#4ade80' : '#22c55e',
               stroke: '#ffffff',
               strokeWidth: 2,
               r: 6,
@@ -134,27 +145,28 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
       }
     }
 
-    // 2. Registered Install Markers (Emerald / Green)
+    // 2. Total Installs Markers (White dot on dark theme, Black dot on light theme)
     for (const [country] of Object.entries(stats?.installLocationDistribution || {})) {
       const match = COUNTRY_MAP[country];
-      if (match?.iso && match.coords && !plottedIsos.has(match.iso)) {
-        plottedIsos.add(match.iso);
+      if (match?.iso && match.coords && !plottedIsos.has(match.iso.toUpperCase())) {
+        const iso = match.iso.toUpperCase();
+        plottedIsos.add(iso);
         markers.push({
           name: country,
-          iso: match.iso,
+          iso,
           coords: match.coords,
           isInstalledOnly: true,
           style: {
             initial: {
-              fill: isDark ? '#30d158' : '#34c759',
-              stroke: isDark ? '#0a0a0c' : '#ffffff',
-              strokeWidth: 1,
+              fill: isDark ? '#ffffff' : '#0f172a',
+              stroke: isDark ? '#000000' : '#ffffff',
+              strokeWidth: 1.2,
               r: 3.5,
             },
             hover: {
-              fill: isDark ? '#4ade80' : '#15803d',
-              stroke: '#ffffff',
-              strokeWidth: 1.5,
+              fill: isDark ? '#f1f5f9' : '#334155',
+              stroke: isDark ? '#ffffff' : '#000000',
+              strokeWidth: 2,
               r: 5,
             },
           },
@@ -178,6 +190,40 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
     // Clean container before creating new instance
     containerRef.current.innerHTML = '';
 
+    // Reusable, non-bloated tooltip content generator for countries & markers
+    const renderTooltipHtml = (rawName: string, rawIso?: string) => {
+      const upperIso = (rawIso || (rawName.length === 2 ? rawName : COUNTRY_MAP[rawName]?.iso) || '').toUpperCase();
+      const countryName = (upperIso && ISO_TO_COUNTRY[upperIso]) || rawName;
+      const installs =
+        (upperIso && regionData[upperIso]) ||
+        (stats?.installLocationDistribution || {})[countryName] ||
+        (rawName && (stats?.installLocationDistribution || {})[rawName]) ||
+        0;
+      const activeCount =
+        (upperIso && activeByIso[upperIso]) ||
+        (stats?.locationDistribution || {})[countryName] ||
+        (rawName && (stats?.locationDistribution || {})[rawName]) ||
+        0;
+      const flag = getFlagUrl(countryName) || (upperIso ? getFlagUrl(upperIso) : null);
+      const flagHtml = flag
+        ? `<img src="${flag}" width="20" height="15" alt="" style="border-radius:2px;vertical-align:middle;display:inline-block;margin-right:6px;" />`
+        : '';
+
+      return `<div style="display:flex;align-items:center;gap:6px;font-weight:600;margin-bottom:6px;font-size:13px;color:var(--text-primary);">
+        ${flagHtml}<span>${countryName}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;font-size:12px;">
+        <div style="display:flex;justify-content:space-between;gap:14px;color:var(--text-secondary);">
+          <span>Open Clients:</span>
+          <strong style="color:var(--accent-green);font-weight:600;">${activeCount.toLocaleString()}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;gap:14px;color:var(--text-secondary);">
+          <span>Total Installs:</span>
+          <strong style="color:var(--text-primary);font-weight:600;">${installs.toLocaleString()}</strong>
+        </div>
+      </div>`;
+    };
+
     try {
       mapInstanceRef.current = new jsVectorMap({
         selector: containerRef.current,
@@ -196,7 +242,7 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
             fillOpacity: 1,
           },
           hover: {
-            fill: isDark ? '#1c1c24' : '#c4d1e6',
+            fill: isDark ? '#1e2230' : '#c7d2e5',
             cursor: 'pointer',
           },
         },
@@ -204,8 +250,8 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
         markers: markers,
         markerStyle: {
           initial: {
-            fill: isDark ? '#38bdf8' : '#0088ff',
-            stroke: isDark ? '#0a0a0c' : '#ffffff',
+            fill: isDark ? '#22c55e' : '#16a34a',
+            stroke: isDark ? '#000000' : '#ffffff',
             strokeWidth: 1.5,
             r: 4,
           },
@@ -219,47 +265,38 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
         onMarkerTooltipShow(_event: any, tooltip: any, index: number) {
           const marker = markers[index];
           if (!marker) return;
-          const countryName = marker.name;
-          const iso = marker.iso;
-          const installs =
-            (iso && regionData[iso]) ||
-            (stats?.installLocationDistribution || {})[countryName] ||
-            0;
-          const activeCount =
-            (iso && activeByIso[iso]) ||
-            (stats?.locationDistribution || {})[countryName] ||
-            marker.activeCount ||
-            0;
-          const flag = getFlagUrl(countryName);
-          const flagHtml = flag
-            ? `<img src="${flag}" width="20" height="15" alt="${countryName} flag" style="border-radius:2px;vertical-align:middle;display:inline-block;" />`
-            : '';
+          tooltip.text(renderTooltipHtml(marker.name, marker.iso), true);
+        },
 
-          tooltip.text(
-            `<div style="display:flex;align-items:center;gap:7px;font-weight:600;margin-bottom:4px;">
-              ${flagHtml} <span>${countryName}</span>
-             </div>
-             <div style="font-size:12px;color:var(--text-secondary);">
-               Active Users: <strong style="color:var(--accent-blue);">${activeCount.toLocaleString()}</strong>
-             </div>
-             <div style="font-size:12px;color:var(--text-secondary);">
-               Total Installs: <strong style="color:var(--accent-green);">${installs.toLocaleString()}</strong>
-             </div>`,
-            true
-          );
+        onRegionTooltipShow(_event: any, tooltip: any, code: string) {
+          tooltip.text(renderTooltipHtml(code, code), true);
         },
       });
     } catch (e) {
       console.error('Failed to construct jsVectorMap', e);
     }
 
+    // Dismiss any stuck tooltips when clicking/tapping outside
+    const handleMapPointerDown = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target || (!target.classList.contains('jvm-region') && !target.classList.contains('jvm-marker'))) {
+        document.querySelectorAll('.jvm-tooltip').forEach((el) => {
+          (el as HTMLElement).style.display = 'none';
+        });
+      }
+    };
+    window.addEventListener('pointerdown', handleMapPointerDown);
+
     return () => {
+      window.removeEventListener('pointerdown', handleMapPointerDown);
       if (mapInstanceRef.current) {
         try {
           mapInstanceRef.current.destroy?.();
         } catch (_) {}
         mapInstanceRef.current = null;
       }
+      // Ensure all jvm-tooltip DOM elements are completely removed
+      document.querySelectorAll('.jvm-tooltip').forEach((el) => el.remove());
     };
   }, [stats, theme]);
 
@@ -268,7 +305,16 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
       className={`map-container-box ${isFullscreen ? 'is-fullscreen' : ''}`}
       style={isFullscreen ? { height: '100%', width: '100%' } : { height }}
     >
-      <div ref={containerRef} id="world-map" style={{ width: '100%', height: '100%' }} />
+      <div
+        ref={containerRef}
+        id="world-map"
+        style={{ width: '100%', height: '100%' }}
+        onMouseLeave={() => {
+          document.querySelectorAll('.jvm-tooltip').forEach((el) => {
+            (el as HTMLElement).style.display = 'none';
+          });
+        }}
+      />
     </div>
   );
 };
