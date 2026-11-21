@@ -17,10 +17,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -35,19 +33,28 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v4
+
       - name: Build React Vite Application
         run: npm run build
         env:
-          BASE_PATH: '/pocket-mc-telemetry/'
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
+          BASE_PATH: ${{ steps.pages.outputs.base_path || '/pocket-mc-telemetry/' }}
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: './dist'
 
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
