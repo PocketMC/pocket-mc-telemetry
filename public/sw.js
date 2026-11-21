@@ -3,7 +3,7 @@
  * Native Android App-Grade Offline & Instant Cold-Launch Caching
  */
 
-const CACHE_NAME = 'pmc-telemetry-v46';
+const CACHE_NAME = 'pmc-telemetry-v47';
 
 // Core critical shell assets to cache on install
 const CRITICAL_SHELL = [
@@ -14,7 +14,10 @@ const CRITICAL_SHELL = [
   'icon-192.png',
   'icon-512.png',
   'icon-maskable.png',
-  'apple-touch-icon.png'
+  'apple-touch-icon.png',
+  'vendor/jsvectormap.min.css',
+  'vendor/jsvectormap.min.js',
+  'vendor/world.js'
 ];
 
 // Optional non-blocking assets to cache
@@ -129,6 +132,12 @@ self.addEventListener('fetch', (event) => {
               cache.put('index.html', clone.clone());
               cache.put('./', clone);
             });
+            return networkRes;
+          }
+          // GitHub Pages serves 404 on deep SPA routes (e.g. /pocket-mc-telemetry/map).
+          // Fall back to cached index.html so React Router handles the route client-side!
+          if (networkRes && networkRes.status === 404) {
+            return caches.match('index.html').then((shell) => shell || networkRes);
           }
           return networkRes;
         })

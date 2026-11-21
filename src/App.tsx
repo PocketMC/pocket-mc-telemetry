@@ -90,15 +90,24 @@ export const App: React.FC = () => {
     document.querySelectorAll('.jvm-tooltip').forEach((el) => el.remove());
   }, [location.pathname]);
 
-  // Lock body scroll on fullscreen map page
+  // Lock body scroll and overscroll gestures on fullscreen map page
   useEffect(() => {
     if (isMapPage) {
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overscrollBehavior = 'none';
+      document.documentElement.style.overscrollBehavior = 'none';
     } else {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.overscrollBehavior = '';
+      document.documentElement.style.overscrollBehavior = '';
     }
     return () => {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.overscrollBehavior = '';
+      document.documentElement.style.overscrollBehavior = '';
     };
   }, [isMapPage]);
 
@@ -136,6 +145,7 @@ export const App: React.FC = () => {
             <Route path="/clients" element={<ClientsPage data={data} />} />
             <Route path="/servers" element={<ServersPage data={data} />} />
             <Route path="/map" element={<MapPage stats={data} theme={theme} />} />
+            <Route path="/map/*" element={<MapPage stats={data} theme={theme} />} />
             <Route path="/heatmap" element={<Navigate to="/map" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

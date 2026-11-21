@@ -637,10 +637,35 @@ body {
 }
 
 @media (max-width: 640px) {
-  .kpi-grid { grid-template-columns: 1fr; gap: 12px; }
-  .kpi-grid-6 { grid-template-columns: repeat(2, 1fr); }
-  .kpi-grid-4 { grid-template-columns: 1fr; }
-  .kpi-grid-3 { grid-template-columns: 1fr; }
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .kpi-grid-6 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+  }
+  .kpi-grid-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+  }
+  .kpi-grid-3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+  }
+  .kpi-card {
+    padding: 14px 14px;
+    gap: 8px;
+    min-height: 102px;
+  }
+  .kpi-value {
+    font-size: 22px;
+  }
+  .kpi-label {
+    font-size: 11px;
+    line-height: 1.25;
+  }
 }
 
 .kpi-card {
@@ -1014,6 +1039,8 @@ body {
   margin: 0;
   overflow: hidden;
   position: relative;
+  touch-action: none;
+  overscroll-behavior: none;
 }
 
 .app-wrapper.map-mode .top-header-row {
@@ -1070,6 +1097,10 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .map-container-box.is-fullscreen {
@@ -1080,6 +1111,50 @@ body {
   border-radius: 0;
   border: none;
   background-color: var(--map-bg);
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+}
+
+#world-map {
+  width: 100%;
+  height: 100%;
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Map Loading & Error States */
+.map-loading-overlay,
+.map-error-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background-color: var(--map-bg);
+  z-index: 10;
+  color: var(--text-secondary);
+  font-size: 13px;
+  user-select: none;
+  pointer-events: auto;
+}
+
+.map-loading-spinner {
+  width: 28px;
+  height: 28px;
+  border: 2.5px solid var(--border-card);
+  border-top-color: var(--accent-green);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.map-loading-text {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
 }
 
 @media (max-width: 768px) {

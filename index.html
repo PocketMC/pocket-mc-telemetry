@@ -67,13 +67,10 @@
   <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
 
-  <!-- jsVectorMap styles and deferred maps (non-blocking for instant initial paint) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.css"
-    integrity="sha384-DkPMVIJ2hERal/WJDrT3mRGo8KOwiHVdjiyRxCFlUnMdvu52V0Y1CL1yULYSDn4h" crossorigin="anonymous" />
-  <script defer src="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.js"
-    integrity="sha384-5T42pwmm9Eq6IKYKkuugmsyxvzvXDazwImzsC76X6lihpgExlMJYSrAtpb5JGZsW" crossorigin="anonymous"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/maps/world.js"
-    integrity="sha384-sGlkSOVF9H+QNNQrLV9xrMIyghEgioD3M3gPd9/tV0mh9qJX75AyCl0l7+OVJ3CD" crossorigin="anonymous"></script>
+  <!-- jsVectorMap styles and deferred maps (Local offline-first with CDN fallback) -->
+  <link rel="stylesheet" href="/vendor/jsvectormap.min.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.css';" />
+  <script defer src="/vendor/jsvectormap.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.js';"></script>
+  <script defer src="/vendor/world.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/maps/world.js';"></script>
 </head>
 
 <body style="margin: 0;">

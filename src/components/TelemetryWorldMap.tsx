@@ -43,9 +43,16 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
   const statsRef = useRef<TelemetryStats | null>(stats);
   statsRef.current = stats;
   const prevThemeRef = useRef<'light' | 'dark'>(theme);
-  const [mapLibReady, setMapLibReady] = React.useState<boolean>(
-    () => typeof window !== 'undefined' && Boolean((window as any).jsVectorMap)
-  );
+  const checkMapLibReady = () => {
+    return (
+      typeof window !== 'undefined' &&
+      Boolean((window as any).jsVectorMap) &&
+      Boolean((window as any).jsVectorMap?.maps?.world)
+    );
+  };
+
+  const [mapLibReady, setMapLibReady] = React.useState<boolean>(checkMapLibReady);
+  const [loadError, setLoadError] = React.useState<string | null>(null);
   const [viewportCategory, setViewportCategory] = React.useState<'small' | 'medium' | 'large'>(() => {
     if (typeof window === 'undefined') return 'large';
     if (window.innerWidth <= 480) return 'small';
@@ -70,18 +77,85 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
     };
   }, []);
 
-  // Poll for deferred jsVectorMap script if not immediately loaded
+  // Poll for both jsVectorMap and its 'world' map definition with timeout handling
   useEffect(() => {
     if (mapLibReady) return;
 
+    let attempts = 0;
+    const maxAttempts = 120; // 6 seconds
+
     const interval = setInterval(() => {
-      if ((window as any).jsVectorMap) {
+      attempts++;
+      if (checkMapLibReady()) {
         setMapLibReady(true);
+        setLoadError(null);
         clearInterval(interval);
+      } else if (attempts >= maxAttempts) {
+        clearInterval(interval);
+        setLoadError('World map data could not be loaded.');
       }
-    }, 100);
+    }, 50);
 
     return () => clearInterval(interval);
+  }, [mapLibReady]);
+
+  // Isolate mobile map gestures: prevent pinch-zoom and pan from zooming/scrolling the website
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isMultiTouch = false;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length >= 2) {
+        isMultiTouch = true;
+      } else if (e.touches.length === 1) {
+        isMultiTouch = false;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      // Prevent browser from zooming or scrolling the page viewport
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+
+      // If user drags more than 10px, dismiss tooltip so it doesn't float adrift
+      if (e.touches.length === 1 && !isMultiTouch) {
+        const dx = Math.abs(e.touches[0].clientX - touchStartX);
+        const dy = Math.abs(e.touches[0].clientY - touchStartY);
+        if (dx > 10 || dy > 10) {
+          document.querySelectorAll('.jvm-tooltip').forEach((el) => {
+            (el as HTMLElement).style.display = 'none';
+            el.classList.remove('active');
+          });
+        }
+      }
+    };
+
+    const onGesture = (e: Event) => {
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+    };
+
+    container.addEventListener('touchstart', onTouchStart, { passive: true });
+    container.addEventListener('touchmove', onTouchMove, { passive: false });
+    container.addEventListener('gesturestart', onGesture, { passive: false });
+    container.addEventListener('gesturechange', onGesture, { passive: false });
+    container.addEventListener('gestureend', onGesture, { passive: false });
+
+    return () => {
+      container.removeEventListener('touchstart', onTouchStart);
+      container.removeEventListener('touchmove', onTouchMove);
+      container.removeEventListener('gesturestart', onGesture);
+      container.removeEventListener('gesturechange', onGesture);
+      container.removeEventListener('gestureend', onGesture);
+    };
   }, [mapLibReady]);
 
   useEffect(() => {
@@ -319,15 +393,16 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
           if (pageX != null && pageY != null) {
             const el = tooltip.getElement();
             if (el) {
-              const space = 10;
+              const space = 12;
               const rect = el.getBoundingClientRect();
-              const tooltipW = rect.width || 180;
-              const tooltipH = rect.height || 70;
-              let left = pageX + space;
+              const tooltipW = rect.width || 190;
+              const tooltipH = rect.height || 75;
+              let left = pageX - tooltipW / 2;
               let top = pageY - tooltipH - space;
-              if (top < 10) top = pageY + space;
+              if (top < 70) top = pageY + space + 10;
+              if (left < 10) left = 10;
               if (left + tooltipW > window.innerWidth - 10) {
-                left = Math.max(10, pageX - tooltipW - space);
+                left = window.innerWidth - tooltipW - 10;
               }
               el.style.left = `${left}px`;
               el.style.top = `${top}px`;
@@ -366,11 +441,48 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
     };
   }, [stats, theme, viewportCategory]);
 
+  const handleRetryMap = () => {
+    setLoadError(null);
+    setMapLibReady(false);
+    if (!(window as any).jsVectorMap) {
+      const s = document.createElement('script');
+      s.src = '/vendor/jsvectormap.min.js';
+      s.onerror = () => {
+        s.src = 'https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.js';
+      };
+      document.head.appendChild(s);
+    }
+    if (!(window as any).jsVectorMap?.maps?.world) {
+      const s2 = document.createElement('script');
+      s2.src = '/vendor/world.js';
+      s2.onerror = () => {
+        s2.src = 'https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/maps/world.js';
+      };
+      document.head.appendChild(s2);
+    }
+  };
+
   return (
     <div
       className={`map-container-box ${isFullscreen ? 'is-fullscreen' : ''}`}
       style={isFullscreen ? { height: '100%', width: '100%' } : { height }}
     >
+      {!mapLibReady && !loadError && (
+        <div className="map-loading-overlay">
+          <div className="map-loading-spinner" />
+          <span className="map-loading-text">Loading Global Map...</span>
+        </div>
+      )}
+
+      {loadError && (
+        <div className="map-error-overlay">
+          <p>{loadError}</p>
+          <button type="button" className="btn-surface btn-sm" onClick={handleRetryMap}>
+            Retry Map
+          </button>
+        </div>
+      )}
+
       <div
         ref={containerRef}
         id="world-map"
