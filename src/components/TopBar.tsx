@@ -40,7 +40,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       {/* Topbar Actions Group (Consistent dock material, 60px height) */}
       <div className="topbar-actions-group">
         <a
-          href="https://github.com/PocketMC/pocket-mc-telemetry"
+          href="https://github.com/PocketMC/pocket-mc-windows"
           target="_blank"
           rel="noopener noreferrer"
           className="top-action-btn"

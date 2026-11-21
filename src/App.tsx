@@ -152,7 +152,7 @@ export const App: React.FC = () => {
 
         <div className="footer-links">
           <a
-            href="https://github.com/PocketMC/pocket-mc-telemetry"
+            href="https://github.com/PocketMC/pocket-mc-windows"
             target="_blank"
             rel="noopener noreferrer"
             className="footer-link"
@@ -174,6 +174,22 @@ export const App: React.FC = () => {
             className="footer-link"
           >
             Official Website
+          </a>
+          <a
+            href="https://pocketmc.github.io/terms/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-link"
+          >
+            Terms of Service
+          </a>
+          <a
+            href="https://pocketmc.github.io/privacy/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-link"
+          >
+            Privacy Policy
           </a>
         </div>
       </footer>
