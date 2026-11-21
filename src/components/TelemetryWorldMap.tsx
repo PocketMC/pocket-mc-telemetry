@@ -44,10 +44,20 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
   const [mapLibReady, setMapLibReady] = React.useState<boolean>(
     () => typeof window !== 'undefined' && Boolean((window as any).jsVectorMap)
   );
+  const [viewportCategory, setViewportCategory] = React.useState<'small' | 'medium' | 'large'>(() => {
+    if (typeof window === 'undefined') return 'large';
+    if (window.innerWidth <= 480) return 'small';
+    if (window.innerWidth <= 768) return 'medium';
+    return 'large';
+  });
+  const prevViewportRef = useRef<'small' | 'medium' | 'large'>(viewportCategory);
 
-  // Auto-resize map on window resize
+  // Auto-resize map on window resize & update responsive dot scaling
   useEffect(() => {
     const handleResize = () => {
+      const w = window.innerWidth;
+      const cat = w <= 480 ? 'small' : w <= 768 ? 'medium' : 'large';
+      setViewportCategory((prev) => (prev !== cat ? cat : prev));
       if (mapInstanceRef.current?.updateSize) {
         mapInstanceRef.current.updateSize();
       }
@@ -111,6 +121,18 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
       }
     }
 
+    // Sizing scaled dynamically to prevent thick bloated dots on mobile viewports
+    const isSmall = viewportCategory === 'small';
+    const isMedium = viewportCategory === 'medium';
+
+    const liveR = isSmall ? 2.5 : isMedium ? 3.0 : 3.8;
+    const liveStroke = isSmall ? 0.75 : isMedium ? 0.9 : 1.2;
+    const liveHoverR = isSmall ? 3.8 : isMedium ? 4.5 : 5.5;
+
+    const installR = isSmall ? 1.8 : isMedium ? 2.2 : 2.8;
+    const installStroke = isSmall ? 0.5 : isMedium ? 0.7 : 0.9;
+    const installHoverR = isSmall ? 2.8 : isMedium ? 3.4 : 4.2;
+
     const markers: MapMarker[] = [];
     const plottedIsos = new Set<string>();
 
@@ -131,14 +153,14 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
             initial: {
               fill: isDark ? '#22c55e' : '#16a34a',
               stroke: isDark ? '#052e16' : '#ffffff',
-              strokeWidth: 1.5,
-              r: 4.5,
+              strokeWidth: liveStroke,
+              r: liveR,
             },
             hover: {
               fill: isDark ? '#4ade80' : '#22c55e',
               stroke: '#ffffff',
-              strokeWidth: 2,
-              r: 6,
+              strokeWidth: liveStroke + 0.4,
+              r: liveHoverR,
             },
           },
         });
@@ -160,22 +182,22 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
             initial: {
               fill: isDark ? '#ffffff' : '#0f172a',
               stroke: isDark ? '#000000' : '#ffffff',
-              strokeWidth: 1.2,
-              r: 3.5,
+              strokeWidth: installStroke,
+              r: installR,
             },
             hover: {
               fill: isDark ? '#f1f5f9' : '#334155',
               stroke: isDark ? '#ffffff' : '#000000',
-              strokeWidth: 2,
-              r: 5,
+              strokeWidth: installStroke + 0.4,
+              r: installHoverR,
             },
           },
         });
       }
     }
 
-    // If map already initialized and theme has not changed, just update markers
-    if (mapInstanceRef.current && prevThemeRef.current === theme) {
+    // If map already initialized and neither theme nor viewport scale changed, just update markers
+    if (mapInstanceRef.current && prevThemeRef.current === theme && prevViewportRef.current === viewportCategory) {
       try {
         mapInstanceRef.current.removeMarkers();
         mapInstanceRef.current.addMarkers(markers);
@@ -186,6 +208,7 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
     }
 
     prevThemeRef.current = theme;
+    prevViewportRef.current = viewportCategory;
 
     // Clean container before creating new instance
     containerRef.current.innerHTML = '';
@@ -252,13 +275,13 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
           initial: {
             fill: isDark ? '#22c55e' : '#16a34a',
             stroke: isDark ? '#000000' : '#ffffff',
-            strokeWidth: 1.5,
-            r: 4,
+            strokeWidth: liveStroke,
+            r: liveR,
           },
           hover: {
             stroke: '#ffffff',
-            strokeWidth: 2,
-            r: 6,
+            strokeWidth: liveStroke + 0.4,
+            r: liveHoverR,
           },
         },
 
@@ -298,7 +321,7 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
       // Ensure all jvm-tooltip DOM elements are completely removed
       document.querySelectorAll('.jvm-tooltip').forEach((el) => el.remove());
     };
-  }, [stats, theme]);
+  }, [stats, theme, viewportCategory]);
 
   return (
     <div
