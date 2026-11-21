@@ -3,7 +3,7 @@
  * Native Android App-Grade Offline & Instant Cold-Launch Caching
  */
 
-const CACHE_NAME = 'pmc-telemetry-v45';
+const CACHE_NAME = 'pmc-telemetry-v46';
 
 // Core critical shell assets to cache on install
 const CRITICAL_SHELL = [
@@ -34,15 +34,30 @@ const SECONDARY_ASSETS = [
   'https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/maps/world.js'
 ];
 
-// 1. Install Event: Cache critical shell immediately and activate without delay
+// 1. Install Event: Cache critical shell + Vite bundles immediately and activate without delay
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      // Cache critical shell (must succeed)
+      // Cache static critical shell
       try {
         await cache.addAll(CRITICAL_SHELL);
       } catch (err) {
         console.warn('[SW] Non-fatal issue caching some critical shell assets:', err);
+      }
+
+      // Pre-cache Vite hashed JS/CSS bundle assets discovered from index.html for instant offline cold start
+      try {
+        const indexRes = await fetch('./index.html');
+        if (indexRes && indexRes.ok) {
+          const html = await indexRes.text();
+          const assetMatches = Array.from(html.matchAll(/(?:src|href)=["']([^"']*(?:assets\/[^"']+))["']/g));
+          const bundleUrls = [...new Set(assetMatches.map((m) => m[1]))];
+          if (bundleUrls.length > 0) {
+            await Promise.all(bundleUrls.map((url) => cache.add(url).catch(() => {})));
+          }
+        }
+      } catch (err) {
+        console.warn('[SW] Non-fatal issue pre-caching Vite bundle assets:', err);
       }
 
       // Cache secondary assets in background (resilient to individual failures)
@@ -103,14 +118,17 @@ self.addEventListener('fetch', (event) => {
   if (!url.protocol.startsWith('http')) return;
 
   // ── Strategy A: Navigation requests (App Launch & Deep Link Routing) ──
-  // Native app feel: Network-first with fast 1200ms fallback to cached index.html shell
+  // Native app feel: Network-first with resilient 3500ms timeout, falling back to cached shell
   if (req.mode === 'navigate') {
     event.respondWith(
-      fetchWithTimeout(req, 1200)
+      fetchWithTimeout(req, 3500)
         .then((networkRes) => {
           if (networkRes && networkRes.status === 200) {
             const clone = networkRes.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put('index.html', clone));
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put('index.html', clone.clone());
+              cache.put('./', clone);
+            });
           }
           return networkRes;
         })

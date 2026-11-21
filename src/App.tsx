@@ -48,9 +48,9 @@ export const App: React.FC = () => {
 
   // ── Normalize URLs: clean index.html and migrate legacy hash routes ─
   useEffect(() => {
-    // 1. Strip index.html from path if present
+    // 1. Strip index.html from path if present while preserving clean trailing slash
     if (window.location.pathname.endsWith('/index.html')) {
-      const cleanPath = window.location.pathname.replace(/\/index\.html$/, '') || '/';
+      const cleanPath = window.location.pathname.replace(/index\.html$/, '');
       window.history.replaceState(null, '', cleanPath + window.location.search + window.location.hash);
     }
 
