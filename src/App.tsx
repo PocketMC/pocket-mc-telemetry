@@ -85,10 +85,16 @@ export const App: React.FC = () => {
 
   const isMapPage = location.pathname.replace(/\/$/, '').endsWith('/map');
 
-  // Clean up any stray map tooltips when navigating between pages
+  // Clean up any stray map tooltips ONLY when navigating away from the map page
   useEffect(() => {
-    document.querySelectorAll('.jvm-tooltip').forEach((el) => el.remove());
-  }, [location.pathname]);
+    if (!isMapPage) {
+      document.querySelectorAll('.jvm-tooltip').forEach((el) => {
+        (el as HTMLElement).style.display = 'none';
+        el.classList.remove('active');
+        el.remove();
+      });
+    }
+  }, [location.pathname, isMapPage]);
 
   // Lock body scroll and overscroll gestures on fullscreen map page
   useEffect(() => {

@@ -273,6 +273,13 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
     // If map already initialized and neither theme nor viewport scale changed, update markers
     if (mapInstanceRef.current && prevThemeRef.current === theme && prevViewportRef.current === viewportCategory) {
       try {
+        if (mapInstanceRef.current._tooltip) {
+          const tooltipEl =
+            mapInstanceRef.current._tooltip.getElement?.() || mapInstanceRef.current._tooltip._tooltip;
+          if (tooltipEl && !document.body.contains(tooltipEl)) {
+            document.body.appendChild(tooltipEl);
+          }
+        }
         mapInstanceRef.current.removeMarkers();
         mapInstanceRef.current.addMarkers(markers);
         return;
@@ -284,6 +291,11 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
     // Always cleanly destroy previous map instance and wipe old tooltips from DOM before creating a new one
     if (mapInstanceRef.current) {
       try {
+        const tooltipEl =
+          mapInstanceRef.current._tooltip?.getElement?.() || mapInstanceRef.current._tooltip?._tooltip;
+        if (tooltipEl && !tooltipEl.parentNode) {
+          document.body.appendChild(tooltipEl);
+        }
         mapInstanceRef.current.destroy?.();
       } catch (_) {}
       mapInstanceRef.current = null;
@@ -370,12 +382,20 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
         },
 
         onRegionTooltipShow(_event: any, tooltip: any, code: string) {
+          const el = tooltip?.getElement?.() || tooltip?._tooltip;
+          if (el && !document.body.contains(el)) {
+            document.body.appendChild(el);
+          }
           tooltip.text(renderTooltipHtml(code, code), true);
         },
 
         onRegionClick(event: any, code: string) {
           if (!mapInstanceRef.current?._tooltip) return;
           const tooltip = mapInstanceRef.current._tooltip;
+          const el = tooltip.getElement?.() || tooltip._tooltip;
+          if (el && !document.body.contains(el)) {
+            document.body.appendChild(el);
+          }
           tooltip.text(renderTooltipHtml(code, code), true);
           tooltip.show();
 
@@ -390,28 +410,34 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
           const pageX = event.pageX || (clientX ? clientX + window.scrollX : undefined);
           const pageY = event.pageY || (clientY ? clientY + window.scrollY : undefined);
 
-          if (pageX != null && pageY != null) {
-            const el = tooltip.getElement();
-            if (el) {
-              const space = 12;
-              const rect = el.getBoundingClientRect();
-              const tooltipW = rect.width || 190;
-              const tooltipH = rect.height || 75;
-              let left = pageX - tooltipW / 2;
-              let top = pageY - tooltipH - space;
-              if (top < 70) top = pageY + space + 10;
-              if (left < 10) left = 10;
-              if (left + tooltipW > window.innerWidth - 10) {
-                left = window.innerWidth - tooltipW - 10;
-              }
-              el.style.left = `${left}px`;
-              el.style.top = `${top}px`;
-              el.style.display = 'block';
-              el.classList.add('active');
+          if (pageX != null && pageY != null && el) {
+            const space = 12;
+            const rect = el.getBoundingClientRect();
+            const tooltipW = rect.width || 190;
+            const tooltipH = rect.height || 75;
+            let left = pageX - tooltipW / 2;
+            let top = pageY - tooltipH - space;
+            if (top < 70) top = pageY + space + 10;
+            if (left < 10) left = 10;
+            if (left + tooltipW > window.innerWidth - 10) {
+              left = window.innerWidth - tooltipW - 10;
             }
+            el.style.left = `${left}px`;
+            el.style.top = `${top}px`;
+            el.style.display = 'block';
+            el.classList.add('active');
           }
         },
       });
+
+      // Confirm tooltip element is firmly attached to document.body
+      if (mapInstanceRef.current?._tooltip) {
+        const tooltipEl =
+          mapInstanceRef.current._tooltip.getElement?.() || mapInstanceRef.current._tooltip._tooltip;
+        if (tooltipEl && !document.body.contains(tooltipEl)) {
+          document.body.appendChild(tooltipEl);
+        }
+      }
     } catch (e) {
       console.error('Failed to construct jsVectorMap', e);
     }
@@ -432,6 +458,11 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
       window.removeEventListener('pointerdown', handleMapPointerDown);
       if (mapInstanceRef.current) {
         try {
+          const tooltipEl =
+            mapInstanceRef.current._tooltip?.getElement?.() || mapInstanceRef.current._tooltip?._tooltip;
+          if (tooltipEl && !tooltipEl.parentNode) {
+            document.body.appendChild(tooltipEl);
+          }
           mapInstanceRef.current.destroy?.();
         } catch (_) {}
         mapInstanceRef.current = null;
@@ -439,7 +470,7 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
       // Ensure all jvm-tooltip DOM elements are completely removed
       document.querySelectorAll('.jvm-tooltip').forEach((el) => el.remove());
     };
-  }, [stats, theme, viewportCategory]);
+  }, [stats, theme, viewportCategory, mapLibReady]);
 
   const handleRetryMap = () => {
     setLoadError(null);
