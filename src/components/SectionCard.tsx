@@ -5,7 +5,6 @@ interface SectionCardProps {
   title: string;
   icon: React.ReactNode;
   iconColor?: 'blue' | 'green' | 'purple';
-  insight?: React.ReactNode;
   action?: React.ReactNode;
   children: React.ReactNode;
 }
@@ -15,7 +14,6 @@ export const SectionCard: React.FC<SectionCardProps> = ({
   title,
   icon,
   iconColor = 'blue',
-  insight,
   action,
   children,
 }) => {
@@ -28,7 +26,6 @@ export const SectionCard: React.FC<SectionCardProps> = ({
           </div>
           <div className="section-header-text">
             <h2 className="section-title">{title}</h2>
-            {insight && <div className="insight-text">{insight}</div>}
           </div>
         </div>
 

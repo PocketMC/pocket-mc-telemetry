@@ -26,16 +26,6 @@ export const HomePage: React.FC<HomePageProps> = ({ data }) => {
       title="Installations & User Base"
       icon={<Download size={18} />}
       iconColor="green"
-      insight={
-        <span>
-          Over <strong>{fmt(data?.totalInstalls)}</strong> registered installs with{' '}
-          <strong>{fmt(activeUsers7d)}</strong> active in 7D (
-          {data?.totalInstalls
-            ? ((activeUsers7d / (data.totalInstalls || 1)) * 100).toFixed(1)
-            : '0'}
-          %)
-        </span>
-      }
     >
       {/* KPI Cards Grid */}
       <div className="kpi-grid">
@@ -44,28 +34,24 @@ export const HomePage: React.FC<HomePageProps> = ({ data }) => {
           label="Total Installs"
           colorClass="text-green"
           icon={<Download size={18} />}
-          tooltip="Lifetime installations"
         />
         <KpiCard
           value={fmt(activeUsers7d)}
           label="Active Users (7D)"
           colorClass="text-blue"
           icon={<Users size={18} />}
-          tooltip="Active in last 7 days"
         />
         <KpiCard
           value={fmt(data?.inactiveUsers7d)}
           label="Inactive Users"
           colorClass="text-slate"
           icon={<UserX size={18} />}
-          tooltip="Not active in 7+ days"
         />
         <KpiCard
           value={fmt(totalCountries)}
           label="Countries Reached"
           colorClass="text-blue"
           icon={<Globe size={18} />}
-          tooltip="Total unique countries with installations"
         />
       </div>
 

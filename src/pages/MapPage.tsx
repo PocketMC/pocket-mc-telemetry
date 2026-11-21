@@ -12,7 +12,6 @@ interface MapPageProps {
 
 export const MapPage: React.FC<MapPageProps> = ({ stats, theme }) => {
   const navigate = useNavigate();
-  const totalCountries = Object.keys(stats?.installLocationDistribution || {}).length;
 
   return (
     <SectionCard
@@ -20,7 +19,6 @@ export const MapPage: React.FC<MapPageProps> = ({ stats, theme }) => {
       title="Global Activity Map"
       icon={<Globe size={18} />}
       iconColor="blue"
-      insight={<span>{totalCountries} countries reached with active installations worldwide</span>}
       action={
         <button
           type="button"

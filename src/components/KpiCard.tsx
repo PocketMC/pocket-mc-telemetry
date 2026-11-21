@@ -1,12 +1,10 @@
 import React from 'react';
-import { HelpCircle } from 'lucide-react';
 
 interface KpiCardProps {
   label: string;
   value: string | number;
   icon: React.ReactNode;
   colorClass?: string;
-  tooltip?: string;
   badge?: {
     text: string;
     variant?: 'green' | 'blue' | 'purple';
@@ -18,7 +16,6 @@ export const KpiCard: React.FC<KpiCardProps> = ({
   value,
   icon,
   colorClass = 'text-blue',
-  tooltip,
   badge,
 }) => {
   return (
@@ -38,21 +35,6 @@ export const KpiCard: React.FC<KpiCardProps> = ({
         </div>
         <div className="kpi-label">
           <span>{label}</span>
-          {tooltip && (
-            <span className="info-wrap">
-              <button
-                type="button"
-                className="info-btn"
-                aria-label={tooltip}
-                tabIndex={0}
-              >
-                <HelpCircle size={12} />
-              </button>
-              <span className="info-tooltip" role="tooltip">
-                {tooltip}
-              </span>
-            </span>
-          )}
         </div>
       </div>
     </div>

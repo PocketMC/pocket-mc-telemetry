@@ -1,11 +1,9 @@
 import React, { useMemo } from 'react';
-import { HelpCircle } from 'lucide-react';
 import { getFlagUrl } from '../utils/countryFlags';
 import { DistributionMap } from '../types/telemetry';
 
 interface BreakdownCardProps {
   title: string;
-  tooltip?: string;
   data: DistributionMap | undefined;
   isCountry?: boolean;
   barColor?: string;
@@ -13,7 +11,6 @@ interface BreakdownCardProps {
 
 export const BreakdownCard: React.FC<BreakdownCardProps> = ({
   title,
-  tooltip,
   data,
   isCountry = false,
   barColor = 'var(--bar-fill)',
@@ -35,21 +32,6 @@ export const BreakdownCard: React.FC<BreakdownCardProps> = ({
       <div className="breakdown-header">
         <h3 className="breakdown-title">
           <span>{title}</span>
-          {tooltip && (
-            <span className="info-wrap">
-              <button
-                type="button"
-                className="info-btn"
-                aria-label={tooltip}
-                tabIndex={0}
-              >
-                <HelpCircle size={12} />
-              </button>
-              <span className="info-tooltip" role="tooltip">
-                {tooltip}
-              </span>
-            </span>
-          )}
         </h3>
       </div>
 

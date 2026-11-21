@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Users, TrendingUp, Globe } from 'lucide-react';
+import { Activity, Users, Clock, Globe } from 'lucide-react';
 import { TelemetryStats } from '../types/telemetry';
 import { SectionCard } from '../components/SectionCard';
 import { KpiCard } from '../components/KpiCard';
@@ -11,7 +11,16 @@ interface ClientsPageProps {
 
 export const ClientsPage: React.FC<ClientsPageProps> = ({ data }) => {
   const fmt = (n?: number | null) => (n == null ? '-' : n.toLocaleString());
-  const activeCountries = Object.keys(data?.locationDistribution || {}).length;
+  
+  const totalClients = data?.openClients;
+  const activeUsers = data?.activeUsers;
+  const afkClients =
+    totalClients != null && activeUsers != null
+      ? Math.max(0, totalClients - activeUsers)
+      : null;
+  const activeCountries = data?.locationDistribution
+    ? Object.keys(data.locationDistribution).length
+    : null;
 
   return (
     <SectionCard
@@ -19,41 +28,32 @@ export const ClientsPage: React.FC<ClientsPageProps> = ({ data }) => {
       title="Active Clients & Online Population"
       icon={<Activity size={18} />}
       iconColor="blue"
-      insight={
-        <span>
-          <strong>{fmt(data?.openClients)}</strong> clients currently online running PocketMC
-        </span>
-      }
     >
       {/* KPI Cards Grid */}
       <div className="kpi-grid">
         <KpiCard
-          value={fmt(data?.openClients)}
-          label="Open Clients Now"
+          value={fmt(totalClients)}
+          label="Total Clients"
           colorClass="text-blue"
           icon={<Activity size={18} />}
-          tooltip="Connected clients sending live telemetry heartbeat"
         />
         <KpiCard
-          value={fmt(data?.activeUsers7d)}
-          label="Active Users (7D)"
-          colorClass="text-blue"
+          value={fmt(activeUsers)}
+          label="Online Users"
+          colorClass="text-green"
           icon={<Users size={18} />}
-          tooltip="Distinct active user sessions in the last 7 days"
         />
         <KpiCard
-          value={fmt(data?.openClients)}
-          label="Peak Concurrent"
+          value={fmt(afkClients)}
+          label="AFK Clients"
           colorClass="text-slate"
-          icon={<TrendingUp size={18} />}
-          tooltip="Live concurrent client peak observed"
+          icon={<Clock size={18} />}
         />
         <KpiCard
           value={fmt(activeCountries)}
           label="Active Countries"
           colorClass="text-blue"
           icon={<Globe size={18} />}
-          tooltip="Countries with currently active clients"
         />
       </div>
 

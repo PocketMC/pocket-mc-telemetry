@@ -568,12 +568,6 @@ body {
   letter-spacing: -0.02em;
 }
 
-.insight-text {
-  font-size: 12.5px;
-  color: var(--text-secondary);
-}
-
-
 /* ═══════════════════════════════════════════════════════════════
    KPI CARDS GRID (2 x 2 Clean Layout)
    ═══════════════════════════════════════════════════════════════ */
@@ -971,60 +965,6 @@ body {
   font-size: 11.5px;
   color: var(--text-secondary);
   text-align: right;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   INFO TOOLTIP SYSTEM
-   ═══════════════════════════════════════════════════════════════ */
-.info-wrap {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-}
-
-.info-btn {
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-  padding: 2px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: color 0.15s ease;
-}
-
-.info-btn:hover {
-  color: var(--text-primary);
-}
-
-.info-tooltip {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-6px);
-  padding: 6px 12px;
-  border-radius: 10px;
-  background-color: var(--tooltip-bg);
-  color: var(--tooltip-text);
-  border: 1px solid var(--border-card);
-  font-size: 11.5px;
-  font-weight: 500;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  visibility: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  transition: opacity 0.15s ease, transform 0.15s ease;
-  z-index: 120;
-}
-
-.info-wrap:hover .info-tooltip,
-.info-wrap.active .info-tooltip {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(-10px);
 }
 
 /* ═══════════════════════════════════════════════════════════════
