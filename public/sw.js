@@ -3,7 +3,7 @@
  * Native Android App-Grade Offline & Instant Cold-Launch Caching
  */
 
-const CACHE_NAME = 'pmc-telemetry-v47';
+const CACHE_NAME = 'pmc-telemetry-v48';
 
 // Core critical shell assets to cache on install
 const CRITICAL_SHELL = [

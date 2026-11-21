@@ -68,9 +68,36 @@
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
 
   <!-- jsVectorMap styles and deferred maps (Local offline-first with CDN fallback) -->
-  <link rel="stylesheet" href="/vendor/jsvectormap.min.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.css';" />
-  <script defer src="/vendor/jsvectormap.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.js';"></script>
-  <script defer src="/vendor/world.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/maps/world.js';"></script>
+  <link rel="stylesheet" href="./vendor/jsvectormap.min.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.css';" />
+  <script>
+    (function () {
+      function wrapJvm(jvm) {
+        if (!jvm) return jvm;
+        jvm.maps = jvm.maps || {};
+        var origAdd = jvm.addMap;
+        jvm.addMap = function (name, data) {
+          jvm.maps[name] = data || true;
+          window._jvmWorldLoaded = true;
+          if (origAdd) origAdd.call(jvm, name, data);
+        };
+        return jvm;
+      }
+      if (window.jsVectorMap) {
+        wrapJvm(window.jsVectorMap);
+      } else {
+        Object.defineProperty(window, 'jsVectorMap', {
+          configurable: true,
+          enumerable: true,
+          get: function () { return this._jvmInstance; },
+          set: function (val) {
+            this._jvmInstance = wrapJvm(val);
+          }
+        });
+      }
+    })();
+  </script>
+  <script defer src="./vendor/jsvectormap.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.js';"></script>
+  <script defer src="./vendor/world.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/maps/world.js';"></script>
 </head>
 
 <body style="margin: 0;">

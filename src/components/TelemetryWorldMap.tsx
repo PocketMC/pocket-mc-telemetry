@@ -44,10 +44,14 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
   statsRef.current = stats;
   const prevThemeRef = useRef<'light' | 'dark'>(theme);
   const checkMapLibReady = () => {
-    return (
-      typeof window !== 'undefined' &&
-      Boolean((window as any).jsVectorMap) &&
-      Boolean((window as any).jsVectorMap?.maps?.world)
+    if (typeof window === 'undefined') return false;
+    const jvm = (window as any).jsVectorMap;
+    if (!jvm || typeof jvm !== 'function') return false;
+    return Boolean(
+      (window as any)._jvmWorldLoaded ||
+      jvm.maps?.world ||
+      jvm.maps ||
+      (jvm.prototype && typeof jvm.prototype.addMarkers === 'function')
     );
   };
 
@@ -81,8 +85,14 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
   useEffect(() => {
     if (mapLibReady) return;
 
+    if (checkMapLibReady()) {
+      setMapLibReady(true);
+      setLoadError(null);
+      return;
+    }
+
     let attempts = 0;
-    const maxAttempts = 120; // 6 seconds
+    const maxAttempts = 80;
 
     const interval = setInterval(() => {
       attempts++;
@@ -92,9 +102,14 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
         clearInterval(interval);
       } else if (attempts >= maxAttempts) {
         clearInterval(interval);
-        setLoadError('World map data could not be loaded.');
+        if (typeof (window as any).jsVectorMap === 'function') {
+          setMapLibReady(true);
+          setLoadError(null);
+        } else {
+          setLoadError('World map data could not be loaded.');
+        }
       }
-    }, 50);
+    }, 40);
 
     return () => clearInterval(interval);
   }, [mapLibReady]);
@@ -477,15 +492,15 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
     setMapLibReady(false);
     if (!(window as any).jsVectorMap) {
       const s = document.createElement('script');
-      s.src = '/vendor/jsvectormap.min.js';
+      s.src = './vendor/jsvectormap.min.js';
       s.onerror = () => {
         s.src = 'https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/jsvectormap.min.js';
       };
       document.head.appendChild(s);
     }
-    if (!(window as any).jsVectorMap?.maps?.world) {
+    if (!(window as any)._jvmWorldLoaded && !(window as any).jsVectorMap?.maps?.world) {
       const s2 = document.createElement('script');
-      s2.src = '/vendor/world.js';
+      s2.src = './vendor/world.js';
       s2.onerror = () => {
         s2.src = 'https://cdn.jsdelivr.net/npm/jsvectormap@1.7.0/dist/maps/world.js';
       };
