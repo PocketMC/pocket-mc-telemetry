@@ -47,16 +47,17 @@
   --tooltip-text: #0f172a;
 
   /* Floating Navigation & Header (Light Theme) with rich frosted glass backdrop blur */
-  --nav-solid-bg: rgba(255, 255, 255, 0.68);
+  --nav-solid-bg: rgba(255, 255, 255, 0.54);
   --nav-solid-border: rgba(0, 0, 0, 0.08);
-  --nav-solid-hover-bg: rgba(255, 255, 255, 0.82);
-  --nav-solid-active-bg: rgba(240, 242, 248, 0.88);
+  --nav-solid-hover-bg: rgba(255, 255, 255, 0.72);
+  --nav-solid-active-bg: rgba(240, 242, 248, 0.82);
   --nav-tab-color: #64748b;
   --nav-tab-hover-bg: rgba(0, 0, 0, 0.05);
   --nav-tab-hover-color: #0f172a;
   --nav-tab-active-bg: rgba(0, 0, 0, 0.08);
   --nav-tab-active-color: #0f172a;
-  --nav-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.06);
+  --nav-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.06);
+  --nav-glass-inset: inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.90), inset 0 -1px 1px 0 rgba(0, 0, 0, 0.03);
 
   /* Viewport Edge Scroll Fade (Light Theme) - Compact & Restrained */
   --fade-scrim-top: linear-gradient(
@@ -122,16 +123,17 @@
   --tooltip-text: #ffffff;
 
   /* Floating Navigation & Header (OLED Dark) with rich frosted glass backdrop blur */
-  --nav-solid-bg: rgba(12, 12, 16, 0.65);
-  --nav-solid-border: rgba(255, 255, 255, 0.12);
-  --nav-solid-hover-bg: rgba(24, 24, 30, 0.78);
-  --nav-solid-active-bg: rgba(32, 32, 40, 0.85);
+  --nav-solid-bg: rgba(12, 12, 16, 0.48);
+  --nav-solid-border: rgba(255, 255, 255, 0.15);
+  --nav-solid-hover-bg: rgba(24, 24, 30, 0.65);
+  --nav-solid-active-bg: rgba(34, 34, 42, 0.75);
   --nav-tab-color: #94949e;
   --nav-tab-hover-bg: rgba(255, 255, 255, 0.06);
   --nav-tab-hover-color: #f0f0f4;
   --nav-tab-active-bg: rgba(255, 255, 255, 0.12);
   --nav-tab-active-color: #ffffff;
-  --nav-shadow: 0 12px 36px rgba(0, 0, 0, 0.75), 0 4px 12px rgba(0, 0, 0, 0.40);
+  --nav-shadow: 0 16px 40px rgba(0, 0, 0, 0.60), 0 4px 12px rgba(0, 0, 0, 0.35);
+  --nav-glass-inset: inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.18), inset 0 -1px 1px 0 rgba(0, 0, 0, 0.25);
 
   /* Viewport Edge Scroll Fade (True OLED Dark Theme) - Compact & Restrained */
   --fade-scrim-top: linear-gradient(
@@ -362,10 +364,10 @@ body {
   display: inline-flex;
   align-items: center;
   background-color: var(--nav-solid-bg);
-  -webkit-backdrop-filter: blur(28px) saturate(190%);
-  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(50px) saturate(220%) contrast(108%);
+  backdrop-filter: blur(50px) saturate(220%) contrast(108%);
   border: 1px solid var(--nav-solid-border);
-  box-shadow: var(--nav-shadow);
+  box-shadow: var(--nav-shadow), var(--nav-glass-inset);
   color: var(--text-primary);
   cursor: pointer;
   font-family: inherit;
@@ -433,10 +435,10 @@ body {
   align-items: center;
   justify-content: center;
   background-color: var(--nav-solid-bg);
-  -webkit-backdrop-filter: blur(28px) saturate(190%);
-  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(50px) saturate(220%) contrast(108%);
+  backdrop-filter: blur(50px) saturate(220%) contrast(108%);
   border: 1px solid var(--nav-solid-border);
-  box-shadow: var(--nav-shadow);
+  box-shadow: var(--nav-shadow), var(--nav-glass-inset);
   color: var(--text-primary);
   cursor: pointer;
   padding: 0;
@@ -950,10 +952,10 @@ body {
   padding: 16px;
   border-radius: 18px;
   background-color: var(--nav-solid-bg);
-  -webkit-backdrop-filter: blur(28px) saturate(190%);
-  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(50px) saturate(220%) contrast(108%);
+  backdrop-filter: blur(50px) saturate(220%) contrast(108%);
   border: 1px solid var(--nav-solid-border);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35), 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35), 0 4px 12px rgba(0, 0, 0, 0.15), var(--nav-glass-inset);
   z-index: 1000;
   animation: topInfoPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   pointer-events: auto;
@@ -1006,13 +1008,13 @@ body {
   z-index: 99999 !important;
   pointer-events: none !important;
   background-color: var(--nav-solid-bg) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
-  backdrop-filter: blur(28px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(50px) saturate(220%) contrast(108%) !important;
+  backdrop-filter: blur(50px) saturate(220%) contrast(108%) !important;
   color: var(--text-primary) !important;
   border: 1px solid var(--nav-solid-border) !important;
   border-radius: 12px !important;
   padding: 10px 14px !important;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.2), var(--nav-glass-inset) !important;
   font-family: inherit !important;
   font-size: 12px !important;
   line-height: 1.4 !important;
@@ -1291,10 +1293,10 @@ body {
   padding: 5px;
   border-radius: 30px;
   background-color: var(--nav-solid-bg);
-  -webkit-backdrop-filter: blur(28px) saturate(190%);
-  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(50px) saturate(220%) contrast(108%);
+  backdrop-filter: blur(50px) saturate(220%) contrast(108%);
   border: 1px solid var(--nav-solid-border);
-  box-shadow: var(--nav-shadow);
+  box-shadow: var(--nav-shadow), var(--nav-glass-inset);
   user-select: none;
   transform: translateZ(0);
   contain: layout style;
