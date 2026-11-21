@@ -104,13 +104,9 @@ export const App: React.FC = () => {
 
   return (
     <div className={`app-wrapper ${isMapPage ? 'map-mode' : ''}`}>
-      {/* Viewport Edge Scroll Fades (Eliminates harsh cut-offs at top and bottom boundaries) */}
-      {!isMapPage && (
-        <>
-          <div className="viewport-edge-fade viewport-edge-fade-top" aria-hidden="true" />
-          <div className="viewport-edge-fade viewport-edge-fade-bottom" aria-hidden="true" />
-        </>
-      )}
+      {/* Viewport Edge Scroll Fades (Smooth gradient dissolve at top and bottom boundaries across all pages) */}
+      <div className="viewport-edge-fade viewport-edge-fade-top" aria-hidden="true" />
+      <div className="viewport-edge-fade viewport-edge-fade-bottom" aria-hidden="true" />
 
       {/* Unified Top Navigation & Brand Bar */}
       <TopBar

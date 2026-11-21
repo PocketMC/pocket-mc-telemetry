@@ -986,6 +986,16 @@ body {
   font-family: inherit !important;
   font-size: 12px !important;
   line-height: 1.4 !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Map marker dots are strictly visual indicators: non-clickable, non-hoverable */
+.jvm-marker,
+.jvm-markers-group,
+.jvm-marker * {
+  pointer-events: none !important;
+  cursor: default !important;
 }
 
 /* Fullscreen Map Styles & Overlays */

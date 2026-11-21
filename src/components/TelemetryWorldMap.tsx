@@ -40,6 +40,8 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
+  const statsRef = useRef<TelemetryStats | null>(stats);
+  statsRef.current = stats;
   const prevThemeRef = useRef<'light' | 'dark'>(theme);
   const [mapLibReady, setMapLibReady] = React.useState<boolean>(
     () => typeof window !== 'undefined' && Boolean((window as any).jsVectorMap)
@@ -127,16 +129,14 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
 
     const liveR = isSmall ? 2.5 : isMedium ? 3.0 : 3.8;
     const liveStroke = isSmall ? 0.75 : isMedium ? 0.9 : 1.2;
-    const liveHoverR = isSmall ? 3.8 : isMedium ? 4.5 : 5.5;
 
     const installR = isSmall ? 1.8 : isMedium ? 2.2 : 2.8;
     const installStroke = isSmall ? 0.5 : isMedium ? 0.7 : 0.9;
-    const installHoverR = isSmall ? 2.8 : isMedium ? 3.4 : 4.2;
 
     const markers: MapMarker[] = [];
     const plottedIsos = new Set<string>();
 
-    // 1. Open Clients Markers (Green dots)
+    // 1. Open Clients Markers (Green dots - visual only, non-interactive)
     for (const [country, count] of Object.entries(stats?.locationDistribution || {})) {
       const match = COUNTRY_MAP[country];
       if (match?.iso && match.coords && !plottedIsos.has(match.iso.toUpperCase())) {
@@ -157,17 +157,17 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
               r: liveR,
             },
             hover: {
-              fill: isDark ? '#4ade80' : '#22c55e',
-              stroke: '#ffffff',
-              strokeWidth: liveStroke + 0.4,
-              r: liveHoverR,
+              fill: isDark ? '#22c55e' : '#16a34a',
+              stroke: isDark ? '#052e16' : '#ffffff',
+              strokeWidth: liveStroke,
+              r: liveR,
             },
           },
         });
       }
     }
 
-    // 2. Total Installs Markers (White dot on dark theme, Black dot on light theme)
+    // 2. Total Installs Markers (White dot on dark theme, Black dot on light theme - visual only)
     for (const [country] of Object.entries(stats?.installLocationDistribution || {})) {
       const match = COUNTRY_MAP[country];
       if (match?.iso && match.coords && !plottedIsos.has(match.iso.toUpperCase())) {
@@ -186,17 +186,17 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
               r: installR,
             },
             hover: {
-              fill: isDark ? '#f1f5f9' : '#334155',
-              stroke: isDark ? '#ffffff' : '#000000',
-              strokeWidth: installStroke + 0.4,
-              r: installHoverR,
+              fill: isDark ? '#ffffff' : '#0f172a',
+              stroke: isDark ? '#000000' : '#ffffff',
+              strokeWidth: installStroke,
+              r: installR,
             },
           },
         });
       }
     }
 
-    // If map already initialized and neither theme nor viewport scale changed, just update markers
+    // If map already initialized and neither theme nor viewport scale changed, update markers
     if (mapInstanceRef.current && prevThemeRef.current === theme && prevViewportRef.current === viewportCategory) {
       try {
         mapInstanceRef.current.removeMarkers();
@@ -207,13 +207,22 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
       }
     }
 
+    // Always cleanly destroy previous map instance and wipe old tooltips from DOM before creating a new one
+    if (mapInstanceRef.current) {
+      try {
+        mapInstanceRef.current.destroy?.();
+      } catch (_) {}
+      mapInstanceRef.current = null;
+    }
+    document.querySelectorAll('.jvm-tooltip').forEach((el) => el.remove());
+    if (containerRef.current) {
+      containerRef.current.innerHTML = '';
+    }
+
     prevThemeRef.current = theme;
     prevViewportRef.current = viewportCategory;
 
-    // Clean container before creating new instance
-    containerRef.current.innerHTML = '';
-
-    // Reusable, non-bloated tooltip content generator for countries & markers
+    // Reusable, non-bloated tooltip content generator for country regions
     const renderTooltipHtml = (rawName: string, rawIso?: string) => {
       const upperIso = (rawIso || (rawName.length === 2 ? rawName : COUNTRY_MAP[rawName]?.iso) || '').toUpperCase();
       const countryName = (upperIso && ISO_TO_COUNTRY[upperIso]) || rawName;
@@ -279,32 +288,66 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
             r: liveR,
           },
           hover: {
-            stroke: '#ffffff',
-            strokeWidth: liveStroke + 0.4,
-            r: liveHoverR,
+            fill: isDark ? '#22c55e' : '#16a34a',
+            stroke: isDark ? '#000000' : '#ffffff',
+            strokeWidth: liveStroke,
+            r: liveR,
           },
-        },
-
-        onMarkerTooltipShow(_event: any, tooltip: any, index: number) {
-          const marker = markers[index];
-          if (!marker) return;
-          tooltip.text(renderTooltipHtml(marker.name, marker.iso), true);
         },
 
         onRegionTooltipShow(_event: any, tooltip: any, code: string) {
           tooltip.text(renderTooltipHtml(code, code), true);
+        },
+
+        onRegionClick(event: any, code: string) {
+          if (!mapInstanceRef.current?._tooltip) return;
+          const tooltip = mapInstanceRef.current._tooltip;
+          tooltip.text(renderTooltipHtml(code, code), true);
+          tooltip.show();
+
+          const clientX =
+            event.clientX ||
+            (event.touches && event.touches[0]?.clientX) ||
+            (event.changedTouches && event.changedTouches[0]?.clientX);
+          const clientY =
+            event.clientY ||
+            (event.touches && event.touches[0]?.clientY) ||
+            (event.changedTouches && event.changedTouches[0]?.clientY);
+          const pageX = event.pageX || (clientX ? clientX + window.scrollX : undefined);
+          const pageY = event.pageY || (clientY ? clientY + window.scrollY : undefined);
+
+          if (pageX != null && pageY != null) {
+            const el = tooltip.getElement();
+            if (el) {
+              const space = 10;
+              const rect = el.getBoundingClientRect();
+              const tooltipW = rect.width || 180;
+              const tooltipH = rect.height || 70;
+              let left = pageX + space;
+              let top = pageY - tooltipH - space;
+              if (top < 10) top = pageY + space;
+              if (left + tooltipW > window.innerWidth - 10) {
+                left = Math.max(10, pageX - tooltipW - space);
+              }
+              el.style.left = `${left}px`;
+              el.style.top = `${top}px`;
+              el.style.display = 'block';
+              el.classList.add('active');
+            }
+          }
         },
       });
     } catch (e) {
       console.error('Failed to construct jsVectorMap', e);
     }
 
-    // Dismiss any stuck tooltips when clicking/tapping outside
+    // Dismiss any stuck tooltips when clicking/tapping outside countries
     const handleMapPointerDown = (e: MouseEvent | TouchEvent) => {
       const target = e.target as HTMLElement | null;
-      if (!target || (!target.classList.contains('jvm-region') && !target.classList.contains('jvm-marker'))) {
+      if (!target || (!target.classList.contains('jvm-region') && !target.closest('.jvm-tooltip'))) {
         document.querySelectorAll('.jvm-tooltip').forEach((el) => {
           (el as HTMLElement).style.display = 'none';
+          el.classList.remove('active');
         });
       }
     };
@@ -335,6 +378,7 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
         onMouseLeave={() => {
           document.querySelectorAll('.jvm-tooltip').forEach((el) => {
             (el as HTMLElement).style.display = 'none';
+            el.classList.remove('active');
           });
         }}
       />
