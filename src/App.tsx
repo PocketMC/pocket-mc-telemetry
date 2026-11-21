@@ -112,6 +112,7 @@ export const App: React.FC = () => {
         theme={theme}
         onToggleTheme={toggleTheme}
         onNavigateHome={() => handleTabChange('overview')}
+        showMapInfo={isMapPage}
       />
 
       {/* Global Error Banner */}

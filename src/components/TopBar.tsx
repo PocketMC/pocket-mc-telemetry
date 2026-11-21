@@ -1,17 +1,41 @@
-import React from 'react';
-import { Sun, Moon } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Sun, Moon, Info } from 'lucide-react';
 
 interface TopBarProps {
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
   onNavigateHome?: () => void;
+  showMapInfo?: boolean;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
   theme,
   onToggleTheme,
   onNavigateHome,
+  showMapInfo = false,
 }) => {
+  const [infoOpen, setInfoOpen] = useState(false);
+  const infoRef = useRef<HTMLDivElement>(null);
+
+  // Close info popover when clicking outside
+  useEffect(() => {
+    if (!infoOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (infoRef.current && !infoRef.current.contains(e.target as Node)) {
+        setInfoOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [infoOpen]);
+
+  // Reset open state when navigating away from map
+  useEffect(() => {
+    if (!showMapInfo) {
+      setInfoOpen(false);
+    }
+  }, [showMapInfo]);
+
   return (
     <header className="top-header-row">
       {/* Brand Component: Solid/translucent dark capsule matching dock material */}
@@ -39,6 +63,47 @@ export const TopBar: React.FC<TopBarProps> = ({
 
       {/* Topbar Actions Group (Consistent dock material, 60px height) */}
       <div className="topbar-actions-group">
+        {/* Map Telemetry Info & Legend Popover Button */}
+        {showMapInfo && (
+          <div className="top-info-wrapper" ref={infoRef}>
+            <button
+              type="button"
+              className={`top-action-btn ${infoOpen ? 'active' : ''}`}
+              onClick={() => setInfoOpen((prev) => !prev)}
+              onMouseEnter={() => setInfoOpen(true)}
+              onMouseLeave={() => setInfoOpen(false)}
+              aria-label="Map telemetry privacy information and legend"
+              aria-expanded={infoOpen}
+              title="Map privacy & legend"
+            >
+              <Info size={21} strokeWidth={1.9} />
+            </button>
+
+            {infoOpen && (
+              <div
+                className="top-info-popover"
+                onMouseEnter={() => setInfoOpen(true)}
+                onMouseLeave={() => setInfoOpen(false)}
+              >
+                <div className="top-info-title">Telemetry Privacy</div>
+                <p className="top-info-text">
+                  Markers represent country-level telemetry coordinates for privacy. Exact coordinates are never collected.
+                </p>
+                <div className="top-info-legend">
+                  <div className="legend-item">
+                    <span className="legend-marker marker-live" />
+                    <span>Active Now</span>
+                  </div>
+                  <div className="legend-item">
+                    <span className="legend-marker marker-installed" />
+                    <span>Registered Installs</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <a
           href="https://github.com/PocketMC/pocket-mc-windows"
           target="_blank"

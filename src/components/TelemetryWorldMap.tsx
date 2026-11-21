@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Info } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
 import type { TelemetryStats } from '../types/telemetry';
 import { COUNTRY_MAP, getFlagUrl } from '../utils/countryFlags';
 
@@ -45,20 +44,6 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
   const [mapLibReady, setMapLibReady] = React.useState<boolean>(
     () => typeof window !== 'undefined' && Boolean((window as any).jsVectorMap)
   );
-  const [infoOpen, setInfoOpen] = useState(false);
-  const infoRef = useRef<HTMLDivElement>(null);
-
-  // Close info popover when clicking outside
-  useEffect(() => {
-    if (!infoOpen) return;
-    const handleClickOutside = (e: MouseEvent) => {
-      if (infoRef.current && !infoRef.current.contains(e.target as Node)) {
-        setInfoOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [infoOpen]);
 
   // Auto-resize map on window resize
   useEffect(() => {
@@ -284,44 +269,6 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
       style={isFullscreen ? { height: '100%', width: '100%' } : { height }}
     >
       <div ref={containerRef} id="world-map" style={{ width: '100%', height: '100%' }} />
-
-      {/* Bottom Left Info Button & Popover */}
-      <div className="map-info-wrapper" ref={infoRef}>
-        <button
-          type="button"
-          className={`map-info-btn ${infoOpen ? 'active' : ''}`}
-          onClick={() => setInfoOpen((prev) => !prev)}
-          onMouseEnter={() => setInfoOpen(true)}
-          onMouseLeave={() => setInfoOpen(false)}
-          aria-label="Map telemetry privacy information"
-          aria-expanded={infoOpen}
-        >
-          <Info size={18} />
-        </button>
-
-        {infoOpen && (
-          <div
-            className="map-info-popover"
-            onMouseEnter={() => setInfoOpen(true)}
-            onMouseLeave={() => setInfoOpen(false)}
-          >
-            <div className="map-info-title">Telemetry Privacy</div>
-            <p className="map-info-text">
-              Markers represent country-level telemetry coordinates for privacy. Exact coordinates are never collected.
-            </p>
-            <div className="map-info-legend">
-              <div className="legend-item">
-                <span className="legend-marker marker-live" />
-                <span>Active Now</span>
-              </div>
-              <div className="legend-item">
-                <span className="legend-marker marker-installed" />
-                <span>Registered Installs</span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 };
