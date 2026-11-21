@@ -70,8 +70,6 @@ export const TopBar: React.FC<TopBarProps> = ({
               type="button"
               className={`top-action-btn ${infoOpen ? 'active' : ''}`}
               onClick={() => setInfoOpen((prev) => !prev)}
-              onMouseEnter={() => setInfoOpen(true)}
-              onMouseLeave={() => setInfoOpen(false)}
               aria-label="Map telemetry privacy information and legend"
               aria-expanded={infoOpen}
               title="Map privacy & legend"
@@ -80,11 +78,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             </button>
 
             {infoOpen && (
-              <div
-                className="top-info-popover"
-                onMouseEnter={() => setInfoOpen(true)}
-                onMouseLeave={() => setInfoOpen(false)}
-              >
+              <div className="top-info-popover">
                 <div className="top-info-title">Telemetry Privacy</div>
                 <p className="top-info-text">
                   Markers represent country-level telemetry coordinates for privacy. Exact coordinates are never collected.
