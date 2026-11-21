@@ -94,6 +94,10 @@ export const App: React.FC = () => {
 
   return (
     <div className="app-wrapper">
+      {/* Viewport Edge Scroll Fades (Eliminates harsh cut-offs at top and bottom boundaries) */}
+      <div className="viewport-edge-fade viewport-edge-fade-top" aria-hidden="true" />
+      <div className="viewport-edge-fade viewport-edge-fade-bottom" aria-hidden="true" />
+
       {/* Unified Top Navigation & Brand Bar */}
       <TopBar
         theme={theme}

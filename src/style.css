@@ -56,6 +56,26 @@
   --nav-tab-active-bg: rgba(0, 0, 0, 0.08);
   --nav-tab-active-color: #0f172a;
   --nav-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.06);
+
+  /* Viewport Edge Scroll Fade (Light Theme) - Compact & Restrained */
+  --fade-scrim-top: linear-gradient(
+    to bottom,
+    rgba(244, 246, 250, 1) 0%,
+    rgba(244, 246, 250, 1) env(safe-area-inset-top, 0px),
+    rgba(244, 246, 250, 0.95) calc(env(safe-area-inset-top, 0px) + 8px),
+    rgba(244, 246, 250, 0.60) calc(env(safe-area-inset-top, 0px) + 18px),
+    rgba(244, 246, 250, 0.18) calc(env(safe-area-inset-top, 0px) + 28px),
+    rgba(244, 246, 250, 0) 100%
+  );
+  --fade-scrim-bottom: linear-gradient(
+    to top,
+    rgba(244, 246, 250, 1) 0%,
+    rgba(244, 246, 250, 1) env(safe-area-inset-bottom, 0px),
+    rgba(244, 246, 250, 0.95) calc(env(safe-area-inset-bottom, 0px) + 10px),
+    rgba(244, 246, 250, 0.60) calc(env(safe-area-inset-bottom, 0px) + 22px),
+    rgba(244, 246, 250, 0.18) calc(env(safe-area-inset-bottom, 0px) + 32px),
+    rgba(244, 246, 250, 0) 100%
+  );
 }
 
 /* ── True OLED Dark Theme Mappings ─────────────────────────── */
@@ -111,6 +131,26 @@
   --nav-tab-active-bg: rgba(255, 255, 255, 0.12);
   --nav-tab-active-color: #ffffff;
   --nav-shadow: 0 8px 32px rgba(0, 0, 0, 0.75);
+
+  /* Viewport Edge Scroll Fade (True OLED Dark Theme) - Compact & Restrained */
+  --fade-scrim-top: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) env(safe-area-inset-top, 0px),
+    rgba(0, 0, 0, 0.95) calc(env(safe-area-inset-top, 0px) + 8px),
+    rgba(0, 0, 0, 0.60) calc(env(safe-area-inset-top, 0px) + 18px),
+    rgba(0, 0, 0, 0.18) calc(env(safe-area-inset-top, 0px) + 28px),
+    rgba(0, 0, 0, 0) 100%
+  );
+  --fade-scrim-bottom: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) env(safe-area-inset-bottom, 0px),
+    rgba(0, 0, 0, 0.95) calc(env(safe-area-inset-bottom, 0px) + 10px),
+    rgba(0, 0, 0, 0.60) calc(env(safe-area-inset-bottom, 0px) + 22px),
+    rgba(0, 0, 0, 0.18) calc(env(safe-area-inset-bottom, 0px) + 32px),
+    rgba(0, 0, 0, 0) 100%
+  );
 }
 
 /* ── Reset & Global Rules ──────────────────────────────────── */
@@ -160,6 +200,41 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VIEWPORT EDGE FADES : Smooth gradient dissolve at scroll boundaries
+   Eliminates harsh cut-off edges at top and bottom of the viewport
+   ═══════════════════════════════════════════════════════════════ */
+.viewport-edge-fade {
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: 100%;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  contain: strict;
+}
+
+.viewport-edge-fade-top {
+  top: 0;
+  height: calc(36px + env(safe-area-inset-top, 0px));
+  background: var(--fade-scrim-top);
+  z-index: 90;
+}
+
+.viewport-edge-fade-bottom {
+  bottom: 0;
+  height: calc(40px + env(safe-area-inset-bottom, 0px));
+  background: var(--fade-scrim-bottom);
+  z-index: 900;
+}
+
+@media print {
+  .viewport-edge-fade {
+    display: none !important;
+  }
 }
 
 /* ── Layout Container ──────────────────────────────────────── */
@@ -710,7 +785,21 @@ body {
   gap: 8px;
   max-height: 270px;
   overflow-y: auto;
-  padding-right: 4px;
+  padding: 4px 4px 4px 0;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0px,
+    black 14px,
+    black calc(100% - 14px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0px,
+    black 14px,
+    black calc(100% - 14px),
+    transparent 100%
+  );
 }
 
 .breakdown-list::-webkit-scrollbar {
