@@ -6,6 +6,7 @@ interface TelemetryWorldMapProps {
   stats: TelemetryStats | null;
   theme: 'light' | 'dark';
   height?: string | number;
+  isFullscreen?: boolean;
 }
 
 interface MapMarker {
@@ -35,12 +36,27 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
   stats,
   theme,
   height = 480,
+  isFullscreen = false,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
+  const prevThemeRef = useRef<'light' | 'dark'>(theme);
   const [mapLibReady, setMapLibReady] = React.useState<boolean>(
     () => typeof window !== 'undefined' && Boolean((window as any).jsVectorMap)
   );
+
+  // Auto-resize map on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (mapInstanceRef.current?.updateSize) {
+        mapInstanceRef.current.updateSize();
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   // Poll for deferred jsVectorMap script if not immediately loaded
   useEffect(() => {
@@ -146,8 +162,8 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
       }
     }
 
-    // If map already initialized, just update markers
-    if (mapInstanceRef.current) {
+    // If map already initialized and theme has not changed, just update markers
+    if (mapInstanceRef.current && prevThemeRef.current === theme) {
       try {
         mapInstanceRef.current.removeMarkers();
         mapInstanceRef.current.addMarkers(markers);
@@ -156,6 +172,8 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
         console.warn('Failed to update markers, re-initializing map', err);
       }
     }
+
+    prevThemeRef.current = theme;
 
     // Clean container before creating new instance
     containerRef.current.innerHTML = '';
@@ -246,7 +264,10 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
   }, [stats, theme]);
 
   return (
-    <div className="map-container-box" style={{ height }}>
+    <div
+      className={`map-container-box ${isFullscreen ? 'is-fullscreen' : ''}`}
+      style={isFullscreen ? { height: '100%', width: '100%' } : { height }}
+    >
       <div ref={containerRef} id="world-map" style={{ width: '100%', height: '100%' }} />
 
       <div className="map-legend-overlay">
@@ -258,6 +279,10 @@ export const TelemetryWorldMap: React.FC<TelemetryWorldMapProps> = ({
           <span className="legend-marker marker-installed" />
           <span>Registered Installs</span>
         </div>
+      </div>
+
+      <div className="map-note-overlay">
+        Note: Markers represent country-level telemetry coordinates for privacy. Exact coordinates are never collected.
       </div>
     </div>
   );

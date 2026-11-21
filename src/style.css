@@ -893,22 +893,115 @@ body {
   font-size: 12px !important;
 }
 
-/* Fullscreen Heatmap Styles */
-#heatmap-container {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
+/* Fullscreen Map Styles & Overlays */
+.app-wrapper.map-mode {
+  max-width: 100vw;
   width: 100vw;
   height: 100vh;
-  background-color: var(--bg-page);
-  transition: background-color 0.25s ease;
+  height: 100dvh;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  position: relative;
 }
 
-.overlay-ui {
+.app-wrapper.map-mode .top-header-row {
+  position: fixed;
+  top: 16px;
+  left: 0;
+  right: 0;
+  width: calc(100% - 48px);
+  max-width: 1280px;
+  margin: 0 auto;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.app-wrapper.map-mode .top-header-row .top-brand-btn,
+.app-wrapper.map-mode .top-header-row .topbar-actions-group {
+  pointer-events: auto;
+}
+
+.app-wrapper.map-mode .error-banner {
+  position: fixed;
+  top: 88px;
+  left: 0;
+  right: 0;
+  width: calc(100% - 48px);
+  max-width: 1280px;
+  margin: 0 auto;
+  z-index: 100;
+}
+
+.app-wrapper.map-mode .main-content {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 1010;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  gap: 0;
+  contain: none;
+  min-height: unset;
+  z-index: 1;
+}
+
+.app-wrapper.map-mode .page-transition {
+  width: 100%;
+  height: 100%;
+  gap: 0;
+  animation: none;
+}
+
+.fullscreen-map-page {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.map-container-box.is-fullscreen {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  border: none;
+  background-color: var(--map-bg);
+}
+
+.map-container-box.is-fullscreen .map-legend-overlay {
+  bottom: 24px;
+  left: 24px;
+  z-index: 10;
+}
+
+.map-note-overlay {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  pointer-events: none;
+  z-index: 10;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 768px) {
+  .app-wrapper.map-mode .top-header-row {
+    top: 12px;
+    width: calc(100% - 24px);
+  }
+
+  .map-container-box.is-fullscreen .map-legend-overlay {
+    bottom: 88px;
+    left: 16px;
+  }
+
+  .map-note-overlay {
+    display: none;
+  }
 }
 
 /* Global Error Banner */

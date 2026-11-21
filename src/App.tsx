@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useTelemetry } from './hooks/useTelemetry';
 import { TopBar } from './components/TopBar';
-import { FullscreenHeatmap } from './components/FullscreenHeatmap';
 import { BottomNavDock } from './components/BottomNavDock';
 import { HomePage, ClientsPage, ServersPage, MapPage } from './pages';
 
@@ -56,9 +55,12 @@ export const App: React.FC = () => {
 
     // 2. Automatically redirect legacy hash URLs (#clients, #servers, #map, #heatmap) to clean routes
     const hash = window.location.hash.replace(/^#\/?/, '');
-    if (hash === 'clients' || hash === 'servers' || hash === 'map' || hash === 'heatmap') {
+    if (hash === 'clients' || hash === 'servers' || hash === 'map') {
       window.history.replaceState(null, '', window.location.pathname + window.location.search);
       navigate(`/${hash}`, { replace: true });
+    } else if (hash === 'heatmap') {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      navigate('/map', { replace: true });
     } else if (hash === 'overview' || hash === 'home') {
       window.history.replaceState(null, '', window.location.pathname + window.location.search);
       navigate('/', { replace: true });
@@ -81,22 +83,29 @@ export const App: React.FC = () => {
     window.scrollTo(0, 0);
   }, [navigate]);
 
-  // Dedicated Fullscreen Heatmap Route
-  if (location.pathname.endsWith('/heatmap')) {
-    return (
-      <FullscreenHeatmap
-        stats={data}
-        theme={theme}
-        onBack={() => navigate('/map')}
-      />
-    );
-  }
+  const isMapPage = location.pathname.replace(/\/$/, '').endsWith('/map');
+
+  // Lock body scroll on fullscreen map page
+  useEffect(() => {
+    if (isMapPage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMapPage]);
 
   return (
-    <div className="app-wrapper">
+    <div className={`app-wrapper ${isMapPage ? 'map-mode' : ''}`}>
       {/* Viewport Edge Scroll Fades (Eliminates harsh cut-offs at top and bottom boundaries) */}
-      <div className="viewport-edge-fade viewport-edge-fade-top" aria-hidden="true" />
-      <div className="viewport-edge-fade viewport-edge-fade-bottom" aria-hidden="true" />
+      {!isMapPage && (
+        <>
+          <div className="viewport-edge-fade viewport-edge-fade-top" aria-hidden="true" />
+          <div className="viewport-edge-fade viewport-edge-fade-bottom" aria-hidden="true" />
+        </>
+      )}
 
       {/* Unified Top Navigation & Brand Bar */}
       <TopBar
@@ -125,74 +134,77 @@ export const App: React.FC = () => {
             <Route path="/clients" element={<ClientsPage data={data} />} />
             <Route path="/servers" element={<ServersPage data={data} />} />
             <Route path="/map" element={<MapPage stats={data} theme={theme} />} />
+            <Route path="/heatmap" element={<Navigate to="/map" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="app-footer">
-        <div className="footer-brand">
-          <img
-            src="https://raw.githubusercontent.com/PocketMC/pocket-mc-website/refs/heads/master/public/logo.webp"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = 'icon.svg';
-            }}
-            alt="PocketMC logo"
-            width={22}
-            height={22}
-            className="footer-logo"
-          />
-          <span className="footer-title">PocketMC Telemetry</span>
-        </div>
+      {/* Footer (Hidden on fullscreen map view) */}
+      {!isMapPage && (
+        <footer className="app-footer">
+          <div className="footer-brand">
+            <img
+              src="https://raw.githubusercontent.com/PocketMC/pocket-mc-website/refs/heads/master/public/logo.webp"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = 'icon.svg';
+              }}
+              alt="PocketMC logo"
+              width={22}
+              height={22}
+              className="footer-logo"
+            />
+            <span className="footer-title">PocketMC Telemetry</span>
+          </div>
 
-        <p className="footer-text">
-          Anonymous telemetry data collected securely to improve performance and understand real-world application usage patterns.
-        </p>
+          <p className="footer-text">
+            Anonymous telemetry data collected securely to improve performance and understand real-world application usage patterns.
+          </p>
 
-        <div className="footer-links">
-          <a
-            href="https://github.com/PocketMC/pocket-mc-windows"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="footer-link"
-          >
-            GitHub Repository
-          </a>
-          <a
-            href="https://github.com/PocketMC"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="footer-link"
-          >
-            PocketMC Organization
-          </a>
-          <a
-            href="https://pocketmc.github.io/pocket-mc-website/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="footer-link"
-          >
-            Official Website
-          </a>
-          <a
-            href="https://pocketmc.github.io/terms/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="footer-link"
-          >
-            Terms of Service
-          </a>
-          <a
-            href="https://pocketmc.github.io/privacy/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="footer-link"
-          >
-            Privacy Policy
-          </a>
-        </div>
-      </footer>
+          <div className="footer-links">
+            <a
+              href="https://github.com/PocketMC/pocket-mc-windows"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-link"
+            >
+              GitHub Repository
+            </a>
+            <a
+              href="https://github.com/PocketMC"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-link"
+            >
+              PocketMC Organization
+            </a>
+            <a
+              href="https://pocketmc.github.io/pocket-mc-website/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-link"
+            >
+              Official Website
+            </a>
+            <a
+              href="https://pocketmc.github.io/terms/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-link"
+            >
+              Terms of Service
+            </a>
+            <a
+              href="https://pocketmc.github.io/privacy/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-link"
+            >
+              Privacy Policy
+            </a>
+          </div>
+        </footer>
+      )}
 
       {/* Floating Bottom Navigation Dock (Memoized) */}
       <BottomNavDock
