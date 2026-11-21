@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { Button } from 'glisse';
 import { useTelemetry } from './hooks/useTelemetry';
-import { GlisseTopBar } from './components/GlisseTopBar';
+import { TopBar } from './components/TopBar';
 import { FullscreenHeatmap } from './components/FullscreenHeatmap';
 import { BottomNavDock } from './components/BottomNavDock';
 import { HomePage, ClientsPage, ServersPage, MapPage } from './pages';
@@ -95,8 +94,8 @@ export const App: React.FC = () => {
 
   return (
     <div className="app-wrapper">
-      {/* Authentic Glisse Floating Command Bar */}
-      <GlisseTopBar
+      {/* Unified Top Navigation & Brand Bar */}
+      <TopBar
         theme={theme}
         onToggleTheme={toggleTheme}
         onNavigateHome={() => handleTabChange('overview')}
@@ -106,9 +105,9 @@ export const App: React.FC = () => {
       {error && (
         <div className="error-banner" role="alert">
           <span>⚠️ {error.message} — Showing cached data or retry shortly.</span>
-          <Button variant="glass" onClick={refresh}>
+          <button type="button" className="btn-surface btn-sm" onClick={refresh}>
             Retry Now
-          </Button>
+          </button>
         </div>
       )}
 

@@ -34,7 +34,7 @@ export const ServerFleetTable: React.FC<ServerFleetTableProps> = ({ data }) => {
 
   if (!sortedEntries.length) {
     return (
-      <div className="server-types-container lg-glass" style={{ padding: '16px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+      <div className="server-types-empty" style={{ padding: '16px', textAlign: 'center', color: 'var(--text-secondary)' }}>
         No server engine telemetry recorded
       </div>
     );
@@ -48,7 +48,7 @@ export const ServerFleetTable: React.FC<ServerFleetTableProps> = ({ data }) => {
         const logoSrc = getServerTypeLogo(type);
 
         return (
-          <div key={type} className="server-type-row lg-glass">
+          <div key={type} className="server-type-row">
             <div className="server-type-brand">
               {logoSrc ? (
                 <img
@@ -73,7 +73,7 @@ export const ServerFleetTable: React.FC<ServerFleetTableProps> = ({ data }) => {
                 />
               </div>
               <div className="server-type-count">{count.toLocaleString()}</div>
-              <div className="badge-glass" style={{ color: 'var(--accent-purple)', fontSize: '11px' }}>
+              <div className="badge-pill" style={{ color: 'var(--accent-purple)', fontSize: '11px' }}>
                 {sharePct}%
               </div>
             </div>

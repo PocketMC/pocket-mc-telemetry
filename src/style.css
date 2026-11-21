@@ -1,9 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
-   PocketMC Telemetry Dashboard : Glisse Liquid Glass Design System
-   Faithful implementation of Apple's Liquid Glass aesthetic (Kelvin Zhang / glisse)
+   PocketMC Telemetry Dashboard : Design System
    ═══════════════════════════════════════════════════════════════ */
-
-@import "glisse/styles.css";
 
 /* ── Light Theme Mappings ──────────────────────────────────── */
 :root,
@@ -12,22 +9,11 @@
   --bg-page: #f4f6fa;
   --bg-surface: #ffffff;
   --bg-surface-subtle: #f8f9fc;
+  --bg-surface-hover: #f1f3f8;
   --bg-surface-elevated: #ffffff;
   --border-card: rgba(0, 0, 0, 0.08);
   --border-subtle: rgba(0, 0, 0, 0.06);
   --border-input: rgba(0, 0, 0, 0.12);
-
-  /* Glisse component tokens override for light theme */
-  --lg-foreground: rgba(0, 0, 0, 0.88);
-  --lg-muted: rgba(60, 60, 67, 0.65);
-  --lg-glass: rgba(248, 249, 252, 0.85);
-  --lg-glass-active: rgba(236, 238, 244, 0.95);
-  --lg-surface: #ffffff;
-  --lg-surface-edge: rgba(0, 0, 0, 0.08);
-  --lg-edge: rgba(0, 0, 0, 0.08);
-  --lg-shadow: rgba(25, 25, 35, 0.08);
-  --lg-drop: rgba(0, 0, 0, 0.04);
-  --lg-rail: rgba(0, 0, 0, 0.08);
 
   --text-primary: #0f172a;
   --text-secondary: #64748b;
@@ -51,12 +37,9 @@
   --map-land-hover: #c4d1e6;
   --map-stroke: #cbd5e1;
 
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow-card: 0 12px 32px rgba(25, 25, 35, 0.06);
-  --shadow-hover: 0 16px 40px rgba(25, 25, 35, 0.10);
-
-  --lg-rim-shine-high: 0.22;
-  --lg-rim-shine: 0.12;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.08);
 
   --scrollbar-thumb: rgba(0, 0, 0, 0.15);
   --tooltip-bg: #ffffff;
@@ -81,22 +64,11 @@
   --bg-page: #000000;
   --bg-surface: #0a0a0c;
   --bg-surface-subtle: #111114;
+  --bg-surface-hover: #16161a;
   --bg-surface-elevated: #16161a;
   --border-card: rgba(255, 255, 255, 0.08);
   --border-subtle: rgba(255, 255, 255, 0.06);
   --border-input: rgba(255, 255, 255, 0.10);
-
-  /* Glisse component tokens override for True OLED Dark */
-  --lg-foreground: #ffffff;
-  --lg-muted: #a1a1aa;
-  --lg-glass: #111114;
-  --lg-glass-active: #18181c;
-  --lg-surface: #0a0a0c;
-  --lg-surface-edge: rgba(255, 255, 255, 0.08);
-  --lg-edge: rgba(255, 255, 255, 0.07);
-  --lg-shadow: rgba(0, 0, 0, 0.70);
-  --lg-drop: transparent;
-  --lg-rail: rgba(255, 255, 255, 0.07);
 
   --text-primary: #ffffff;
   --text-secondary: #a1a1aa;
@@ -120,12 +92,9 @@
   --map-land-hover: #1c1c24;
   --map-stroke: #1f1f26;
 
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
-  --shadow-card: 0 16px 40px rgba(0, 0, 0, 0.75);
-  --shadow-hover: 0 20px 48px rgba(0, 0, 0, 0.90);
-
-  --lg-rim-shine-high: 0.04;
-  --lg-rim-shine: 0.03;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.7);
 
   --scrollbar-thumb: rgba(255, 255, 255, 0.16);
   --tooltip-bg: #141418;
@@ -180,8 +149,8 @@ body {
 .solid-segmented-bar,
 .top-brand-btn,
 .top-action-btn,
-.lg-button,
-.lg-input,
+.btn-surface,
+.search-field-wrap,
 .map-container-box,
 .table-card {
   transition: background-color 0.25s ease, border-color 0.25s ease, color 0.2s ease, box-shadow 0.25s ease;
@@ -403,61 +372,44 @@ body {
   }
 }
 
-/* ── Glisse Buttons & Icon Buttons (0.5px Hairline Edge Matching Dockbar) ─── */
-.lg-button {
+/* ── Clean Surface Buttons ─────────────────────────────────── */
+.btn-surface {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 40px;
+  height: 38px;
   padding: 0 16px;
-  border: 0;
-  border-radius: 999px;
-  background-color: var(--lg-glass);
+  border-radius: 19px;
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-card);
   color: var(--text-primary);
   font-size: 13px;
   font-weight: 600;
+  font-family: inherit;
   text-decoration: none;
   cursor: pointer;
-  touch-action: manipulation;
   user-select: none;
-  /* Authentic Glisse hairline 0.5px glass edge - exactly matches dockbar */
-  box-shadow:
-    inset 0 0 0 0.5px var(--lg-edge),
-    0 1px 3px var(--lg-drop);
-  transition: transform 0.16s var(--lg-ease), background-color 0.16s var(--lg-ease), box-shadow 0.16s var(--lg-ease);
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
 }
 
-.lg-button:hover {
-  background-color: var(--lg-glass-active);
+.btn-surface:hover {
+  background-color: var(--bg-surface-hover);
+  border-color: var(--border-input);
   transform: translateY(-1px);
-  box-shadow:
-    inset 0 0 0 0.5px var(--lg-edge),
-    0 4px 12px var(--lg-shadow);
 }
 
-.lg-button:active {
+.btn-surface:active {
   transform: scale(0.97);
 }
 
-.lg-button[data-icon="only"],
-.lg-button.icon-only {
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border-radius: 50%;
-}
-
-.lg-button[data-variant="filled"] {
-  background-color: var(--lg-fill);
-  border: 0;
-  color: #ffffff;
-  box-shadow: 0 4px 14px rgba(0, 145, 255, 0.35);
-}
-
-.lg-button[data-variant="filled"]:hover {
-  background-color: #0077e6;
-  color: #ffffff;
+.btn-surface.btn-sm {
+  height: 32px;
+  padding: 0 12px;
+  font-size: 12px;
+  border-radius: 16px;
 }
 
 .btn-spin {
@@ -469,38 +421,19 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* Theme toggle sun/moon */
-#themeToggle .sun-icon { display: block; }
-#themeToggle .moon-icon { display: none; }
-[data-theme="dark"] #themeToggle .sun-icon { display: none; }
-[data-theme="dark"] #themeToggle .moon-icon { display: block; }
-
-@media (max-width: 600px) {
-  .live-time,
-  .live-separator {
-    display: none;
-  }
-  .switch-label {
-    display: none;
-  }
-}
-
 /* ═══════════════════════════════════════════════════════════════
-   SECTION CARDS : Liquid Glass Containers
+   SECTION CARDS
    ═══════════════════════════════════════════════════════════════ */
 .section-card {
   position: relative;
-  background-color: var(--lg-surface);
-  border-radius: 26px;
-  border: 1px solid var(--lg-surface-edge);
-  box-shadow:
-    inset 0 1px 1.5px 0 rgba(255, 255, 255, var(--lg-rim-shine-high)),
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.05),
-    0 20px 50px 0 var(--lg-shadow);
-  padding: 26px;
-  margin-bottom: 32px;
+  background-color: var(--bg-surface);
+  border-radius: 24px;
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+  margin-bottom: 28px;
   overflow: hidden;
-  transition: transform 0.25s var(--lg-ease), box-shadow 0.25s var(--lg-ease);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
   contain: layout style;
 }
 
@@ -534,9 +467,8 @@ body {
   width: 42px;
   height: 42px;
   border-radius: 13px;
-  border: 1px solid var(--lg-edge);
-  background-color: var(--lg-glass);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, var(--lg-rim-shine));
+  border: 1px solid var(--border-card);
+  background-color: var(--bg-surface-subtle);
 }
 
 .section-icon-blue { color: var(--accent-blue); }
@@ -562,7 +494,7 @@ body {
 
 
 /* ═══════════════════════════════════════════════════════════════
-   KPI CARDS GRID : Liquid Glass Optical Lenses
+   KPI CARDS GRID
    ═══════════════════════════════════════════════════════════════ */
 .kpi-grid {
   display: grid;
@@ -595,27 +527,24 @@ body {
 
 .kpi-card {
   position: relative;
-  background-color: var(--lg-glass);
+  background-color: var(--bg-surface);
   border-radius: 20px;
-  border: 1px solid var(--lg-edge);
-  box-shadow:
-    inset 0 1px 1.5px 0 rgba(255, 255, 255, var(--lg-rim-shine-high)),
-    0 6px 20px 0 var(--lg-drop);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-sm);
   padding: 18px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 12px;
   contain: layout style;
-  transition: transform 0.2s var(--lg-ease), background-color 0.2s var(--lg-ease), box-shadow 0.2s var(--lg-ease);
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .kpi-card:hover {
   transform: translateY(-2px);
-  background-color: var(--lg-glass-active);
-  box-shadow:
-    inset 0 1px 2px 0 rgba(255, 255, 255, calc(var(--lg-rim-shine-high) * 1.4)),
-    0 10px 28px 0 var(--lg-shadow);
+  background-color: var(--bg-surface-elevated);
+  border-color: var(--border-input);
+  box-shadow: var(--shadow-card);
 }
 
 .kpi-icon-top {
@@ -652,15 +581,15 @@ body {
   color: var(--text-secondary);
 }
 
-.badge-glass {
+.badge-pill {
   display: inline-flex;
   align-items: center;
   padding: 2px 7px;
   border-radius: 999px;
   font-size: 11px;
   font-weight: 600;
-  border: 1px solid var(--lg-edge);
-  background-color: var(--lg-glass);
+  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-surface-subtle);
 }
 
 .badge-green { color: var(--accent-green); background-color: var(--accent-green-subtle); }
@@ -668,7 +597,7 @@ body {
 .badge-purple { color: var(--accent-purple); background-color: var(--accent-purple-subtle); }
 
 /* ═══════════════════════════════════════════════════════════════
-   BREAKDOWNS : Glisse Search Inputs & Progress Rows
+   BREAKDOWNS : Search Inputs & Progress Rows
    ═══════════════════════════════════════════════════════════════ */
 .breakdown-grid {
   display: grid;
@@ -684,17 +613,16 @@ body {
 
 .breakdown-card {
   position: relative;
-  background-color: var(--lg-glass);
+  background-color: var(--bg-surface);
   border-radius: 20px;
-  border: 1px solid var(--lg-edge);
-  box-shadow:
-    inset 0 1px 1.5px 0 rgba(255, 255, 255, var(--lg-rim-shine-high)),
-    0 6px 20px 0 var(--lg-drop);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-sm);
   padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   contain: layout style;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .breakdown-header {
@@ -713,43 +641,67 @@ body {
   gap: 6px;
 }
 
-/* ── Glisse Search Input (.lg-input) ───────────────────────── */
-.search-box-wrap {
+/* ── Clean Search Field ────────────────────────────────────── */
+.search-field-wrap {
   position: relative;
+  display: flex;
+  align-items: center;
   width: 100%;
+  height: 34px;
+  background-color: var(--bg-surface-subtle);
+  border: 1px solid var(--border-input);
+  border-radius: 17px;
+  padding: 0 10px 0 12px;
+  gap: 7px;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.lg-input {
-  background-color: var(--lg-glass);
-  border: 1px solid var(--lg-edge);
-  color: var(--text-primary);
-  transition: background-color 0.2s var(--lg-ease), border-color 0.2s ease, box-shadow 0.2s var(--lg-ease);
-}
-
-.lg-input:focus-within {
-  background-color: var(--lg-glass-active);
+.search-field-wrap:focus-within {
   border-color: var(--accent-blue);
+  background-color: var(--bg-surface-elevated);
   box-shadow: 0 0 0 2px var(--accent-blue-subtle);
 }
 
-.lg-input input {
-  color: var(--text-primary) !important;
+.search-field-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
 }
 
-.lg-input input::placeholder {
-  color: var(--text-muted) !important;
+.search-field-input {
+  flex: 1;
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 12.5px;
+  font-family: inherit;
+  padding: 0;
 }
 
-.lg-input-icon {
-  color: var(--text-muted) !important;
+.search-field-input::placeholder {
+  color: var(--text-muted);
 }
 
-.lg-input-clear {
-  color: var(--text-muted) !important;
+.search-field-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+  border-radius: 50%;
+  transition: color 0.15s ease, background-color 0.15s ease;
 }
 
-.lg-input-clear:hover {
-  color: var(--text-primary) !important;
+.search-field-clear:hover {
+  color: var(--text-primary);
+  background-color: var(--border-subtle);
 }
 
 .breakdown-list {
@@ -780,7 +732,7 @@ body {
 }
 
 .breakdown-row:hover {
-  background-color: var(--lg-glass-active);
+  background-color: var(--bg-surface-subtle);
 }
 
 .breakdown-label {
@@ -804,22 +756,21 @@ body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-/* ── Glisse Slider Track Style Progress Bar ────────────────── */
+/* ── Progress Track ────────────────────────────────────────── */
 .breakdown-track {
   flex: 1;
   height: 7px;
   border-radius: 999px;
-  background-color: var(--lg-rail);
+  background-color: var(--bar-track);
   overflow: hidden;
   position: relative;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .breakdown-fill {
   height: 100%;
   border-radius: 999px;
   background-color: var(--bar-fill);
-  transition: width 0.6s var(--lg-ease);
+  transition: width 0.5s ease;
 }
 
 .breakdown-value {
@@ -847,16 +798,17 @@ body {
   justify-content: space-between;
   padding: 12px 16px;
   border-radius: 16px;
-  background-color: var(--lg-glass);
-  border: 1px solid var(--lg-edge);
-  box-shadow: inset 0 1px 1.2px rgba(255, 255, 255, var(--lg-rim-shine-high));
-  transition: transform 0.15s var(--lg-ease), background-color 0.15s var(--lg-ease);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
   contain: layout style;
 }
 
 .server-type-row:hover {
   transform: translateY(-1px);
-  background-color: var(--lg-glass-active);
+  background-color: var(--bg-surface-subtle);
+  border-color: var(--border-input);
 }
 
 .server-type-brand {
@@ -895,7 +847,6 @@ body {
   overflow: hidden;
   background-color: var(--map-bg);
   border: 1px solid var(--border-card);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, var(--lg-rim-shine));
 }
 
 #world-map {

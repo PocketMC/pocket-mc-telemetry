@@ -1,6 +1,5 @@
 import React from 'react';
 import { Globe, Maximize2 } from 'lucide-react';
-import { Button } from 'glisse';
 import { useNavigate } from 'react-router-dom';
 import { TelemetryStats } from '../types/telemetry';
 import { SectionCard } from '../components/SectionCard';
@@ -23,14 +22,15 @@ export const MapPage: React.FC<MapPageProps> = ({ stats, theme }) => {
       iconColor="blue"
       insight={<span>{totalCountries} countries reached with active installations worldwide</span>}
       action={
-        <Button
-          variant="glass"
+        <button
+          type="button"
+          className="btn-surface"
           onClick={() => navigate('/heatmap')}
-          icon={<Maximize2 size={14} />}
           aria-label="Open fullscreen map view"
         >
-          Fullscreen Heatmap
-        </Button>
+          <Maximize2 size={14} />
+          <span>Fullscreen Heatmap</span>
+        </button>
       }
     >
       <TelemetryWorldMap stats={stats} theme={theme} />

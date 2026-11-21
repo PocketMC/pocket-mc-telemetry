@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { SearchField } from 'glisse';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, Search, X } from 'lucide-react';
 import { getFlagUrl } from '../utils/countryFlags';
 import { DistributionMap } from '../types/telemetry';
 
@@ -42,7 +41,7 @@ export const BreakdownCard: React.FC<BreakdownCardProps> = ({
   }, [sortedEntries, query]);
 
   return (
-    <div className="breakdown-card lg-glass">
+    <div className="breakdown-card">
       <div className="breakdown-header">
         <h3 className="breakdown-title">
           <span>{title}</span>
@@ -63,14 +62,29 @@ export const BreakdownCard: React.FC<BreakdownCardProps> = ({
           )}
         </h3>
 
-        {/* Real Glisse SearchField */}
+        {/* Clean Native Search Field */}
         <div style={{ maxWidth: '190px', width: '100%' }}>
-          <SearchField
-            placeholder={placeholder}
-            value={query}
-            onValueChange={setQuery}
-            aria-label={`Search ${title}`}
-          />
+          <div className="search-field-wrap">
+            <Search size={13} className="search-field-icon" aria-hidden="true" />
+            <input
+              type="text"
+              className="search-field-input"
+              placeholder={placeholder}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label={`Search ${title}`}
+            />
+            {query && (
+              <button
+                type="button"
+                className="search-field-clear"
+                onClick={() => setQuery('')}
+                aria-label="Clear search"
+              >
+                <X size={12} />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -119,7 +133,7 @@ export const BreakdownCard: React.FC<BreakdownCardProps> = ({
                   {count.toLocaleString()}
                 </div>
 
-                <div className="badge-glass" style={{ fontSize: '10.5px', color: 'var(--text-secondary)' }}>
+                <div className="badge-pill" style={{ fontSize: '10.5px', color: 'var(--text-secondary)' }}>
                   {sharePct}%
                 </div>
               </div>

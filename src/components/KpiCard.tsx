@@ -22,11 +22,11 @@ export const KpiCard: React.FC<KpiCardProps> = ({
   badge,
 }) => {
   return (
-    <div className="kpi-card lg-glass">
+    <div className="kpi-card">
       <div className={`kpi-icon-top ${colorClass}`}>
         {icon}
         {badge && (
-          <span className={`badge-glass badge-${badge.variant || 'blue'}`}>
+          <span className={`badge-pill badge-${badge.variant || 'blue'}`}>
             {badge.text}
           </span>
         )}

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Button } from 'glisse';
 import { ArrowLeft } from 'lucide-react';
 import { TelemetryWorldMap } from './TelemetryWorldMap';
 import type { TelemetryStats } from '../types/telemetry';
@@ -18,15 +17,16 @@ export const FullscreenHeatmap: React.FC<FullscreenHeatmapProps> = ({
   return (
     <div id="heatmap-container" style={{ position: 'fixed', inset: 0, zIndex: 10, width: '100vw', height: '100vh', background: 'var(--bg-page)' }}>
       <div className="overlay-ui">
-        <Button
-          variant="glass"
+        <button
+          type="button"
+          className="btn-surface"
           onClick={onBack}
           aria-label="Back to Dashboard"
           style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
         >
           <ArrowLeft size={16} />
           <span>Back to Dashboard</span>
-        </Button>
+        </button>
       </div>
 
       <div style={{ width: '100%', height: '100%' }}>

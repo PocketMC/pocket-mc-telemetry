@@ -20,7 +20,7 @@ export const SectionCard: React.FC<SectionCardProps> = ({
   children,
 }) => {
   return (
-    <section className="section-card lg-glass" id={id}>
+    <section className="section-card" id={id}>
       <div className="section-header">
         <div className="section-title-wrap">
           <div className={`section-icon-badge section-icon-${iconColor}`}>

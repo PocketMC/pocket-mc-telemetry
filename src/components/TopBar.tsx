@@ -1,13 +1,13 @@
 import React from 'react';
 import { Sun, Moon } from 'lucide-react';
 
-interface GlisseTopBarProps {
+interface TopBarProps {
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
   onNavigateHome?: () => void;
 }
 
-export const GlisseTopBar: React.FC<GlisseTopBarProps> = ({
+export const TopBar: React.FC<TopBarProps> = ({
   theme,
   onToggleTheme,
   onNavigateHome,
