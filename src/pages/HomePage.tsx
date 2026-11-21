@@ -74,12 +74,10 @@ export const HomePage: React.FC<HomePageProps> = ({ data }) => {
         <BreakdownCard
           title="Install Versions"
           data={data?.installVersionDistribution}
-          placeholder="Filter install versions..."
         />
         <BreakdownCard
           title="Install Locations"
           data={data?.installLocationDistribution}
-          placeholder="Filter install countries..."
           isCountry
         />
       </div>

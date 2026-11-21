@@ -62,12 +62,10 @@ export const ClientsPage: React.FC<ClientsPageProps> = ({ data }) => {
         <BreakdownCard
           title="Active Client Versions"
           data={data?.versionDistribution}
-          placeholder="Filter client versions..."
         />
         <BreakdownCard
           title="Active Client Locations"
           data={data?.locationDistribution}
-          placeholder="Filter client countries..."
           isCountry
         />
       </div>
