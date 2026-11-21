@@ -614,14 +614,6 @@ body {
   justify-content: space-between;
   gap: 12px;
   contain: layout style;
-  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.kpi-card:hover {
-  transform: translateY(-2px);
-  background-color: var(--bg-surface-elevated);
-  border-color: var(--border-input);
-  box-shadow: var(--shadow-card);
 }
 
 .kpi-icon-top {
@@ -756,11 +748,6 @@ body {
   gap: 12px;
   padding: 6px 8px;
   border-radius: 10px;
-  transition: background-color 0.15s ease;
-}
-
-.breakdown-row:hover {
-  background-color: var(--bg-surface-subtle);
 }
 
 .breakdown-label {
@@ -829,14 +816,7 @@ body {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-card);
   box-shadow: var(--shadow-sm);
-  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
   contain: layout style;
-}
-
-.server-type-row:hover {
-  transform: translateY(-1px);
-  background-color: var(--bg-surface-subtle);
-  border-color: var(--border-input);
 }
 
 .server-type-brand {
